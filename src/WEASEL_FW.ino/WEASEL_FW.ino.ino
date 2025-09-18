@@ -30,6 +30,13 @@ float modOsc_modAmount;            // MOD AMOUNT AFFECTING COMPLEX OSC
 float complexOsc_timbreAmount;     // Timbre blend amount (0.0 = sine, 1.0 = triangle)
 float complexOsc_foldAmount;       // Wavefolding amount (0.0 = no fold, 1.0 = max fold)
 
+// Function to convert linear values to logarithmic scale for pitch
+float linearToLog(float value, float minVal, float maxVal) {
+  // Convert linear 0-1 value to exponential frequency
+  // Using the formula: freq = minVal * pow(maxVal/minVal, value)
+  return minVal * pow(maxVal / minVal, value);
+}
+
 // WAVEFOLDER FNC.
 float wavefolder(float input, float amount) {
   // More intense wavefolding algorithm
@@ -38,7 +45,7 @@ float wavefolder(float input, float amount) {
   
   // Increased gain before folding for more intense effect
   // Scale input based on fold amount - much more aggressive now
-  float scaledInput = input * (1.0f + amount * 50.0f);  // 
+  float scaledInput = input * (1.0f + amount * 60.0f);  // 
   
   // Multiple folding stages for more complex harmonics
   for (int fold = 0; fold < 3; fold++) {  // Multiple folding passes
@@ -64,7 +71,7 @@ float wavefolder(float input, float amount) {
     wetDryMix = 1.0f;  // Full wet for higher amounts
   }
   
-  return (input * (1.0f - wetDryMix)) + ((scaledInput * wetDryMix) * 0.10); // MANUAL LEVEL SCALING
+  return (input * (1.0f - wetDryMix)) + (scaledInput * wetDryMix); // MANUAL LEVEL SCALING
 }
 
 // MUX
@@ -76,16 +83,22 @@ void setMuxChannel(int channel) {
   digitalWrite(MUX_S3, channel & 0x08);
 }
 
-float readMuxChannel(int channel, float minVal, float maxVal) {
+float readMuxChannel(int channel, float minVal, float maxVal, bool logarithmic = false) {
   // Set MUX to desired channel
   setMuxChannel(channel);
   
   // Small delay for MUX to settle
   delayMicroseconds(10);
   
-  // Read analog value and map to desired range
+  // Read analog value and map to 0-1 range
   int rawValue = analogRead(MUX_SIG);
-  return minVal + (maxVal - minVal) * (rawValue / 65535.0f);
+  float normalizedValue = rawValue / 65535.0f;
+  
+  if (logarithmic) {
+    return linearToLog(normalizedValue, minVal, maxVal);
+  } else {
+    return minVal + (maxVal - minVal) * normalizedValue;
+  }
 }
 
 void AudioCallback(float **in, float **out, size_t size) {
@@ -115,9 +128,12 @@ void AudioCallback(float **in, float **out, size_t size) {
     // APPLY WAVEFOLDING (more aggressive now)
     float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
+    // OSC STAGE OUTPUT
+    float oscillatorSum_signal = complexOsc_foldedSignal + modOsc_signal;
+
     // OUTPUT
-    out[0][i] = complexOsc_foldedSignal;
-    out[1][i] = complexOsc_foldedSignal; 
+    out[0][i] = oscillatorSum_signal;
+    out[1][i] = oscillatorSum_signal; 
   }
 }
 
@@ -177,15 +193,16 @@ void setup() {
   DAISY.begin(AudioCallback);
   
   Serial.println("Weasel Initialised with AGGRESSIVE Wavefolder, Moog Filter, and Buchla-style Timbre Control");
+  Serial.println("Now with logarithmic pitch scaling for more natural response");
 }
 
 void loop() {
-  // POTENTIOMETER READ
-  modOsc_pitch = readMuxChannel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f);
-  modOsc_modAmount = readMuxChannel(MOD_AMOUNT_CHANNEL, 0.0f, 1000.0f);
-  complexOsc_basePitch = readMuxChannel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f);
-  complexOsc_timbreAmount = readMuxChannel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);  // WAVE MORPHING AMOUNT
-  complexOsc_foldAmount = readMuxChannel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);      // WAVEFOLDING AMOUNT
+  // POTENTIOMETER READ with logarithmic scaling for pitch channels
+  modOsc_pitch = readMuxChannel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true); // Logarithmic
+  modOsc_modAmount = readMuxChannel(MOD_AMOUNT_CHANNEL, 0.0f, 1000.0f); // Linear
+  complexOsc_basePitch = readMuxChannel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true); // Logarithmic
+  complexOsc_timbreAmount = readMuxChannel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);  // Linear
+  complexOsc_foldAmount = readMuxChannel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);      // Linear
   
   // SERIAL DEBUG
   static unsigned long lastPrint = 0;
