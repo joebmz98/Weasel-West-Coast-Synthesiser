@@ -1,4 +1,5 @@
 #include "DaisyDuino.h"
+//#include "buchla_lpg.h"
 
 // MUX PINS
 #define MUX_S0 0
@@ -15,30 +16,52 @@
 #define COMPLEX_OSC_FOLD_CHANNEL 4  // C4 - wavefolding amount
 #define COMPLEX_OSC_LEVEL_CHANNEL 5 // C5 - complex oscillator output level
 #define MOD_OSC_LEVEL_CHANNEL 6    // C6 - modulator oscillator output level
+#define SEQ_STEP_1_CHANNEL 7       // C7 - Sequencer step 1
+#define SEQ_STEP_2_CHANNEL 8       // C8 - Sequencer step 2
+#define SEQ_STEP_3_CHANNEL 9       // C9 - Sequencer step 3
+#define SEQ_STEP_4_CHANNEL 10      // C10 - Sequencer step 4
+#define SEQ_STEP_5_CHANNEL 11      // C11 - Sequencer step 5
+#define ASD_ATTACK_CHANNEL 12      // C12 - ATTACK
+#define ASD_SUSTAIN_CHANNEL 13     // C13 - SUSTAIN
+#define ASD_DECAY_CHANNEL 14       // C13 - DECAY
+#define CLOCK_CHANNEL 15           // C15 - CLOCK
 
 // DEFINE DAISYSEED
 DaisyHardware hw;
 
 //INIT OSCILLATORS, FILTER, AND WAVEFOLDER
-static Oscillator complexOsc;      // Primary carrier oscillator (sine)
-static Oscillator complexOscTri;   // Secondary oscillator (triangle)
-static Oscillator modOsc;          // Modulator oscillator
-static MoogLadder complexOsc_filter; // Moog-style lowpass filter
+static Oscillator complexOsc;      // PRIMARY COMPLEX OSC
+static Oscillator complexOscTri;   // SECONDARY COMPLEX OSC (triangle)
+static Oscillator modOsc;          // MODULATION OSC
+static MoogLadder complexOsc_filter; // FILTER - HIGH CUT AT 15kHz FOR "ANALOGUE" FEEL OF WAVEFORMS
 
 // OSCILLATOR PARAMETER VARIABLES
 float complexOsc_basePitch;        // COMPLEX OSC BASE PITCH
 float modOsc_pitch;                // MOD OSC BASE PITCH
 float modOsc_modAmount;            // MOD AMOUNT AFFECTING COMPLEX OSC
-float complexOsc_timbreAmount;     // Timbre blend amount (0.0 = sine, 1.0 = triangle)
-float complexOsc_foldAmount;       // Wavefolding amount (0.0 = no fold, 1.0 = max fold)
-float complexOsc_level;            // Complex oscillator output level (0.0 to 1.0)
-float modOsc_level;                // Modulator oscillator output level (0.0 to 1.0)
+float complexOsc_timbreAmount;     // COMPLEX OSC TIMBRE WAVEMORPHING AMOUNT (0.0 = sine, 1.0 = triangle)
+float complexOsc_foldAmount;       // COMPLEX OSC WAVEFOLDING AMOUNT (0.0 = no fold, 1.0 = max fold)
+float complexOsc_level;            // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
+float modOsc_level;                // MODULATION OSC LEVEL CONTROLl (0.0 to 1.0)
+
+// SEQUENCER VARIABLES
+const int SEQ_STEPS = 5;           // NUM OF STEPS
+float sequencerValues[SEQ_STEPS];  // STORE POT VALUES
+int currentStep = 0;               // CURRENT STEP
+unsigned long stepStartTime = 0;   // TIME WHEN CURRENT STEP STARTED
+const float BPM = 100.0f;          // CLOCK SPEED
+const float STEP_DURATION_MS = (60000.0f / BPM) / 4.0f; // QUARTER NOTE DURATION AT 100BPM
 
 // Function to convert linear values to logarithmic scale for pitch
 float linearToLog(float value, float minVal, float maxVal) {
   // Convert linear 0-1 value to exponential frequency
   // Using the formula: freq = minVal * pow(maxVal/minVal, value)
   return minVal * pow(maxVal / minVal, value);
+}
+
+// Function to convert semitones to frequency ratio
+float semitonesToRatio(float semitones) {
+  return pow(2.0f, semitones / 12.0f);
 }
 
 // WAVEFOLDER FNC.
@@ -105,14 +128,40 @@ float readMuxChannel(int channel, float minVal, float maxVal, bool logarithmic =
   }
 }
 
+// Update sequencer step
+void updateSequencer() {
+  unsigned long currentTime = millis();
+  
+  // Check if it's time to advance to the next step
+  if (currentTime - stepStartTime >= STEP_DURATION_MS) {
+    currentStep = (currentStep + 1) % SEQ_STEPS;
+    stepStartTime = currentTime;
+  }
+}
+
+// Read all sequencer potentiometers
+void readSequencerValues() {
+  sequencerValues[0] = readMuxChannel(SEQ_STEP_1_CHANNEL, 0.0f, 48.0f); // 0 to +48 semitones
+  sequencerValues[1] = readMuxChannel(SEQ_STEP_2_CHANNEL, 0.0f, 48.0f);
+  sequencerValues[2] = readMuxChannel(SEQ_STEP_3_CHANNEL, 0.0f, 48.0f);
+  sequencerValues[3] = readMuxChannel(SEQ_STEP_4_CHANNEL, 0.0f, 48.0f);
+  sequencerValues[4] = readMuxChannel(SEQ_STEP_5_CHANNEL, 0.0f, 48.0f);
+}
+
 void AudioCallback(float **in, float **out, size_t size) {
   for (size_t i = 0; i < size; i++) {
-    // PROCESS MODULATOR OSCILLATOR
-    modOsc.SetFreq(modOsc_pitch);
+    // Get current sequencer pitch offset
+    float sequencerPitchOffset = sequencerValues[currentStep];
+    float pitchRatio = semitonesToRatio(sequencerPitchOffset);
+    
+    // PROCESS MODULATOR OSCILLATOR with sequencer pitch modulation
+    float modulatedModPitch = modOsc_pitch * pitchRatio;
+    modOsc.SetFreq(modulatedModPitch);
     float modOsc_signal = modOsc.Process();
     
-    // PROCESS COMPLEX OSCILLATOR WITH FM
-    float complexOsc_modulatedFreq = complexOsc_basePitch + (modOsc_signal * modOsc_modAmount) - 16.0;
+    // PROCESS COMPLEX OSCILLATOR WITH FM and sequencer pitch modulation
+    float modulatedComplexBasePitch = complexOsc_basePitch * pitchRatio;
+    float complexOsc_modulatedFreq = modulatedComplexBasePitch + (modOsc_signal * modOsc_modAmount) - 16.0;
     complexOsc_modulatedFreq = max(complexOsc_modulatedFreq, 17.0f);  // MIN 17Hz
     
     // Set frequency for both complex oscillators
@@ -135,6 +184,8 @@ void AudioCallback(float **in, float **out, size_t size) {
     // APPLY OUTPUT LEVEL CONTROL TO BOTH OSCILLATORS
     float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
     float modulated_modOsc = modOsc_signal * modOsc_level;
+
+    // VCA + ENVELOPE
 
     // OSC STAGE OUTPUT
     float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
@@ -180,11 +231,11 @@ void setup() {
   
   // INIT PRIMARY CARRIER OSC (sine wave)
   complexOsc.SetWaveform(complexOsc.WAVE_SIN);
-  complexOsc.SetAmp(0.75);
+  complexOsc.SetAmp(1.0);
   
   // INIT SECONDARY CARRIER OSC (triangle wave)
   complexOscTri.SetWaveform(complexOscTri.WAVE_TRI);
-  complexOscTri.SetAmp(0.75);
+  complexOscTri.SetAmp(1.0);
   
   // INIT MODULATOR OSC
   modOsc.SetWaveform(modOsc.WAVE_TRI);
@@ -199,12 +250,20 @@ void setup() {
   complexOsc_level = 1.0f;         // Start with full volume for complex oscillator
   modOsc_level = 1.0f;             // Start with full volume for modulator oscillator
   
+  // Initialize sequencer values
+  for (int i = 0; i < SEQ_STEPS; i++) {
+    sequencerValues[i] = 0.0f;
+  }
+  
+  stepStartTime = millis();
+  
   // Start audio callback
   DAISY.begin(AudioCallback);
   
   Serial.println("Weasel Initialised with AGGRESSIVE Wavefolder, Moog Filter, and Buchla-style Timbre Control");
   Serial.println("Now with logarithmic pitch scaling for more natural response");
   Serial.println("And individual output level controls for both oscillators");
+  Serial.println("And 5-step sequencer with 0 to +48 semitone range");
 }
 
 void loop() {
@@ -217,10 +276,20 @@ void loop() {
   complexOsc_level = readMuxChannel(COMPLEX_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);          // Linear - Complex OSC level
   modOsc_level = readMuxChannel(MOD_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);                  // Linear - Mod OSC level
   
+  // Read sequencer values
+  readSequencerValues();
+  
+  // Update sequencer
+  updateSequencer();
+  
   // SERIAL DEBUG
   static unsigned long lastPrint = 0;
   if (millis() - lastPrint > 200) { // Print every 200ms to avoid flooding
-    Serial.print("Mod Freq: ");
+    Serial.print("Step: ");
+    Serial.print(currentStep + 1);
+    Serial.print("/5 | Step Pitch: +");
+    Serial.print(sequencerValues[currentStep]);
+    Serial.print("st | Mod Freq: ");
     Serial.print(modOsc_pitch);
     Serial.print("Hz | Mod Amount: ");
     Serial.print(modOsc_modAmount/10); // SCALE TO PERCENTAGE
