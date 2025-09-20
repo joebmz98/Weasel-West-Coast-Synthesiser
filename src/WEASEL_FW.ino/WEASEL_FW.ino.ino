@@ -21,9 +21,9 @@
 #define SEQ_STEP_3_CHANNEL 9       // C9 - Sequencer step 3
 #define SEQ_STEP_4_CHANNEL 10      // C10 - Sequencer step 4
 #define SEQ_STEP_5_CHANNEL 11      // C11 - Sequencer step 5
-#define ASD_ATTACK_CHANNEL 12      // C12 - ATTACK
-#define ASD_SUSTAIN_CHANNEL 13     // C13 - SUSTAIN
-#define ASD_DECAY_CHANNEL 14       // C13 - DECAY
+#define ASD_ATTACK_CHANNEL 12      // C12 - BUCHLA ATTACK // ATTACK
+#define ASD_SUSTAIN_CHANNEL 13     // C13 - BUCHLA SUSTAIN // DECAY
+#define ASD_DECAY_CHANNEL 14       // C14 - BUCHLA DECAY // RELEASE
 #define CLOCK_CHANNEL 15           // C15 - CLOCK
 
 // DEFINE DAISYSEED
@@ -43,6 +43,17 @@ float complexOsc_timbreAmount;     // COMPLEX OSC TIMBRE WAVEMORPHING AMOUNT (0.
 float complexOsc_foldAmount;       // COMPLEX OSC WAVEFOLDING AMOUNT (0.0 = no fold, 1.0 = max fold)
 float complexOsc_level;            // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
 float modOsc_level;                // MODULATION OSC LEVEL CONTROLl (0.0 to 1.0)
+
+// ADSR ENVELOPE VARIABLES
+float attackTime;                  // ATTACK time in seconds
+float decayTime;                   // DECAY time in seconds
+float sustainLevel;                // SUSTAIN level (0.0 to 1.0)
+float releaseTime;                 // RELEASE time in seconds
+Adsr env;                          // ADSR envelope
+
+// ENVELOPE STATE VARIABLES
+bool gateOpen = false;             // Whether the envelope gate is open
+unsigned long lastGateTime = 0;    // Last time the gate was triggered
 
 // SEQUENCER VARIABLES
 const int SEQ_STEPS = 5;           // NUM OF STEPS
@@ -136,6 +147,17 @@ void updateSequencer() {
   if (currentTime - stepStartTime >= STEP_DURATION_MS) {
     currentStep = (currentStep + 1) % SEQ_STEPS;
     stepStartTime = currentTime;
+    
+    // Trigger envelope on each new step
+    gateOpen = true;
+    lastGateTime = currentTime;
+    env.Retrigger(true);
+  }
+  
+  // Check if we should release the envelope
+  // Release after 80% of the step duration
+  if (gateOpen && (currentTime - stepStartTime) > (STEP_DURATION_MS * 0.8f)) {
+    gateOpen = false;
   }
 }
 
@@ -185,7 +207,10 @@ void AudioCallback(float **in, float **out, size_t size) {
     float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
     float modulated_modOsc = modOsc_signal * modOsc_level;
 
-    // VCA + ENVELOPE
+    // APPLY ADSR ENVELOPE
+    float envValue = env.Process(gateOpen);
+    modulated_complexOsc *= envValue;
+    modulated_modOsc *= envValue;
 
     // OSC STAGE OUTPUT
     float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
@@ -229,12 +254,15 @@ void setup() {
   complexOsc_filter.SetFreq(15000.0f);  // 15kHz cutoff
   complexOsc_filter.SetRes(0.3f);       // Small amount of resonance
   
+  // INIT ADSR ENVELOPE
+  env.Init(sample_rate);
+  
   // INIT PRIMARY CARRIER OSC (sine wave)
   complexOsc.SetWaveform(complexOsc.WAVE_SIN);
   complexOsc.SetAmp(1.0);
   
   // INIT SECONDARY CARRIER OSC (triangle wave)
-  complexOscTri.SetWaveform(complexOscTri.WAVE_TRI);
+  complexOscTri.SetWaveform(complexOscTri.WAVE_SAW);
   complexOscTri.SetAmp(1.0);
   
   // INIT MODULATOR OSC
@@ -250,6 +278,16 @@ void setup() {
   complexOsc_level = 1.0f;         // Start with full volume for complex oscillator
   modOsc_level = 1.0f;             // Start with full volume for modulator oscillator
   
+  // Initialize ADSR values
+  attackTime = 0.1f;
+  decayTime = 0.1f;
+  sustainLevel = 0.7f;
+  releaseTime = 0.2f;
+  env.SetTime(ADSR_SEG_ATTACK, attackTime);
+  env.SetTime(ADSR_SEG_DECAY, decayTime);
+  env.SetTime(ADSR_SEG_RELEASE, releaseTime);
+  env.SetSustainLevel(sustainLevel);
+  
   // Initialize sequencer values
   for (int i = 0; i < SEQ_STEPS; i++) {
     sequencerValues[i] = 0.0f;
@@ -264,6 +302,7 @@ void setup() {
   Serial.println("Now with logarithmic pitch scaling for more natural response");
   Serial.println("And individual output level controls for both oscillators");
   Serial.println("And 5-step sequencer with 0 to +48 semitone range");
+  Serial.println("And ADSR envelope control");
 }
 
 void loop() {
@@ -275,6 +314,18 @@ void loop() {
   complexOsc_foldAmount = readMuxChannel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);      // Linear
   complexOsc_level = readMuxChannel(COMPLEX_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);          // Linear - Complex OSC level
   modOsc_level = readMuxChannel(MOD_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);                  // Linear - Mod OSC level
+  
+  // Read ADSR parameters // BUCHLA LABELS
+  attackTime = readMuxChannel(ASD_ATTACK_CHANNEL, 0.002f, 10.0f);     // ATTACK - 1ms to 2s
+  decayTime = readMuxChannel(ASD_SUSTAIN_CHANNEL, 0.002f, 10.0f);       // SUSTAIN - 1ms to 2s
+  sustainLevel = 1.0f;
+  releaseTime = readMuxChannel(ASD_DECAY_CHANNEL, 0.02f, 10.0f);    // DECAY - 0.0 to 1.0
+  
+  // Update ADSR parameters
+  env.SetTime(ADSR_SEG_ATTACK, attackTime);
+  env.SetTime(ADSR_SEG_DECAY, decayTime);
+  env.SetTime(ADSR_SEG_RELEASE, releaseTime);
+  env.SetSustainLevel(sustainLevel);
   
   // Read sequencer values
   readSequencerValues();
@@ -303,7 +354,13 @@ void loop() {
     Serial.print(complexOsc_level * 100); // SCALE TO PERCENTAGE
     Serial.print("% | Mod Level: ");
     Serial.print(modOsc_level * 100); // SCALE TO PERCENTAGE
-    Serial.println("%"); 
+    Serial.print("% | Attack: ");
+    Serial.print(attackTime * 1000); // Convert to ms
+    Serial.print("ms | Sustain: ");
+    Serial.print(decayTime * 1000); // Convert to ms
+    Serial.print("ms | Decay: ");
+    Serial.print(releaseTime * 1000); // Convert to ms
+    Serial.println("ms"); 
     lastPrint = millis();
   }
   
