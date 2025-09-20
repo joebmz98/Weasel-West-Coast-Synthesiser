@@ -45,10 +45,10 @@ float complexOsc_level;            // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
 float modOsc_level;                // MODULATION OSC LEVEL CONTROLl (0.0 to 1.0)
 
 // ADSR ENVELOPE VARIABLES
-float attackTime;                  // ATTACK time in seconds
-float decayTime;                   // DECAY time in seconds
-float sustainLevel;                // SUSTAIN level (0.0 to 1.0)
-float releaseTime;                 // RELEASE time in seconds
+float eg_attackTime;                  // ATTACK time in seconds
+float eg_decayTime;                   // DECAY time in seconds (will control gate duration)
+float eg_sustainLevel;                // SUSTAIN level (0.0 to 1.0)
+float eg_releaseTime;                 // RELEASE time in seconds
 Adsr env;                          // ADSR envelope
 
 // ENVELOPE STATE VARIABLES
@@ -60,8 +60,8 @@ const int SEQ_STEPS = 5;           // NUM OF STEPS
 float sequencerValues[SEQ_STEPS];  // STORE POT VALUES
 int currentStep = 0;               // CURRENT STEP
 unsigned long stepStartTime = 0;   // TIME WHEN CURRENT STEP STARTED
-const float BPM = 100.0f;          // CLOCK SPEED
-const float STEP_DURATION_MS = (60000.0f / BPM) / 4.0f; // QUARTER NOTE DURATION AT 100BPM
+float BPM = 100.0f;                // CLOCK SPEED (now variable)
+float STEP_DURATION_MS;            // STEP DURATION (will be calculated based on BPM)
 
 // Function to convert linear values to logarithmic scale for pitch
 float linearToLog(float value, float minVal, float maxVal) {
@@ -143,6 +143,9 @@ float readMuxChannel(int channel, float minVal, float maxVal, bool logarithmic =
 void updateSequencer() {
   unsigned long currentTime = millis();
   
+  // Calculate step duration based on current BPM
+  STEP_DURATION_MS = (60000.0f / BPM) / 4.0f; // QUARTER NOTE DURATION
+  
   // Check if it's time to advance to the next step
   if (currentTime - stepStartTime >= STEP_DURATION_MS) {
     currentStep = (currentStep + 1) % SEQ_STEPS;
@@ -151,12 +154,21 @@ void updateSequencer() {
     // Trigger envelope on each new step
     gateOpen = true;
     lastGateTime = currentTime;
+    env.Retrigger(false); // TO AVOID CLICK
     env.Retrigger(true);
   }
   
-  // Check if we should release the envelope
-  // Release after 80% of the step duration
-  if (gateOpen && (currentTime - stepStartTime) > (STEP_DURATION_MS * 0.8f)) {
+  // Check if we should release the envelope based on decay time
+  // Convert decay time from seconds to milliseconds and use it to control gate duration
+  float gateDurationMs = eg_decayTime * 1000.0f;
+  
+  // Ensure gate duration doesn't exceed step duration
+  if (gateDurationMs > STEP_DURATION_MS) {
+    gateDurationMs = STEP_DURATION_MS;
+  }
+  
+  // Release the envelope after the gate duration has passed
+  if (gateOpen && (currentTime - stepStartTime) > gateDurationMs) {
     gateOpen = false;
   }
 }
@@ -262,7 +274,7 @@ void setup() {
   complexOsc.SetAmp(1.0);
   
   // INIT SECONDARY CARRIER OSC (triangle wave)
-  complexOscTri.SetWaveform(complexOscTri.WAVE_SAW);
+  complexOscTri.SetWaveform(complexOscTri.WAVE_SQUARE);
   complexOscTri.SetAmp(1.0);
   
   // INIT MODULATOR OSC
@@ -279,19 +291,23 @@ void setup() {
   modOsc_level = 1.0f;             // Start with full volume for modulator oscillator
   
   // Initialize ADSR values
-  attackTime = 0.1f;
-  decayTime = 0.1f;
-  sustainLevel = 0.7f;
-  releaseTime = 0.2f;
-  env.SetTime(ADSR_SEG_ATTACK, attackTime);
-  env.SetTime(ADSR_SEG_DECAY, decayTime);
-  env.SetTime(ADSR_SEG_RELEASE, releaseTime);
-  env.SetSustainLevel(sustainLevel);
+  eg_attackTime = 0.1f;
+  eg_decayTime = 0.1f;
+  eg_sustainLevel = 1.0f;
+  eg_releaseTime = 0.2f;
+  env.SetTime(ADSR_SEG_ATTACK, eg_attackTime);
+  env.SetTime(ADSR_SEG_DECAY, eg_decayTime);
+  env.SetTime(ADSR_SEG_RELEASE, eg_releaseTime);
+  env.SetSustainLevel(eg_sustainLevel);
   
   // Initialize sequencer values
   for (int i = 0; i < SEQ_STEPS; i++) {
     sequencerValues[i] = 0.0f;
   }
+  
+  // Initialize BPM and step duration
+  BPM = 100.0f;
+  STEP_DURATION_MS = (60000.0f / BPM) / 4.0f;
   
   stepStartTime = millis();
   
@@ -303,6 +319,9 @@ void setup() {
   Serial.println("And individual output level controls for both oscillators");
   Serial.println("And 5-step sequencer with 0 to +48 semitone range");
   Serial.println("And ADSR envelope control");
+  Serial.println("And variable clock speed control (80-120 BPM)");
+  Serial.println("And Buchla-style decay time controlling note duration");
+  Serial.println("With logarithmic scaling for envelope times");
 }
 
 void loop() {
@@ -315,17 +334,20 @@ void loop() {
   complexOsc_level = readMuxChannel(COMPLEX_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);          // Linear - Complex OSC level
   modOsc_level = readMuxChannel(MOD_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);                  // Linear - Mod OSC level
   
-  // Read ADSR parameters // BUCHLA LABELS
-  attackTime = readMuxChannel(ASD_ATTACK_CHANNEL, 0.002f, 10.0f);     // ATTACK - 1ms to 2s
-  decayTime = readMuxChannel(ASD_SUSTAIN_CHANNEL, 0.002f, 10.0f);       // SUSTAIN - 1ms to 2s
-  sustainLevel = 1.0f;
-  releaseTime = readMuxChannel(ASD_DECAY_CHANNEL, 0.02f, 10.0f);    // DECAY - 0.0 to 1.0
+  // Read ADSR parameters with logarithmic scaling // BUCHLA LABELS
+  eg_attackTime = readMuxChannel(ASD_ATTACK_CHANNEL, 0.002f, 10.0f, true);     // ATTACK - 1ms to 10s (logarithmic)
+  eg_decayTime = readMuxChannel(ASD_SUSTAIN_CHANNEL, 0.002f, 10.0f, true);     // SUSTAIN - 1ms to 10s (logarithmic)
+  eg_sustainLevel = 1.0f;
+  eg_releaseTime = readMuxChannel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);      // DECAY - 20ms to 10s (logarithmic)
+  
+  // Read clock speed (80-120 BPM)
+  BPM = readMuxChannel(CLOCK_CHANNEL, 60.0f, 120.0f); // Clock speed control
   
   // Update ADSR parameters
-  env.SetTime(ADSR_SEG_ATTACK, attackTime);
-  env.SetTime(ADSR_SEG_DECAY, decayTime);
-  env.SetTime(ADSR_SEG_RELEASE, releaseTime);
-  env.SetSustainLevel(sustainLevel);
+  env.SetTime(ADSR_SEG_ATTACK, eg_attackTime);
+  env.SetTime(ADSR_SEG_DECAY, eg_decayTime);
+  env.SetTime(ADSR_SEG_RELEASE, eg_releaseTime);
+  env.SetSustainLevel(eg_sustainLevel);
   
   // Read sequencer values
   readSequencerValues();
@@ -355,12 +377,14 @@ void loop() {
     Serial.print("% | Mod Level: ");
     Serial.print(modOsc_level * 100); // SCALE TO PERCENTAGE
     Serial.print("% | Attack: ");
-    Serial.print(attackTime * 1000); // Convert to ms
+    Serial.print(eg_attackTime * 1000); // Convert to ms
     Serial.print("ms | Sustain: ");
-    Serial.print(decayTime * 1000); // Convert to ms
+    Serial.print(eg_decayTime * 1000); // Convert to ms
     Serial.print("ms | Decay: ");
-    Serial.print(releaseTime * 1000); // Convert to ms
-    Serial.println("ms"); 
+    Serial.print(eg_releaseTime * 1000); // Convert to ms
+    Serial.print("ms | BPM: ");
+    Serial.print(BPM);
+    Serial.println(); 
     lastPrint = millis();
   }
   
