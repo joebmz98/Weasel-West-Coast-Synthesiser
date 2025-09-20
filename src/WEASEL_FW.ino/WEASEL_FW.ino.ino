@@ -13,6 +13,8 @@
 #define COMPLEX_OSC_PITCH_CHANNEL 2 // C2 - complexOsc_pitch
 #define COMPLEX_OSC_TIMBRE_CHANNEL 3 // C3 - timbre control (sine/triangle blend)
 #define COMPLEX_OSC_FOLD_CHANNEL 4  // C4 - wavefolding amount
+#define COMPLEX_OSC_LEVEL_CHANNEL 5 // C5 - complex oscillator output level
+#define MOD_OSC_LEVEL_CHANNEL 6    // C6 - modulator oscillator output level
 
 // DEFINE DAISYSEED
 DaisyHardware hw;
@@ -29,6 +31,8 @@ float modOsc_pitch;                // MOD OSC BASE PITCH
 float modOsc_modAmount;            // MOD AMOUNT AFFECTING COMPLEX OSC
 float complexOsc_timbreAmount;     // Timbre blend amount (0.0 = sine, 1.0 = triangle)
 float complexOsc_foldAmount;       // Wavefolding amount (0.0 = no fold, 1.0 = max fold)
+float complexOsc_level;            // Complex oscillator output level (0.0 to 1.0)
+float modOsc_level;                // Modulator oscillator output level (0.0 to 1.0)
 
 // Function to convert linear values to logarithmic scale for pitch
 float linearToLog(float value, float minVal, float maxVal) {
@@ -45,7 +49,7 @@ float wavefolder(float input, float amount) {
   
   // Increased gain before folding for more intense effect
   // Scale input based on fold amount - much more aggressive now
-  float scaledInput = input * (1.0f + amount * 60.0f);  // 
+  float scaledInput = input * (1.0f + amount * 80.0f);  // 
   
   // Multiple folding stages for more complex harmonics
   for (int fold = 0; fold < 3; fold++) {  // Multiple folding passes
@@ -71,7 +75,7 @@ float wavefolder(float input, float amount) {
     wetDryMix = 1.0f;  // Full wet for higher amounts
   }
   
-  return (input * (1.0f - wetDryMix)) + (scaledInput * wetDryMix); // MANUAL LEVEL SCALING
+  return (input * (1.0f - wetDryMix)) + ((scaledInput * wetDryMix) *0.25 ); // MANUAL LEVEL SCALING
 }
 
 // MUX
@@ -128,8 +132,12 @@ void AudioCallback(float **in, float **out, size_t size) {
     // APPLY WAVEFOLDING (more aggressive now)
     float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
+    // APPLY OUTPUT LEVEL CONTROL TO BOTH OSCILLATORS
+    float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
+    float modulated_modOsc = modOsc_signal * modOsc_level;
+
     // OSC STAGE OUTPUT
-    float oscillatorSum_signal = complexOsc_foldedSignal + modOsc_signal;
+    float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
 
     // OUTPUT
     out[0][i] = oscillatorSum_signal;
@@ -172,11 +180,11 @@ void setup() {
   
   // INIT PRIMARY CARRIER OSC (sine wave)
   complexOsc.SetWaveform(complexOsc.WAVE_SIN);
-  complexOsc.SetAmp(0.5);
+  complexOsc.SetAmp(0.75);
   
   // INIT SECONDARY CARRIER OSC (triangle wave)
   complexOscTri.SetWaveform(complexOscTri.WAVE_TRI);
-  complexOscTri.SetAmp(0.5);
+  complexOscTri.SetAmp(0.75);
   
   // INIT MODULATOR OSC
   modOsc.SetWaveform(modOsc.WAVE_TRI);
@@ -188,12 +196,15 @@ void setup() {
   modOsc_modAmount = 0.0f;
   complexOsc_timbreAmount = 0.0f;  // Start with pure sine wave
   complexOsc_foldAmount = 0.0f;    // Start with no wavefolding
+  complexOsc_level = 1.0f;         // Start with full volume for complex oscillator
+  modOsc_level = 1.0f;             // Start with full volume for modulator oscillator
   
   // Start audio callback
   DAISY.begin(AudioCallback);
   
   Serial.println("Weasel Initialised with AGGRESSIVE Wavefolder, Moog Filter, and Buchla-style Timbre Control");
   Serial.println("Now with logarithmic pitch scaling for more natural response");
+  Serial.println("And individual output level controls for both oscillators");
 }
 
 void loop() {
@@ -203,6 +214,8 @@ void loop() {
   complexOsc_basePitch = readMuxChannel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true); // Logarithmic
   complexOsc_timbreAmount = readMuxChannel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);  // Linear
   complexOsc_foldAmount = readMuxChannel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);      // Linear
+  complexOsc_level = readMuxChannel(COMPLEX_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);          // Linear - Complex OSC level
+  modOsc_level = readMuxChannel(MOD_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);                  // Linear - Mod OSC level
   
   // SERIAL DEBUG
   static unsigned long lastPrint = 0;
@@ -217,6 +230,10 @@ void loop() {
     Serial.print(complexOsc_timbreAmount * 100); // SCALE TO PERCENTAGE
     Serial.print("% | Fold: ");
     Serial.print(complexOsc_foldAmount * 100); // SCALE TO PERCENTAGE
+    Serial.print("% | Complex Level: ");
+    Serial.print(complexOsc_level * 100); // SCALE TO PERCENTAGE
+    Serial.print("% | Mod Level: ");
+    Serial.print(modOsc_level * 100); // SCALE TO PERCENTAGE
     Serial.println("%"); 
     lastPrint = millis();
   }
