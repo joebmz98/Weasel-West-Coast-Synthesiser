@@ -27,10 +27,10 @@
 #define ASD_DECAY_CHANNEL 14          // C14 - BUCHLA DECAY // RELEASE
 #define CLOCK_CHANNEL 15              // C15 - CLOCK
 
-#define SEQUENCER_TOGGLE_BUTTON 19 // SEQ TOGGLE
+#define SEQUENCER_TOGGLE_BUTTON 19  // SEQ TOGGLE
 
 // MIDI Settings
-#define MIDI_RX_PIN 30  // USART1 Rx
+#define MIDI_RX_PIN 30  // USART1 Rx (Digital pin 30)
 
 // DEFINE DAISYSEED
 DaisyHardware hw;
@@ -84,6 +84,14 @@ bool midiNoteReceived = false;
 byte lastMidiNote = 0;
 byte lastMidiVelocity = 0;
 byte lastMidiChannel = 0;
+unsigned long midiNoteCount = 0;
+unsigned long midiErrorCount = 0;
+
+// MIDI to CV variables
+float midiPitchCV = 0.0f;        // MIDI pitch control voltage (in semitones) - PERSISTS after note off
+bool midiNoteActive = false;     // Whether a MIDI note is currently active (for triggering)
+unsigned long lastMidiNoteTime = 0; // Time when last MIDI note was received
+const unsigned long MIDI_NOTE_TIMEOUT = 1000; // 1 second timeout for MIDI notes
 
 // Function to convert linear values to logarithmic scale for pitch
 float linearToLog(float value, float minVal, float maxVal) {
@@ -93,6 +101,19 @@ float linearToLog(float value, float minVal, float maxVal) {
 // Function to convert semitones to frequency ratio
 float semitonesToRatio(float semitones) {
   return pow(2.0f, semitones / 12.0f);
+}
+
+// Function to convert MIDI note to frequency (1V/octave standard)
+float midiNoteToFrequency(byte midiNote, float baseFreq = 261.63f) { // C4 = 261.63Hz
+  // Convert MIDI note to frequency (MIDI note 69 = A4 = 440Hz)
+  return 440.0f * pow(2.0f, (midiNote - 69) / 12.0f);
+}
+
+// Function to convert MIDI note to CV (1V/octave, where 1V = 12 semitones)
+float midiNoteToCV(byte midiNote, float baseNote = 60.0f) { // C4 = MIDI note 60
+  // Convert MIDI note to CV voltage (1V/octave standard)
+  // Returns semitones offset from base note
+  return (midiNote - baseNote);
 }
 
 // WAVEFOLDER FNC.
@@ -136,7 +157,7 @@ void setMuxChannel(int channel) {
 float readMuxChannel(int channel, float minVal, float maxVal, bool logarithmic = false) {
   setMuxChannel(channel);
   delayMicroseconds(10);
-  
+
   int rawValue = analogRead(MUX_SIG);
   float normalizedValue = rawValue / 65535.0f;
 
@@ -183,70 +204,103 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
   lastMidiNote = note;
   lastMidiVelocity = velocity;
   lastMidiChannel = channel;
+  midiNoteCount++;
   
+  // Convert MIDI note to CV and store it (this value will persist)
+  midiPitchCV = midiNoteToCV(note);
+  midiNoteActive = true;  // For triggering sequencer if needed
+  lastMidiNoteTime = millis();
+
   if (useMidiClock) {
     advanceStep();
   }
-  
+
   Serial.print("MIDI Note On - Channel: ");
   Serial.print(channel);
   Serial.print(" Note: ");
   Serial.print(note);
   Serial.print(" Velocity: ");
-  Serial.println(velocity);
+  Serial.print(velocity);
+  Serial.print(" CV: ");
+  Serial.print(midiPitchCV);
+  Serial.println(" semitones");
 }
 
 // MIDI Note Off handler
 void handleNoteOff(byte channel, byte note, byte velocity) {
+  // Only turn off the active flag for triggering purposes
+  // BUT DO NOT reset midiPitchCV - it persists!
+  if (note == lastMidiNote) {
+    midiNoteActive = false;  // This only affects triggering, not pitch
+  }
+  
   Serial.print("MIDI Note Off - Channel: ");
   Serial.print(channel);
   Serial.print(" Note: ");
   Serial.print(note);
   Serial.print(" Velocity: ");
   Serial.println(velocity);
+  Serial.println("Note: MIDI pitch CV persists for envelope release");
 }
 
 void AudioCallback(float **in, float **out, size_t size) {
   for (size_t i = 0; i < size; i++) {
+    // Get current sequencer pitch offset
     float sequencerPitchOffset = sequencerValues[currentStep];
-    float pitchRatio = semitonesToRatio(sequencerPitchOffset);
+    
+    // Combine all pitch sources: pots + sequencer + MIDI
+    // MIDI pitch CV PERSISTS even after note off for envelope release
+    float totalPitchOffset = sequencerPitchOffset + midiPitchCV;
+    
+    float pitchRatio = semitonesToRatio(totalPitchOffset);
 
+    // PROCESS MODULATOR OSCILLATOR with combined pitch modulation
     float modulatedModPitch = modOsc_pitch * pitchRatio;
     modOsc.SetFreq(modulatedModPitch);
     float modOsc_signal = modOsc.Process();
 
+    // PROCESS COMPLEX OSCILLATOR WITH FM and combined pitch modulation
     float modulatedComplexBasePitch = complexOsc_basePitch * pitchRatio;
     float complexOsc_modulatedFreq = modulatedComplexBasePitch + (modOsc_signal * modOsc_modAmount) - 16.0;
     complexOsc_modulatedFreq = max(complexOsc_modulatedFreq, 17.0f);
 
+    // Set frequency for both complex oscillators
     complexOsc.SetFreq(complexOsc_modulatedFreq);
     complexOscTri.SetFreq(complexOsc_modulatedFreq);
 
+    // Process both waveforms
     float complexOsc_sineSignal = complexOsc.Process();
     float complexOsc_triSignal = complexOscTri.Process();
 
+    // BLEND BETWEEN SINE AND TRIANGLE USING TIMBRE CONTROL
     float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
 
+    // APPLY MOOG LOWPASS FILTER
     float complexOsc_filteredSignal = complexOsc_filter.Process(complexOsc_rawSignal);
 
+    // APPLY WAVEFOLDING (more aggressive now)
     float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
+    // APPLY OUTPUT LEVEL CONTROL TO BOTH OSCILLATORS
     float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
     float modulated_modOsc = modOsc_signal * modOsc_level;
 
+    // APPLY ADSR ENVELOPE
     float envValue = env.Process(gateOpen);
     modulated_complexOsc *= envValue;
     modulated_modOsc *= envValue;
 
+    // OSC STAGE OUTPUT
     float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
 
+    // OUTPUT
     out[0][i] = oscillatorSum_signal;
     out[1][i] = oscillatorSum_signal;
   }
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);  // Increased baud rate for faster debugging
 
   // BUTTON INIT
   sequencerToggle.Init(1000, true, SEQUENCER_TOGGLE_BUTTON, INPUT_PULLUP);
@@ -265,12 +319,21 @@ void setup() {
   // INIT 16-BIT ADC
   analogReadResolution(16);
 
-  // INIT MIDI - Configure Serial1 to use pin 37 for RX
+  // INIT MIDI - Configure Serial1 to use pin 30 for RX
   Serial1.setRx(MIDI_RX_PIN);
-  Serial1.begin(31250);
+
+  // Try different approaches for MIDI initialization
+  Serial1.begin(31250);  // Standard MIDI baud rate
+
+  // Configure MIDI library for better performance
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
+
+  // Increase MIDI throughput (if supported by the library)
+  MIDI.turnThruOff();  // Disable MIDI thru to reduce load
+
+  Serial.println("MIDI initialized with pin 30 (Digital pin 30)");
 
   // INIT SEED AT 48kHz
   float sample_rate;
@@ -332,11 +395,21 @@ void setup() {
 
   Serial.println("Weasel Initialised with MIDI functionality");
   Serial.println("Use button to toggle between internal clock and MIDI note triggers");
-  Serial.println("MIDI Debug enabled - will show incoming MIDI messages");
+  Serial.println("MIDI to CV conversion enabled - pitch controlled by pots + sequencer + MIDI");
+  Serial.println("MIDI pitch CV now PERSISTS during envelope release");
 }
 
 void loop() {
-  // Read potentiometers
+  // Process MIDI FIRST to ensure timely reception
+  MIDI.read();
+
+  // Check for MIDI note timeout (only affects triggering, not pitch)
+  if (midiNoteActive && (millis() - lastMidiNoteTime > MIDI_NOTE_TIMEOUT)) {
+    midiNoteActive = false;
+    Serial.println("MIDI note timeout - triggering disabled, but pitch persists");
+  }
+
+  // Then read potentiometers (less time-critical)
   modOsc_pitch = readMuxChannel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true);
   modOsc_modAmount = readMuxChannel(MOD_AMOUNT_CHANNEL, 0.0f, 1000.0f);
   complexOsc_basePitch = readMuxChannel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
@@ -354,7 +427,7 @@ void loop() {
 
   // Button handling
   sequencerToggle.Debounce();
-  
+
   // Toggle MIDI clock mode when button is pressed
   if (sequencerToggle.RisingEdge()) {
     useMidiClock = !useMidiClock;
@@ -370,7 +443,6 @@ void loop() {
 
   readSequencerValues();
   updateSequencer();
-  MIDI.read();
 
   // Handle envelope release
   float gateDurationMs = eg_decayTime * 1000.0f;
@@ -381,37 +453,40 @@ void loop() {
   if (gateOpen && (millis() - stepStartTime) > gateDurationMs) {
     gateOpen = false;
   }
-
-  // Debug output
+  
+  // Debug output - less frequent to reduce serial overhead
   static unsigned long lastPrint = 0;
-  if (millis() - lastPrint > 200) {
+  if (millis() - lastPrint > 500) { // Reduced frequency to 500ms
     Serial.print("Step: ");
     Serial.print(currentStep + 1);
     Serial.print("/5 | Mode: ");
     Serial.print(useMidiClock ? "MIDI" : "INT");
     Serial.print(" | BPM: ");
     Serial.print(BPM);
+    Serial.print(" | MIDI Notes: ");
+    Serial.print(midiNoteCount);
+    Serial.print(" | MIDI CV: ");
+    Serial.print(midiPitchCV);
+    Serial.print(" st | Trigger: ");
+    Serial.print(midiNoteActive ? "ACTIVE" : "HOLD");
     
-    // Show MIDI status if no notes received recently
-    if (millis() - lastMidiDebugTime > 1000) {
-      if (!midiNoteReceived) {
-        Serial.print(" | No MIDI received");
-      } else {
-        Serial.print(" | Last MIDI: Ch");
-        Serial.print(lastMidiChannel);
-        Serial.print(" Note:");
-        Serial.print(lastMidiNote);
-        Serial.print(" Vel:");
-        Serial.print(lastMidiVelocity);
-        midiNoteReceived = false;
-      }
-      lastMidiDebugTime = millis();
+    // Show MIDI status
+    if (!midiNoteReceived) {
+      Serial.print(" | No new MIDI");
+    } else {
+      Serial.print(" | Last: Ch");
+      Serial.print(lastMidiChannel);
+      Serial.print(" N:");
+      Serial.print(lastMidiNote);
+      Serial.print(" V:");
+      Serial.print(lastMidiVelocity);
+      midiNoteReceived = false;
     }
     
     Serial.println();
     
     lastPrint = millis();
   }
-
-  delay(10);
+  
+  //delay(5); // Reduced delay for more responsive MIDI
 }
