@@ -411,7 +411,7 @@ void loop() {
 
   // Then read potentiometers (less time-critical)
   modOsc_pitch = readMuxChannel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true);
-  modOsc_modAmount = readMuxChannel(MOD_AMOUNT_CHANNEL, 0.0f, 1000.0f);
+  modOsc_modAmount = readMuxChannel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
   complexOsc_basePitch = readMuxChannel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
   complexOsc_timbreAmount = readMuxChannel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);
   complexOsc_foldAmount = readMuxChannel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);
@@ -488,5 +488,4 @@ void loop() {
     lastPrint = millis();
   }
   
-  //delay(5); // Reduced delay for more responsive MIDI
 }
