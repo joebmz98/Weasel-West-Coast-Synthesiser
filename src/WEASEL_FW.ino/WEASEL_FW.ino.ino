@@ -27,7 +27,8 @@
 #define ASD_DECAY_CHANNEL 14          // C14 - BUCHLA DECAY // RELEASE
 #define CLOCK_CHANNEL 15              // C15 - CLOCK
 
-#define SEQUENCER_TOGGLE_BUTTON 19  // SEQ TOGGLE
+#define SEQUENCER_TOGGLE_BUTTON 19    // SEQ TOGGLE
+#define MODULATION_TOGGLE_BUTTON 20   // MODULATION TOGGLE
 
 // MIDI Settings
 #define MIDI_RX_PIN 30  // USART1 Rx (Digital pin 30)
@@ -72,8 +73,12 @@ float STEP_DURATION_MS;            // STEP DURATION (will be calculated based on
 // MIDI SEQUENCER CONTROL
 bool useMidiClock = false;  // false = internal clock, true = MIDI note triggers
 
+// MODULATION TYPE CONTROL
+bool useAmplitudeModulation = false;  // false = FM, true = AM
+
 // BUTTONS
-Switch sequencerToggle;  // SEQUENCER CLOCK TOGGLE
+Switch sequencerToggle;   // SEQUENCER CLOCK TOGGLE
+Switch modulationToggle;  // MODULATION TYPE TOGGLE
 
 // MIDI Object
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
@@ -240,7 +245,6 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
   Serial.print(note);
   Serial.print(" Velocity: ");
   Serial.println(velocity);
-  Serial.println("Note: MIDI pitch CV persists for envelope release");
 }
 
 void AudioCallback(float **in, float **out, size_t size) {
@@ -259,51 +263,105 @@ void AudioCallback(float **in, float **out, size_t size) {
     modOsc.SetFreq(modulatedModPitch);
     float modOsc_signal = modOsc.Process();
 
-    // PROCESS COMPLEX OSCILLATOR WITH FM and combined pitch modulation
+    // PROCESS COMPLEX OSCILLATOR with combined pitch modulation
     float modulatedComplexBasePitch = complexOsc_basePitch * pitchRatio;
-    float complexOsc_modulatedFreq = modulatedComplexBasePitch + (modOsc_signal * modOsc_modAmount) - 16.0;
-    complexOsc_modulatedFreq = max(complexOsc_modulatedFreq, 17.0f);
+    float complexOsc_freq = modulatedComplexBasePitch;
 
-    // Set frequency for both complex oscillators
-    complexOsc.SetFreq(complexOsc_modulatedFreq);
-    complexOscTri.SetFreq(complexOsc_modulatedFreq);
+    // APPLY MODULATION BASED ON SELECTED TYPE
+    if (useAmplitudeModulation) {
+      // AMPLITUDE MODULATION (AM) - FIXED IMPLEMENTATION
+      // Scale modulation amount to be more musical (0.0 to 1.0 range)
+      float amDepth = modOsc_modAmount * 0.01f; // Much smaller scaling
+      
+      // Convert bipolar modulator signal to unipolar (0 to 1) for AM
+      float unipolarModulator = (modOsc_signal + 1.0f) * 0.5f; // Convert from [-1,1] to [0,1]
+      
+      // Create AM signal: depth controls how much modulation is applied
+      float amSignal = 1.0f - amDepth + (unipolarModulator * amDepth);
+      
+      // Set carrier frequency (no FM in AM mode)
+      complexOsc.SetFreq(complexOsc_freq);
+      complexOscTri.SetFreq(complexOsc_freq);
+      
+      // Process both waveforms
+      float complexOsc_sineSignal = complexOsc.Process();
+      float complexOsc_triSignal = complexOscTri.Process();
 
-    // Process both waveforms
-    float complexOsc_sineSignal = complexOsc.Process();
-    float complexOsc_triSignal = complexOscTri.Process();
+      // BLEND BETWEEN SINE AND TRIANGLE USING TIMBRE CONTROL
+      float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
 
-    // BLEND BETWEEN SINE AND TRIANGLE USING TIMBRE CONTROL
-    float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
+      // APPLY MOOG LOWPASS FILTER
+      float complexOsc_filteredSignal = complexOsc_filter.Process(complexOsc_rawSignal);
 
-    // APPLY MOOG LOWPASS FILTER
-    float complexOsc_filteredSignal = complexOsc_filter.Process(complexOsc_rawSignal);
+      // APPLY WAVEFOLDING
+      float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
-    // APPLY WAVEFOLDING (more aggressive now)
-    float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
+      // APPLY AMPLITUDE MODULATION to carrier only
+      float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level * amSignal;
+      
+      // Modulator oscillator output (optional - can be muted in AM mode)
+      float modulated_modOsc = modOsc_signal * modOsc_level * 0.1f; // Reduced level in AM mode
 
-    // APPLY OUTPUT LEVEL CONTROL TO BOTH OSCILLATORS
-    float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
-    float modulated_modOsc = modOsc_signal * modOsc_level;
+      // APPLY ADSR ENVELOPE
+      float envValue = env.Process(gateOpen);
+      modulated_complexOsc *= envValue;
+      modulated_modOsc *= envValue;
 
-    // APPLY ADSR ENVELOPE
-    float envValue = env.Process(gateOpen);
-    modulated_complexOsc *= envValue;
-    modulated_modOsc *= envValue;
+      // OSC STAGE OUTPUT
+      float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
 
-    // OSC STAGE OUTPUT
-    float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+      // OUTPUT
+      out[0][i] = oscillatorSum_signal;
+      out[1][i] = oscillatorSum_signal;
+      
+    } else {
+      // FREQUENCY MODULATION (FM) - default
+      float modulationDepth = modOsc_modAmount * 0.1f; // Scale FM depth
+      float modulatorSignal = modOsc_signal * modulationDepth;
+      float complexOsc_modulatedFreq = complexOsc_freq + modulatorSignal - 16.0f;
+      complexOsc_modulatedFreq = max(complexOsc_modulatedFreq, 17.0f);
 
-    // OUTPUT
-    out[0][i] = oscillatorSum_signal;
-    out[1][i] = oscillatorSum_signal;
+      // Set carrier frequency with FM
+      complexOsc.SetFreq(complexOsc_modulatedFreq);
+      complexOscTri.SetFreq(complexOsc_modulatedFreq);
+
+      // Process both waveforms
+      float complexOsc_sineSignal = complexOsc.Process();
+      float complexOsc_triSignal = complexOscTri.Process();
+
+      // BLEND BETWEEN SINE AND TRIANGLE USING TIMBRE CONTROL
+      float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
+
+      // APPLY MOOG LOWPASS FILTER
+      float complexOsc_filteredSignal = complexOsc_filter.Process(complexOsc_rawSignal);
+
+      // APPLY WAVEFOLDING
+      float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
+
+      // APPLY OUTPUT LEVEL CONTROL TO BOTH OSCILLATORS
+      float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
+      float modulated_modOsc = modOsc_signal * modOsc_level;
+
+      // APPLY ADSR ENVELOPE
+      float envValue = env.Process(gateOpen);
+      modulated_complexOsc *= envValue;
+      modulated_modOsc *= envValue;
+
+      // OSC STAGE OUTPUT
+      float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+
+      // OUTPUT
+      out[0][i] = oscillatorSum_signal;
+      out[1][i] = oscillatorSum_signal;
+    }
   }
 }
-
 void setup() {
   Serial.begin(115200);  // Increased baud rate for faster debugging
 
-  // BUTTON INIT
+  // BUTTON INIT - Fixed the modulationToggle pin assignment
   sequencerToggle.Init(1000, true, SEQUENCER_TOGGLE_BUTTON, INPUT_PULLUP);
+  modulationToggle.Init(1000, true, MODULATION_TOGGLE_BUTTON, INPUT_PULLUP);
 
   // INIT MUX_1 PINS
   pinMode(MUX_S0, OUTPUT);
@@ -362,7 +420,7 @@ void setup() {
   modOsc.SetWaveform(modOsc.WAVE_TRI);
   modOsc.SetAmp(0.5);
 
-  // Set initial values
+  // OSC INIT
   complexOsc_basePitch = 440.0f;
   modOsc_pitch = 1.0f;
   modOsc_modAmount = 0.0f;
@@ -371,7 +429,7 @@ void setup() {
   complexOsc_level = 1.0f;
   modOsc_level = 1.0f;
 
-  // Initialize ADSR values
+  // ADSR INIT
   eg_attackTime = 0.1f;
   eg_decayTime = 0.1f;
   eg_sustainLevel = 1.0f;
@@ -394,22 +452,22 @@ void setup() {
   DAISY.begin(AudioCallback);
 
   Serial.println("Weasel Initialised with MIDI functionality");
-  Serial.println("Use button to toggle between internal clock and MIDI note triggers");
-  Serial.println("MIDI to CV conversion enabled - pitch controlled by pots + sequencer + MIDI");
-  Serial.println("MIDI pitch CV now PERSISTS during envelope release");
+  Serial.println("Use button 19 to toggle between internal clock and MIDI note triggers");
+  Serial.println("Use button 20 to toggle between FM and AM modulation");
+  Serial.println("Current modulation: FM");
 }
 
 void loop() {
-  // Process MIDI FIRST to ensure timely reception
+
+  // MIDI PROCESS
   MIDI.read();
 
-  // Check for MIDI note timeout (only affects triggering, not pitch)
+  // CHECK MIDI TIMEOUT
   if (midiNoteActive && (millis() - lastMidiNoteTime > MIDI_NOTE_TIMEOUT)) {
     midiNoteActive = false;
-    Serial.println("MIDI note timeout - triggering disabled, but pitch persists");
   }
 
-  // Then read potentiometers (less time-critical)
+  // POTENTIOMETER HANDLING
   modOsc_pitch = readMuxChannel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true);
   modOsc_modAmount = readMuxChannel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
   complexOsc_basePitch = readMuxChannel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
@@ -425,17 +483,25 @@ void loop() {
 
   BPM = readMuxChannel(CLOCK_CHANNEL, 60.0f, 120.0f);
 
-  // Button handling
+  // BUTTON HANDLING
   sequencerToggle.Debounce();
+  modulationToggle.Debounce();
 
-  // Toggle MIDI clock mode when button is pressed
+  // TOGGLE MIDI SEQUENCER TRIGGER
   if (sequencerToggle.RisingEdge()) {
     useMidiClock = !useMidiClock;
     Serial.print("Sequencer mode: ");
     Serial.println(useMidiClock ? "MIDI Note Triggers" : "Internal Clock");
   }
 
-  // Update ADSR parameters
+  // TOGGLE MODULATION TYPE
+  if (modulationToggle.RisingEdge()) {
+    useAmplitudeModulation = !useAmplitudeModulation;
+    Serial.print("Modulation type: ");
+    Serial.println(useAmplitudeModulation ? "AM (Amplitude Modulation)" : "FM (Frequency Modulation)");
+  }
+
+  // ADR PARAMETERS
   env.SetTime(ADSR_SEG_ATTACK, eg_attackTime);
   env.SetTime(ADSR_SEG_DECAY, eg_decayTime);
   env.SetTime(ADSR_SEG_RELEASE, eg_releaseTime);
@@ -444,7 +510,7 @@ void loop() {
   readSequencerValues();
   updateSequencer();
 
-  // Handle envelope release
+  // HANDLE ENV RELEASE 
   float gateDurationMs = eg_decayTime * 1000.0f;
   if (gateDurationMs > STEP_DURATION_MS) {
     gateDurationMs = STEP_DURATION_MS;
@@ -454,32 +520,25 @@ void loop() {
     gateOpen = false;
   }
   
-  // Debug output - less frequent to reduce serial overhead
+  // DEBUG OUTPUT
   static unsigned long lastPrint = 0;
-  if (millis() - lastPrint > 500) { // Reduced frequency to 500ms
+  if (millis() - lastPrint > 500) {
     Serial.print("Step: ");
     Serial.print(currentStep + 1);
-    Serial.print("/5 | Mode: ");
+    Serial.print("/5 | Seq Mode: ");
     Serial.print(useMidiClock ? "MIDI" : "INT");
+    Serial.print(" | Mod Type: ");
+    Serial.print(useAmplitudeModulation ? "AM" : "FM");
     Serial.print(" | BPM: ");
     Serial.print(BPM);
-    Serial.print(" | MIDI Notes: ");
-    Serial.print(midiNoteCount);
     Serial.print(" | MIDI CV: ");
     Serial.print(midiPitchCV);
-    Serial.print(" st | Trigger: ");
-    Serial.print(midiNoteActive ? "ACTIVE" : "HOLD");
+    Serial.print(" st");
     
     // Show MIDI status
-    if (!midiNoteReceived) {
-      Serial.print(" | No new MIDI");
-    } else {
-      Serial.print(" | Last: Ch");
-      Serial.print(lastMidiChannel);
-      Serial.print(" N:");
+    if (midiNoteReceived) {
+      Serial.print(" | Note: ");
       Serial.print(lastMidiNote);
-      Serial.print(" V:");
-      Serial.print(lastMidiVelocity);
       midiNoteReceived = false;
     }
     
