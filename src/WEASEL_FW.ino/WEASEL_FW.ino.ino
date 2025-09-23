@@ -253,7 +253,6 @@ void AudioCallback(float **in, float **out, size_t size) {
     float sequencerPitchOffset = sequencerValues[currentStep];
     
     // Combine all pitch sources: pots + sequencer + MIDI
-    // MIDI pitch CV PERSISTS even after note off for envelope release
     float totalPitchOffset = sequencerPitchOffset + midiPitchCV;
     
     float pitchRatio = semitonesToRatio(totalPitchOffset);
@@ -269,17 +268,17 @@ void AudioCallback(float **in, float **out, size_t size) {
 
     // APPLY MODULATION BASED ON SELECTED TYPE
     if (useAmplitudeModulation) {
-      // AMPLITUDE MODULATION (AM) - IMPROVED IMPLEMENTATION
-      // Scale modulation amount to be more musical (0.0 to 1.0 range)
-      float amDepth = modOsc_modAmount * 0.5f; // Increased scaling for better range
+      // AMPLITUDE MODULATION (AM) - PROPER LEVEL-MATCHED IMPLEMENTATION
+      float amDepth = modOsc_modAmount * 0.5f; // Modulation depth
       
-      // Convert bipolar modulator signal to proper AM signal
-      // AM formula: carrier * (1 + depth * modulator)
-      // This ensures no level drop and proper modulation
+      // Proper AM formula that maintains average level
+      // The key is to scale the modulation so peak level doesn't exceed 1.0
       float amSignal = 1.0f + (amDepth * modOsc_signal);
       
-      // Clamp to prevent negative amplitudes (which cause distortion)
-      amSignal = max(amSignal, 0.0f);
+      // Normalize to maintain consistent average level
+      // This prevents the volume jump when switching to AM
+      float normalizationFactor = 1.0f / (1.0f + amDepth);
+      amSignal *= normalizationFactor;
       
       // Set carrier frequency (no FM in AM mode)
       complexOsc.SetFreq(complexOsc_freq);
@@ -298,11 +297,11 @@ void AudioCallback(float **in, float **out, size_t size) {
       // APPLY WAVEFOLDING
       float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
-      // APPLY AMPLITUDE MODULATION to carrier
+      // APPLY AMPLITUDE MODULATION with level matching
       float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level * amSignal;
       
-      // Modulator oscillator output - normal level in AM mode
-      float modulated_modOsc = modOsc_signal * modOsc_level;
+      // Modulator oscillator output - reduced in AM mode to match FM level
+      float modulated_modOsc = modOsc_signal * modOsc_level * 0.3f;
 
       // APPLY ADSR ENVELOPE
       float envValue = env.Process(gateOpen);
@@ -312,13 +311,13 @@ void AudioCallback(float **in, float **out, size_t size) {
       // OSC STAGE OUTPUT
       float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
 
-      // OUTPUT with gentle limiting to prevent clipping
-      out[0][i] = tanh(oscillatorSum_signal * 0.7f); // Soft clipping
-      out[1][i] = tanh(oscillatorSum_signal * 0.7f);
+      // OUTPUT - same as FM mode, no additional processing needed
+      out[0][i] = oscillatorSum_signal;
+      out[1][i] = oscillatorSum_signal;
       
     } else {
       // FREQUENCY MODULATION (FM) - default
-      float modulationDepth = modOsc_modAmount; // Scale FM depth
+      float modulationDepth = modOsc_modAmount * 0.1f;
       float modulatorSignal = modOsc_signal * modulationDepth;
       float complexOsc_modulatedFreq = complexOsc_freq + modulatorSignal - 16.0f;
       complexOsc_modulatedFreq = max(complexOsc_modulatedFreq, 17.0f);
@@ -484,7 +483,7 @@ void loop() {
   eg_sustainLevel = 1.0f;
   eg_releaseTime = readMuxChannel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);
 
-  BPM = readMuxChannel(CLOCK_CHANNEL, 60.0f, 120.0f);
+  BPM = readMuxChannel(CLOCK_CHANNEL, 20.0f, 160.0f);
 
   // BUTTON HANDLING
   sequencerToggle.Debounce();
