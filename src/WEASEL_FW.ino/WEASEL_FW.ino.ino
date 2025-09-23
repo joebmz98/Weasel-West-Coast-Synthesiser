@@ -2,14 +2,21 @@
 #include <MIDI.h>
 //#include "buchla_lpg.h"
 
-// MUX PINS
+// MUX 1 PINS (Original MUX)
 #define MUX_S0 0
 #define MUX_S1 1
 #define MUX_S2 2
 #define MUX_S3 3
 #define MUX_SIG A0  // MUX signal pin
 
-// MUX CHANNEL ASSIGNMENTS
+// MUX 2 PINS (New MUX for additional controls)
+#define MUX2_S0 4
+#define MUX2_S1 5
+#define MUX2_S2 6
+#define MUX2_S3 7
+#define MUX2_SIG A1  // Second MUX signal pin
+
+// MUX 1 CHANNEL ASSIGNMENTS
 #define MOD_OSC_PITCH_CHANNEL 0       // C0 - modOsc_pitch
 #define MOD_AMOUNT_CHANNEL 1          // C1 - modOsc_modAmount
 #define COMPLEX_OSC_PITCH_CHANNEL 2   // C2 - complexOsc_pitch
@@ -26,6 +33,9 @@
 #define ASD_SUSTAIN_CHANNEL 13        // C13 - BUCHLA SUSTAIN // DECAY
 #define ASD_DECAY_CHANNEL 14          // C14 - BUCHLA DECAY // RELEASE
 #define CLOCK_CHANNEL 15              // C15 - CLOCK
+
+// MUX 2 CHANNEL ASSIGNMENTS
+#define MASTER_VOLUME_CHANNEL 0       // C0 - Master Volume
 
 #define SEQUENCER_TOGGLE_BUTTON 19    // SEQ TOGGLE
 #define MODULATION_TOGGLE_BUTTON 20   // MODULATION TOGGLE
@@ -50,6 +60,7 @@ float complexOsc_timbreAmount;  // COMPLEX OSC TIMBRE WAVEMORPHING AMOUNT (0.0 =
 float complexOsc_foldAmount;    // COMPLEX OSC WAVEFOLDING AMOUNT (0.0 = no fold, 1.0 = max fold)
 float complexOsc_level;         // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
 float modOsc_level;             // MODULATION OSC LEVEL CONTROLl (0.0 to 1.0)
+float masterVolume;             // MASTER VOLUME CONTROL (0.0 to 1.0)
 
 // ADSR ENVELOPE VARIABLES
 float eg_attackTime;    // ATTACK time in seconds
@@ -151,7 +162,7 @@ float wavefolder(float input, float amount) {
   return (input * (1.0f - wetDryMix)) + ((scaledInput * wetDryMix) * 0.25);
 }
 
-// MUX
+// MUX 1 Functions
 void setMuxChannel(int channel) {
   digitalWrite(MUX_S0, channel & 0x01);
   digitalWrite(MUX_S1, channel & 0x02);
@@ -164,6 +175,28 @@ float readMuxChannel(int channel, float minVal, float maxVal, bool logarithmic =
   delayMicroseconds(10);
 
   int rawValue = analogRead(MUX_SIG);
+  float normalizedValue = rawValue / 65535.0f;
+
+  if (logarithmic) {
+    return linearToLog(normalizedValue, minVal, maxVal);
+  } else {
+    return minVal + (maxVal - minVal) * normalizedValue;
+  }
+}
+
+// MUX 2 Functions
+void setMux2Channel(int channel) {
+  digitalWrite(MUX2_S0, channel & 0x01);
+  digitalWrite(MUX2_S1, channel & 0x02);
+  digitalWrite(MUX2_S2, channel & 0x04);
+  digitalWrite(MUX2_S3, channel & 0x08);
+}
+
+float readMux2Channel(int channel, float minVal, float maxVal, bool logarithmic = false) {
+  setMux2Channel(channel);
+  delayMicroseconds(10);
+
+  int rawValue = analogRead(MUX2_SIG);
   float normalizedValue = rawValue / 65535.0f;
 
   if (logarithmic) {
@@ -272,11 +305,9 @@ void AudioCallback(float **in, float **out, size_t size) {
       float amDepth = modOsc_modAmount * 0.5f; // Modulation depth
       
       // Proper AM formula that maintains average level
-      // The key is to scale the modulation so peak level doesn't exceed 1.0
       float amSignal = 1.0f + (amDepth * modOsc_signal);
       
       // Normalize to maintain consistent average level
-      // This prevents the volume jump when switching to AM
       float normalizationFactor = 1.0f / (1.0f + amDepth);
       amSignal *= normalizationFactor;
       
@@ -308,10 +339,10 @@ void AudioCallback(float **in, float **out, size_t size) {
       modulated_complexOsc *= envValue;
       modulated_modOsc *= envValue;
 
-      // OSC STAGE OUTPUT
-      float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+      // OSC STAGE OUTPUT with MASTER VOLUME
+      float oscillatorSum_signal = (modulated_complexOsc + modulated_modOsc) * masterVolume;
 
-      // OUTPUT - same as FM mode, no additional processing needed
+      // OUTPUT
       out[0][i] = oscillatorSum_signal;
       out[1][i] = oscillatorSum_signal;
       
@@ -348,8 +379,8 @@ void AudioCallback(float **in, float **out, size_t size) {
       modulated_complexOsc *= envValue;
       modulated_modOsc *= envValue;
 
-      // OSC STAGE OUTPUT
-      float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+      // OSC STAGE OUTPUT with MASTER VOLUME
+      float oscillatorSum_signal = (modulated_complexOsc + modulated_modOsc) * masterVolume;
 
       // OUTPUT
       out[0][i] = oscillatorSum_signal;
@@ -361,20 +392,31 @@ void AudioCallback(float **in, float **out, size_t size) {
 void setup() {
   Serial.begin(115200);  // Increased baud rate for faster debugging
 
-  // BUTTON INIT - Fixed the modulationToggle pin assignment
+  // BUTTON INIT
   sequencerToggle.Init(1000, true, SEQUENCER_TOGGLE_BUTTON, INPUT_PULLUP);
   modulationToggle.Init(1000, true, MODULATION_TOGGLE_BUTTON, INPUT_PULLUP);
 
-  // INIT MUX_1 PINS
+  // INIT MUX 1 PINS
   pinMode(MUX_S0, OUTPUT);
   pinMode(MUX_S1, OUTPUT);
   pinMode(MUX_S2, OUTPUT);
   pinMode(MUX_S3, OUTPUT);
 
+  // INIT MUX 2 PINS
+  pinMode(MUX2_S0, OUTPUT);
+  pinMode(MUX2_S1, OUTPUT);
+  pinMode(MUX2_S2, OUTPUT);
+  pinMode(MUX2_S3, OUTPUT);
+
+  // SET ALL MUX PINS LOW
   digitalWrite(MUX_S0, LOW);
   digitalWrite(MUX_S1, LOW);
   digitalWrite(MUX_S2, LOW);
   digitalWrite(MUX_S3, LOW);
+  digitalWrite(MUX2_S0, LOW);
+  digitalWrite(MUX2_S1, LOW);
+  digitalWrite(MUX2_S2, LOW);
+  digitalWrite(MUX2_S3, LOW);
 
   // INIT 16-BIT ADC
   analogReadResolution(16);
@@ -430,6 +472,7 @@ void setup() {
   complexOsc_foldAmount = 0.0f;
   complexOsc_level = 1.0f;
   modOsc_level = 1.0f;
+  masterVolume = 1.0f;  // Start at full volume
 
   // ADSR INIT
   eg_attackTime = 0.1f;
@@ -456,6 +499,7 @@ void setup() {
   Serial.println("Weasel Initialised with MIDI functionality");
   Serial.println("Use button 19 to toggle between internal clock and MIDI note triggers");
   Serial.println("Use button 20 to toggle between FM and AM modulation");
+  Serial.println("Second MUX added with Master Volume control");
   Serial.println("Current modulation: FM");
 }
 
@@ -469,7 +513,7 @@ void loop() {
     midiNoteActive = false;
   }
 
-  // POTENTIOMETER HANDLING
+  // POTENTIOMETER HANDLING - MUX 1
   modOsc_pitch = readMuxChannel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true);
   modOsc_modAmount = readMuxChannel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
   complexOsc_basePitch = readMuxChannel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
@@ -484,6 +528,9 @@ void loop() {
   eg_releaseTime = readMuxChannel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);
 
   BPM = readMuxChannel(CLOCK_CHANNEL, 20.0f, 160.0f);
+
+  // POTENTIOMETER HANDLING - MUX 2
+  masterVolume = readMux2Channel(MASTER_VOLUME_CHANNEL, 0.0f, 1.0f);
 
   // BUTTON HANDLING
   sequencerToggle.Debounce();
@@ -533,6 +580,9 @@ void loop() {
     Serial.print(useAmplitudeModulation ? "AM" : "FM");
     Serial.print(" | BPM: ");
     Serial.print(BPM);
+    Serial.print(" | Master Vol: ");
+    Serial.print(masterVolume * 5000);
+    Serial.print("%");
     Serial.print(" | MIDI CV: ");
     Serial.print(midiPitchCV);
     Serial.print(" st");
