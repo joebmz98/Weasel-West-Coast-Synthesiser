@@ -269,15 +269,17 @@ void AudioCallback(float **in, float **out, size_t size) {
 
     // APPLY MODULATION BASED ON SELECTED TYPE
     if (useAmplitudeModulation) {
-      // AMPLITUDE MODULATION (AM) - FIXED IMPLEMENTATION
+      // AMPLITUDE MODULATION (AM) - IMPROVED IMPLEMENTATION
       // Scale modulation amount to be more musical (0.0 to 1.0 range)
-      float amDepth = modOsc_modAmount * 0.01f; // Much smaller scaling
+      float amDepth = modOsc_modAmount * 0.5f; // Increased scaling for better range
       
-      // Convert bipolar modulator signal to unipolar (0 to 1) for AM
-      float unipolarModulator = (modOsc_signal + 1.0f) * 0.5f; // Convert from [-1,1] to [0,1]
+      // Convert bipolar modulator signal to proper AM signal
+      // AM formula: carrier * (1 + depth * modulator)
+      // This ensures no level drop and proper modulation
+      float amSignal = 1.0f + (amDepth * modOsc_signal);
       
-      // Create AM signal: depth controls how much modulation is applied
-      float amSignal = 1.0f - amDepth + (unipolarModulator * amDepth);
+      // Clamp to prevent negative amplitudes (which cause distortion)
+      amSignal = max(amSignal, 0.0f);
       
       // Set carrier frequency (no FM in AM mode)
       complexOsc.SetFreq(complexOsc_freq);
@@ -296,11 +298,11 @@ void AudioCallback(float **in, float **out, size_t size) {
       // APPLY WAVEFOLDING
       float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
-      // APPLY AMPLITUDE MODULATION to carrier only
+      // APPLY AMPLITUDE MODULATION to carrier
       float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level * amSignal;
       
-      // Modulator oscillator output (optional - can be muted in AM mode)
-      float modulated_modOsc = modOsc_signal * modOsc_level * 0.1f; // Reduced level in AM mode
+      // Modulator oscillator output - normal level in AM mode
+      float modulated_modOsc = modOsc_signal * modOsc_level;
 
       // APPLY ADSR ENVELOPE
       float envValue = env.Process(gateOpen);
@@ -310,13 +312,13 @@ void AudioCallback(float **in, float **out, size_t size) {
       // OSC STAGE OUTPUT
       float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
 
-      // OUTPUT
-      out[0][i] = oscillatorSum_signal;
-      out[1][i] = oscillatorSum_signal;
+      // OUTPUT with gentle limiting to prevent clipping
+      out[0][i] = tanh(oscillatorSum_signal * 0.7f); // Soft clipping
+      out[1][i] = tanh(oscillatorSum_signal * 0.7f);
       
     } else {
       // FREQUENCY MODULATION (FM) - default
-      float modulationDepth = modOsc_modAmount * 0.1f; // Scale FM depth
+      float modulationDepth = modOsc_modAmount; // Scale FM depth
       float modulatorSignal = modOsc_signal * modulationDepth;
       float complexOsc_modulatedFreq = complexOsc_freq + modulatorSignal - 16.0f;
       complexOsc_modulatedFreq = max(complexOsc_modulatedFreq, 17.0f);
@@ -356,6 +358,7 @@ void AudioCallback(float **in, float **out, size_t size) {
     }
   }
 }
+
 void setup() {
   Serial.begin(115200);  // Increased baud rate for faster debugging
 
