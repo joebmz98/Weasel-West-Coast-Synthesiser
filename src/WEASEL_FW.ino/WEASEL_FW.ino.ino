@@ -40,7 +40,8 @@ DaisyHardware hw;
 static Oscillator complexOsc;         // PRIMARY COMPLEX OSC
 static Oscillator complexOscTri;      // SECONDARY COMPLEX OSC (triangle)
 static Oscillator modOsc;             // MODULATION OSC
-static MoogLadder complexOsc_filter;  // FILTER - HIGH CUT AT 15kHz FOR "ANALOGUE" FEEL OF WAVEFORMS
+static MoogLadder complexOsc_analogFilter;  // FILTER - HIGH CUT AT 15kHz FOR "ANALOGUE" FEEL OF WAVEFORMS
+static MoogLadder modOsc_analogFilter;      // FILTER FOR MOD OSCILLATOR
 
 // OSCILLATOR PARAMETER VARIABLES
 float complexOsc_basePitch;     // COMPLEX OSC BASE PITCH
@@ -261,6 +262,9 @@ void AudioCallback(float **in, float **out, size_t size) {
     float modulatedModPitch = modOsc_pitch * pitchRatio;
     modOsc.SetFreq(modulatedModPitch);
     float modOsc_signal = modOsc.Process();
+    
+    // APPLY ANALOG FILTER TO MOD OSCILLATOR
+    float modOsc_filteredSignal = modOsc_analogFilter.Process(modOsc_signal);
 
     // PROCESS COMPLEX OSCILLATOR with combined pitch modulation
     float modulatedComplexBasePitch = complexOsc_basePitch * pitchRatio;
@@ -268,95 +272,94 @@ void AudioCallback(float **in, float **out, size_t size) {
 
     // APPLY MODULATION BASED ON SELECTED TYPE
     if (useAmplitudeModulation) {
-      // AMPLITUDE MODULATION (AM) - PROPER LEVEL-MATCHED IMPLEMENTATION
-      float amDepth = modOsc_modAmount * 0.5f; // Modulation depth
+      // AMPLITUDE MODULATION (AM) - FIXED IMPLEMENTATION
+      float amDepth = modOsc_modAmount * 0.5f;
       
-      // Proper AM formula that maintains average level
-      // The key is to scale the modulation so peak level doesn't exceed 1.0
-      float amSignal = 1.0f + (amDepth * modOsc_signal);
-      
-      // Normalize to maintain consistent average level
-      // This prevents the volume jump when switching to AM
-      float normalizationFactor = 1.0f / (1.0f + amDepth);
-      amSignal *= normalizationFactor;
-      
-      // Set carrier frequency (no FM in AM mode)
-      complexOsc.SetFreq(complexOsc_freq);
-      complexOscTri.SetFreq(complexOsc_freq);
-      
-      // Process both waveforms
-      float complexOsc_sineSignal = complexOsc.Process();
-      float complexOsc_triSignal = complexOscTri.Process();
+      // Reduced modulator level for AM mode (consistent in both cases)
+      float modulated_modOsc = modOsc_filteredSignal * modOsc_level * 0.85f;
 
-      // BLEND BETWEEN SINE AND TRIANGLE USING TIMBRE CONTROL
-      float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
+      // Only apply AM if depth is significant
+      if (amDepth < 0.001f) {
+        // No AM - just pass through complex oscillator
+        complexOsc.SetFreq(complexOsc_freq);
+        complexOscTri.SetFreq(complexOsc_freq);
+        
+        float complexOsc_sineSignal = complexOsc.Process();
+        float complexOsc_triSignal = complexOscTri.Process();
+        float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
+        float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
+        float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
-      // APPLY MOOG LOWPASS FILTER
-      float complexOsc_filteredSignal = complexOsc_filter.Process(complexOsc_rawSignal);
+        float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
 
-      // APPLY WAVEFOLDING
-      float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
+        float envValue = env.Process(gateOpen);
+        modulated_complexOsc *= envValue;
+        modulated_modOsc *= envValue;
 
-      // APPLY AMPLITUDE MODULATION with level matching
-      float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level * amSignal;
-      
-      // Modulator oscillator output - reduced in AM mode to match FM level
-      float modulated_modOsc = modOsc_signal * modOsc_level * 0.3f;
+        float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+        out[0][i] = oscillatorSum_signal;
+        out[1][i] = oscillatorSum_signal;
+      } else {
+        // Apply AM with proper level handling
+        float amSignal = 1.0f + (amDepth * modOsc_filteredSignal);
+        
+        // Clamp to prevent excessive amplification
+        amSignal = fmaxf(fminf(amSignal, 2.0f), 0.0f);
+        
+        // Set carrier frequency
+        complexOsc.SetFreq(complexOsc_freq);
+        complexOscTri.SetFreq(complexOsc_freq);
+        
+        float complexOsc_sineSignal = complexOsc.Process();
+        float complexOsc_triSignal = complexOscTri.Process();
+        float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
+        float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
+        float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
-      // APPLY ADSR ENVELOPE
-      float envValue = env.Process(gateOpen);
-      modulated_complexOsc *= envValue;
-      modulated_modOsc *= envValue;
+        // Apply AM
+        float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level * amSignal;
 
-      // OSC STAGE OUTPUT
-      float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+        float envValue = env.Process(gateOpen);
+        modulated_complexOsc *= envValue;
+        modulated_modOsc *= envValue;
 
-      // OUTPUT - same as FM mode, no additional processing needed
-      out[0][i] = oscillatorSum_signal;
-      out[1][i] = oscillatorSum_signal;
+        float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+        out[0][i] = oscillatorSum_signal;
+        out[1][i] = oscillatorSum_signal;
+      }
       
     } else {
-      // FREQUENCY MODULATION (FM) - default
-      float modulationDepth = modOsc_modAmount * 0.1f;
-      float modulatorSignal = modOsc_signal * modulationDepth;
+      // FREQUENCY MODULATION (FM) - default (unchanged)
+      // Full modulator level for FM mode
+      float modulated_modOsc = modOsc_filteredSignal * modOsc_level;
+      
+      float modulationDepth = modOsc_modAmount * 1.0f;
+      float modulatorSignal = modOsc_filteredSignal * modulationDepth;
       float complexOsc_modulatedFreq = complexOsc_freq + modulatorSignal - 16.0f;
       complexOsc_modulatedFreq = max(complexOsc_modulatedFreq, 17.0f);
 
-      // Set carrier frequency with FM
       complexOsc.SetFreq(complexOsc_modulatedFreq);
       complexOscTri.SetFreq(complexOsc_modulatedFreq);
 
-      // Process both waveforms
       float complexOsc_sineSignal = complexOsc.Process();
       float complexOsc_triSignal = complexOscTri.Process();
-
-      // BLEND BETWEEN SINE AND TRIANGLE USING TIMBRE CONTROL
       float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
-
-      // APPLY MOOG LOWPASS FILTER
-      float complexOsc_filteredSignal = complexOsc_filter.Process(complexOsc_rawSignal);
-
-      // APPLY WAVEFOLDING
+      float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
       float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
-      // APPLY OUTPUT LEVEL CONTROL TO BOTH OSCILLATORS
       float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
-      float modulated_modOsc = modOsc_signal * modOsc_level;
 
-      // APPLY ADSR ENVELOPE
       float envValue = env.Process(gateOpen);
       modulated_complexOsc *= envValue;
       modulated_modOsc *= envValue;
 
-      // OSC STAGE OUTPUT
       float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
-
-      // OUTPUT
       out[0][i] = oscillatorSum_signal;
       out[1][i] = oscillatorSum_signal;
     }
   }
 }
+
 
 void setup() {
   Serial.begin(115200);  // Increased baud rate for faster debugging
@@ -405,10 +408,15 @@ void setup() {
   complexOscTri.Init(sample_rate);
   modOsc.Init(sample_rate);
 
-  // INIT COMPLEX FILTER
-  complexOsc_filter.Init(sample_rate);
-  complexOsc_filter.SetFreq(15000.0f);
-  complexOsc_filter.SetRes(0.3f);
+  // INIT COMPLEX OSC FILTER
+  complexOsc_analogFilter.Init(sample_rate);
+  complexOsc_analogFilter.SetFreq(15000.0f);
+  complexOsc_analogFilter.SetRes(0.3f);
+
+  // INIT MOD OSC FILTER (same settings as complexOsc_analogFilter)
+  modOsc_analogFilter.Init(sample_rate);
+  modOsc_analogFilter.SetFreq(15000.0f);
+  modOsc_analogFilter.SetRes(0.3f);
 
   // INIT ADSR ENVELOPE
   env.Init(sample_rate);
