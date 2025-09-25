@@ -1,4 +1,4 @@
-26827314048636509
+26825556703674069
 AXS_LOGO_KICAD
 AXS_LOGO_FMASK_10X10
 
@@ -56279,13 +56279,6 @@ Untitled
 0
 0
 0
-Device_Audio_Electrosmith_Daisy_Seed
-Device_Audio_Electrosmith_Daisy_Seed
-
-
-0
-40
-40
 Diode_SMD
 D_0201_0603Metric
 Diode SMD 0201 (0603 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: https://www.vishay.com/docs/20052/crcw0201e3.pdf), generated with kicad-footprint-generator
