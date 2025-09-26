@@ -14051,7 +14051,7 @@
 				)
 			)
 		)
-		(property "Footprint" "MODULE"
+		(property "Footprint" "CD74HC4067 MUX:CD74HC4067"
 			(at 278.13 104.14 0)
 			(effects
 				(font
@@ -20352,7 +20352,7 @@
 				)
 			)
 		)
-		(property "Footprint" "MODULE"
+		(property "Footprint" "CD74HC4067 MUX:CD74HC4067"
 			(at 341.63 234.95 0)
 			(effects
 				(font
