@@ -34,10 +34,9 @@
 #define ASD_DECAY_CHANNEL 14          // C14 - BUCHLA DECAY // RELEASE
 #define CLOCK_CHANNEL 15              // C15 - CLOCK
 
-// MUX CHANNEL ASSIGNMENTS (SECOND MUX - currently empty, ready for future use)
-// You can add new potentiometers to these channels as needed
-#define MUX2_CHANNEL_0 0
-#define MUX2_CHANNEL_1 1
+// MUX CHANNEL ASSIGNMENTS (SECOND MUX - modulation depth controls)
+#define ENV_MOD_DEPTH_CH1 0  // C0 - Envelope modulation depth for Channel 1 (complex osc)
+#define ENV_MOD_DEPTH_CH2 1  // C1 - Envelope modulation depth for Channel 2 (mod osc)
 #define MUX2_CHANNEL_2 2
 #define MUX2_CHANNEL_3 3
 #define MUX2_CHANNEL_4 4
@@ -53,10 +52,10 @@
 #define MUX2_CHANNEL_14 14
 #define MUX2_CHANNEL_15 15
 
-#define SEQUENCER_TOGGLE_BUTTON 19    // SEQ TOGGLE
-#define MODULATION_TOGGLE_BUTTON 20   // MODULATION TOGGLE
-#define LPG_CH1_TOGGLE_BUTTON 21   // LPG CHANNEL 1 TOGGLE
-#define LPG_CH2_TOGGLE_BUTTON 22   // LPG CHANNEL 2 TOGGLE
+#define SEQUENCER_TOGGLE_BUTTON 19   // SEQ TOGGLE
+#define MODULATION_TOGGLE_BUTTON 20  // MODULATION TOGGLE
+#define LPG_CH1_TOGGLE_BUTTON 21     // LPG CHANNEL 1 TOGGLE
+#define LPG_CH2_TOGGLE_BUTTON 22     // LPG CHANNEL 2 TOGGLE
 
 // MIDI Settings
 #define MIDI_RX_PIN 30  // USART1 Rx (Digital pin 30)
@@ -72,15 +71,15 @@ enum LPGMode {
 DaisyHardware hw;
 
 //INIT OSCILLATORS, FILTER
-static Oscillator complexOsc;         // PRIMARY COMPLEX OSC
-static Oscillator complexOscTri;      // SECONDARY COMPLEX OSC (triangle)
-static Oscillator modOsc;             // MODULATION OSC
+static Oscillator complexOsc;               // PRIMARY COMPLEX OSC
+static Oscillator complexOscTri;            // SECONDARY COMPLEX OSC (triangle)
+static Oscillator modOsc;                   // MODULATION OSC
 static MoogLadder complexOsc_analogFilter;  // FILTER - HIGH CUT AT 15kHz FOR "ANALOGUE" FEEL OF WAVEFORMS
 static MoogLadder modOsc_analogFilter;      // FILTER FOR MOD OSCILLATOR
 
 // INIT LPG
-static MoogLadder lpgChannel1_filter;      // FILTER FOR BUCHLA LPG CH1
-static MoogLadder lpgChannel2_filter;      // FILTER FOR BUCHLA LPG CH2
+static MoogLadder lpgChannel1_filter;  // FILTER FOR BUCHLA LPG CH1
+static MoogLadder lpgChannel2_filter;  // FILTER FOR BUCHLA LPG CH2
 
 // OSCILLATOR PARAMETER VARIABLES
 float complexOsc_basePitch;     // COMPLEX OSC BASE PITCH
@@ -89,7 +88,15 @@ float modOsc_modAmount;         // MOD AMOUNT AFFECTING COMPLEX OSC
 float complexOsc_timbreAmount;  // COMPLEX OSC TIMBRE WAVEMORPHING AMOUNT (0.0 = sine, 1.0 = triangle)
 float complexOsc_foldAmount;    // COMPLEX OSC WAVEFOLDING AMOUNT (0.0 = no fold, 1.0 = max fold)
 float complexOsc_level;         // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
-float modOsc_level;             // MODULATION OSC LEVEL CONTROLl (0.0 to 1.0)
+float modOsc_level;             // MODULATION OSC LEVEL CONTROL (0.0 to 1.0)
+
+// LP MODE CUTOFF CONTROL VARIABLES
+float lpgCh1_baseCutoff = 0.5f;  // Base cutoff for Channel 1 in LP mode (0.0 to 1.0)
+float lpgCh2_baseCutoff = 0.5f;  // Base cutoff for Channel 2 in LP mode (0.0 to 1.0)
+
+// ENVELOPE MODULATION DEPTH CONTROLS
+float envModDepth_ch1 = 1.0f;  // Envelope modulation depth for channel 1 (complex osc)
+float envModDepth_ch2 = 1.0f;  // Envelope modulation depth for channel 2 (mod osc)
 
 // ADSR ENVELOPE VARIABLES & OBJECT
 Adsr env;               // ADSR envelope
@@ -121,10 +128,10 @@ LPGMode lpgChannel1_mode = LPG_MODE_COMBI;  // Default to COMBI mode
 LPGMode lpgChannel2_mode = LPG_MODE_COMBI;  // Default to COMBI mode
 
 // BUTTONS
-Switch sequencerToggle;   // SEQUENCER CLOCK TOGGLE
-Switch modulationToggle;  // MODULATION TYPE TOGGLE
-Switch lpgToggle_channel1;// LPG CH1 MODE TOGGLE 
-Switch lpgToggle_channel2;// LPG CH2 MODE TOGGLE 
+Switch sequencerToggle;     // SEQUENCER CLOCK TOGGLE
+Switch modulationToggle;    // MODULATION TYPE TOGGLE
+Switch lpgToggle_channel1;  // LPG CH1 MODE TOGGLE
+Switch lpgToggle_channel2;  // LPG CH2 MODE TOGGLE
 
 // MIDI Object
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
@@ -139,10 +146,10 @@ unsigned long midiNoteCount = 0;
 unsigned long midiErrorCount = 0;
 
 // MIDI to CV variables
-float midiPitchCV = 0.0f;        // MIDI pitch control voltage (in semitones) - PERSISTS after note off
-bool midiNoteActive = false;     // Whether a MIDI note is currently active (for triggering)
-unsigned long lastMidiNoteTime = 0; // Time when last MIDI note was received
-const unsigned long MIDI_NOTE_TIMEOUT = 1000; // 1 second timeout for MIDI notes
+float midiPitchCV = 0.0f;                      // MIDI pitch control voltage (in semitones) - PERSISTS after note off
+bool midiNoteActive = false;                   // Whether a MIDI note is currently active (for triggering)
+unsigned long lastMidiNoteTime = 0;            // Time when last MIDI note was received
+const unsigned long MIDI_NOTE_TIMEOUT = 1000;  // 1 second timeout for MIDI notes
 
 // Function to convert linear values to logarithmic scale for pitch
 float linearToLog(float value, float minVal, float maxVal) {
@@ -155,13 +162,13 @@ float semitonesToRatio(float semitones) {
 }
 
 // Function to convert MIDI note to frequency (1V/octave standard)
-float midiNoteToFrequency(byte midiNote, float baseFreq = 261.63f) { // C4 = 261.63Hz
+float midiNoteToFrequency(byte midiNote, float baseFreq = 261.63f) {  // C4 = 261.63Hz
   // Convert MIDI note to frequency (MIDI note 69 = A4 = 440Hz)
   return 440.0f * pow(2.0f, (midiNote - 69) / 12.0f);
 }
 
 // Function to convert MIDI note to CV (1V/octave, where 1V = 12 semitones)
-float midiNoteToCV(byte midiNote, float baseNote = 60.0f) { // C4 = MIDI note 60
+float midiNoteToCV(byte midiNote, float baseNote = 60.0f) {  // C4 = MIDI note 60
   // Convert MIDI note to CV voltage (1V/octave standard)
   // Returns semitones offset from base note
   return (midiNote - baseNote);
@@ -197,46 +204,78 @@ float wavefolder(float input, float amount) {
   return (input * (1.0f - wetDryMix)) + ((scaledInput * wetDryMix) * 0.25);
 }
 
-// Function to apply LPG processing based on mode
-void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLevel) {
-  switch (mode) {
-    case LPG_MODE_COMBI:
-      // COMBI mode: frequency range 500Hz to 20kHz with no resonance
-      filter.SetFreq(500.0f + (channelLevel * channelLevel * 19500.0f));
-      filter.SetRes(0.0f);
-      signal = filter.Process(signal);
-      break;
-      
-    case LPG_MODE_VCA:
-      // VCA mode: filter slightly active, frequency range 16kHz to 20kHz with no resonance
-      filter.SetFreq(16000.0f + (channelLevel * 4000.0f));
-      filter.SetRes(0.0f);
-      signal = filter.Process(signal);
-      break;
-      
-    case LPG_MODE_LP:
-      // LP mode: safe implementation with instability protection
-      float cutoff = 20.0f + (channelLevel * 19980.0f); // 20Hz to 20kHz
-      filter.SetFreq(cutoff);
-      
-      // Safe resonance curve
-      float resonance = pow(channelLevel, 1.8f) * 0.9f;
-      resonance = fminf(resonance, 0.92f);
-      
-      // Soft clipping for high resonance
-      if (resonance > 0.85f) {
-        resonance = 0.85f + (resonance - 0.85f) * 0.3f;
-      }
-      
-      filter.SetRes(resonance);
-      
-      // Input gain compensation
-      float safeGain = 1.0f / (1.0f + resonance * 0.5f);
-      signal *= safeGain;
-      
-      signal = filter.Process(signal);
-      break;
-  }
+// Function to apply LPG processing based on mode with envelope modulation depth
+void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLevel, float baseCutoffControl, float envValue, float modDepth) {
+    float outputGain = 1.0f;
+    
+    // Apply modulation depth to envelope value
+    // modDepth = 0.0: no envelope effect, modDepth = 1.0: full envelope effect
+    float modulatedEnv = envValue * modDepth;
+    
+    switch (mode) {
+        case LPG_MODE_COMBI: {
+            // COMBI mode: envelope controls BOTH cutoff AND amplitude with modulation depth
+            // Base cutoff determined by channel level (20Hz to 20kHz)
+            float baseCutoff = 20.0f + (channelLevel * 19980.0f);
+            
+            // Envelope opens the filter from base cutoff up to 20kHz
+            float combiCutoff = baseCutoff + ((20000.0f - baseCutoff) * modulatedEnv);
+            filter.SetFreq(fminf(combiCutoff, 20000.0f));
+            filter.SetRes(0.0f);
+            
+            // Apply amplitude modulation from envelope with modulation depth
+            float amplitudeMod = 1.0f - modDepth + modulatedEnv;
+            signal *= fmaxf(amplitudeMod, 0.0f); // Ensure non-negative
+            
+            outputGain = 1.0f;
+            signal = filter.Process(signal) * outputGain;
+            break;
+        }
+            
+        case LPG_MODE_VCA: {
+            // VCA mode: filter wide open, envelope controls ONLY amplitude with modulation depth
+            filter.SetFreq(20000.0f); // Filter wide open
+            filter.SetRes(0.0f);
+            
+            // Apply amplitude modulation from envelope with modulation depth
+            float amplitudeMod = 1.0f - modDepth + modulatedEnv;
+            signal *= fmaxf(amplitudeMod, 0.0f); // Ensure non-negative
+            
+            outputGain = 1.0f;
+            signal = filter.Process(signal) * outputGain;
+            break;
+        }
+            
+        case LPG_MODE_LP: {
+            // LP mode: envelope controls ONLY the filter cutoff with modulation depth
+            // Base cutoff determined by baseCutoffControl parameter (20Hz to 20kHz)
+            float baseCutoff = 20.0f + (baseCutoffControl * 19980.0f);
+            
+            // Envelope opens the filter from base cutoff up to 20kHz
+            float lpCutoff = baseCutoff + ((20000.0f - baseCutoff) * modulatedEnv);
+            filter.SetFreq(fminf(lpCutoff, 20000.0f));
+            
+            // Safe resonance curve based on baseCutoffControl only (not envelope)
+            float resonance = pow(baseCutoffControl, 1.8f) * 0.9f;
+            resonance = fminf(resonance, 0.92f);
+            
+            if (resonance > 0.85f) {
+                resonance = 0.85f + (resonance - 0.85f) * 0.3f;
+            }
+            
+            filter.SetRes(resonance);
+            
+            // Input gain compensation
+            float safeGain = 1.0f / (1.0f + resonance * 0.5f);
+            signal *= safeGain;
+            
+            // Boost for LP mode
+            outputGain = 2.5f + (resonance * 3.0f);
+            
+            signal = filter.Process(signal) * outputGain;
+            break;
+        }
+    }
 }
 
 // MUX FUNCTIONS
@@ -319,7 +358,7 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
   lastMidiVelocity = velocity;
   lastMidiChannel = channel;
   midiNoteCount++;
-  
+
   // Convert MIDI note to CV and store it (this value will persist)
   midiPitchCV = midiNoteToCV(note);
   midiNoteActive = true;  // For triggering sequencer if needed
@@ -347,7 +386,7 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
   if (note == lastMidiNote) {
     midiNoteActive = false;  // This only affects triggering, not pitch
   }
-  
+
   Serial.print("MIDI Note Off - Channel: ");
   Serial.print(channel);
   Serial.print(" Note: ");
@@ -356,21 +395,21 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
   Serial.println(velocity);
 }
 
-void AudioCallback(float **in, float **out, size_t size) {
+void AudioCallback(float** in, float** out, size_t size) {
   for (size_t i = 0; i < size; i++) {
     // Get current sequencer pitch offset
     float sequencerPitchOffset = sequencerValues[currentStep];
-    
+
     // Combine all pitch sources: pots + sequencer + MIDI
     float totalPitchOffset = sequencerPitchOffset + midiPitchCV;
-    
+
     float pitchRatio = semitonesToRatio(totalPitchOffset);
 
     // PROCESS MODULATOR OSCILLATOR with combined pitch modulation
     float modulatedModPitch = modOsc_pitch * pitchRatio;
     modOsc.SetFreq(modulatedModPitch);
     float modOsc_signal = modOsc.Process();
-    
+
     // APPLY ANALOG FILTER TO MOD OSCILLATOR
     float modOsc_filteredSignal = modOsc_analogFilter.Process(modOsc_signal);
 
@@ -378,35 +417,55 @@ void AudioCallback(float **in, float **out, size_t size) {
     float modulatedComplexBasePitch = complexOsc_basePitch * pitchRatio;
     float complexOsc_freq = modulatedComplexBasePitch;
 
+    // Get envelope value once per sample
+    float envValue = env.Process(gateOpen);
+
+    // Determine the appropriate parameters for each channel based on LPG mode
+    float ch1_level, ch1_cutoffControl, ch2_level, ch2_cutoffControl;
+    
+    // For Channel 1 (complex oscillator)
+    if (lpgChannel1_mode == LPG_MODE_LP) {
+        ch1_level = 1.0f;  // Static level in LP mode
+        ch1_cutoffControl = lpgCh1_baseCutoff;  // Use cutoff control pot
+    } else {
+        ch1_level = complexOsc_level;  // Use level pot
+        ch1_cutoffControl = complexOsc_level;  // Use level for cutoff in non-LP modes
+    }
+    
+    // For Channel 2 (modulator oscillator)
+    if (lpgChannel2_mode == LPG_MODE_LP) {
+        ch2_level = 1.0f;  // Static level in LP mode
+        ch2_cutoffControl = lpgCh2_baseCutoff;  // Use cutoff control pot
+    } else {
+        ch2_level = modOsc_level;  // Use level pot
+        ch2_cutoffControl = modOsc_level;  // Use level for cutoff in non-LP modes
+    }
+
     // APPLY MODULATION BASED ON SELECTED TYPE
     if (useAmplitudeModulation) {
       // AMPLITUDE MODULATION (AM) - FIXED IMPLEMENTATION
       float amDepth = modOsc_modAmount * 0.5f;
-      
+
       // Reduced modulator level for AM mode (consistent in both cases)
-      float modulated_modOsc = modOsc_filteredSignal * modOsc_level * 0.85f;
+      float modulated_modOsc = modOsc_filteredSignal * ch2_level * 0.85f;
 
       // Only apply AM if depth is significant
       if (amDepth < 0.001f) {
         // No AM - just pass through complex oscillator
         complexOsc.SetFreq(complexOsc_freq);
         complexOscTri.SetFreq(complexOsc_freq);
-        
+
         float complexOsc_sineSignal = complexOsc.Process();
         float complexOsc_triSignal = complexOscTri.Process();
         float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
         float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
         float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
-        float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
+        float modulated_complexOsc = complexOsc_foldedSignal * ch1_level;
 
-        float envValue = env.Process(gateOpen);
-        modulated_complexOsc *= envValue;
-        modulated_modOsc *= envValue;
-
-        // APPLY LPG FILTERS BASED ON CURRENT MODE
-        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level);
-        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level);
+        // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth
+        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, ch1_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, ch2_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
         float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
         out[0][i] = oscillatorSum_signal;
@@ -414,14 +473,14 @@ void AudioCallback(float **in, float **out, size_t size) {
       } else {
         // Apply AM with proper level handling
         float amSignal = 1.0f + (amDepth * modOsc_filteredSignal);
-        
+
         // Clamp to prevent excessive amplification
         amSignal = fmaxf(fminf(amSignal, 2.0f), 0.0f);
-        
+
         // Set carrier frequency
         complexOsc.SetFreq(complexOsc_freq);
         complexOscTri.SetFreq(complexOsc_freq);
-        
+
         float complexOsc_sineSignal = complexOsc.Process();
         float complexOsc_triSignal = complexOscTri.Process();
         float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
@@ -429,27 +488,23 @@ void AudioCallback(float **in, float **out, size_t size) {
         float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
         // Apply AM
-        float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level * amSignal;
+        float modulated_complexOsc = complexOsc_foldedSignal * ch1_level * amSignal;
 
-        float envValue = env.Process(gateOpen);
-        modulated_complexOsc *= envValue;
-        modulated_modOsc *= envValue;
-
-        // APPLY LPG FILTERS BASED ON CURRENT MODE
-        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level);
-        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level);
+        // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth
+        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, ch1_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, ch2_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
         // OUTPUT SUMMATION
         float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
         out[0][i] = oscillatorSum_signal;
         out[1][i] = oscillatorSum_signal;
       }
-      
+
     } else {
       // FREQUENCY MODULATION (FM) - default (unchanged)
       // Full modulator level for FM mode
-      float modulated_modOsc = modOsc_filteredSignal * modOsc_level;
-      
+      float modulated_modOsc = modOsc_filteredSignal * ch2_level;
+
       float modulationDepth = modOsc_modAmount * 1.0f;
       float modulatorSignal = modOsc_filteredSignal * modulationDepth;
       float complexOsc_modulatedFreq = complexOsc_freq + modulatorSignal - 16.0f;
@@ -464,15 +519,11 @@ void AudioCallback(float **in, float **out, size_t size) {
       float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
       float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
 
-      float modulated_complexOsc = complexOsc_foldedSignal * complexOsc_level;
+      float modulated_complexOsc = complexOsc_foldedSignal * ch1_level;
 
-      float envValue = env.Process(gateOpen);
-      modulated_complexOsc *= envValue;
-      modulated_modOsc *= envValue;
-
-      // APPLY LPG FILTERS BASED ON CURRENT MODE
-      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level);
-      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level);
+      // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth
+      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, ch1_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, ch2_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
       float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
       out[0][i] = oscillatorSum_signal;
@@ -507,7 +558,7 @@ void setup() {
   digitalWrite(MUX1_S1, LOW);
   digitalWrite(MUX1_S2, LOW);
   digitalWrite(MUX1_S3, LOW);
-  
+
   digitalWrite(MUX2_S0, LOW);
   digitalWrite(MUX2_S1, LOW);
   digitalWrite(MUX2_S2, LOW);
@@ -556,7 +607,7 @@ void setup() {
   lpgChannel1_filter.Init(sample_rate);
   lpgChannel1_filter.SetFreq(15000.0f);
   lpgChannel1_filter.SetRes(0.0f);  // No resonance
-  
+
   lpgChannel2_filter.Init(sample_rate);
   lpgChannel2_filter.SetFreq(15000.0f);
   lpgChannel2_filter.SetRes(0.0f);  // No resonance
@@ -581,6 +632,14 @@ void setup() {
   complexOsc_foldAmount = 0.0f;
   complexOsc_level = 1.0f;
   modOsc_level = 1.0f;
+
+  // LP MODE CUTOFF INIT
+  lpgCh1_baseCutoff = 0.5f;
+  lpgCh2_baseCutoff = 0.5f;
+
+  // ENVELOPE MODULATION DEPTH INIT
+  envModDepth_ch1 = 1.0f;
+  envModDepth_ch2 = 1.0f;
 
   // ADSR INIT
   eg_attackTime = 0.1f;
@@ -609,6 +668,8 @@ void setup() {
   Serial.println("Use button 20 to toggle between FM and AM modulation");
   Serial.println("Current modulation: FM");
   Serial.println("LPG Channel 1: COMBI mode | LPG Channel 2: COMBI mode");
+  Serial.println("MUX2 C0: Env modulation depth for Ch1 | MUX2 C1: Env modulation depth for Ch2");
+  Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
 }
 
 void loop() {
@@ -621,26 +682,37 @@ void loop() {
     midiNoteActive = false;
   }
 
-  // POTENTIOMETER HANDLING - ALL FROM FIRST MUX (no changes to existing functionality)
+  // POTENTIOMETER HANDLING - ALL FROM FIRST MUX
   modOsc_pitch = readMux1Channel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true);
   modOsc_modAmount = readMux1Channel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
   complexOsc_basePitch = readMux1Channel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
   complexOsc_timbreAmount = readMux1Channel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);
   complexOsc_foldAmount = readMux1Channel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);
+  
+  // Always read the level pots, but they'll be used differently based on LPG mode
   complexOsc_level = readMux1Channel(COMPLEX_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);
   modOsc_level = readMux1Channel(MOD_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);
+  
+  // In LP mode, use the level pots as cutoff controls
+  if (lpgChannel1_mode == LPG_MODE_LP) {
+    lpgCh1_baseCutoff = complexOsc_level;
+  }
+  if (lpgChannel2_mode == LPG_MODE_LP) {
+    lpgCh2_baseCutoff = modOsc_level;
+  }
 
   eg_attackTime = readMux1Channel(ASD_ATTACK_CHANNEL, 0.002f, 10.0f, true);
   eg_decayTime = readMux1Channel(ASD_SUSTAIN_CHANNEL, 0.002f, 10.0f, true);
   eg_sustainLevel = 1.0f;
   eg_releaseTime = readMux1Channel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);
 
-  BPM = readMux1Channel(CLOCK_CHANNEL, 20.0f, 160.0f);
+  BPM = readMux1Channel(CLOCK_CHANNEL, 1.0f, 750.0f);
 
-  // READ SECOND MUX CHANNELS (for future use - currently just reading but not using the values)
-  // You can add functionality for these as needed
-  float mux2_ch0 = readMux2Channel(MUX2_CHANNEL_0, 0.0f, 1.0f);
-  float mux2_ch1 = readMux2Channel(MUX2_CHANNEL_1, 0.0f, 1.0f);
+  // READ ENVELOPE MODULATION DEPTH CONTROLS FROM SECOND MUX
+  envModDepth_ch1 = readMux2Channel(ENV_MOD_DEPTH_CH1, 0.0f, 1.0f);  // Channel 1 modulation depth
+  envModDepth_ch2 = readMux2Channel(ENV_MOD_DEPTH_CH2, 0.0f, 1.0f);  // Channel 2 modulation depth
+
+  // READ REMAINING SECOND MUX CHANNELS (for future use)
   float mux2_ch2 = readMux2Channel(MUX2_CHANNEL_2, 0.0f, 1.0f);
   float mux2_ch3 = readMux2Channel(MUX2_CHANNEL_3, 0.0f, 1.0f);
   float mux2_ch4 = readMux2Channel(MUX2_CHANNEL_4, 0.0f, 1.0f);
@@ -681,9 +753,9 @@ void loop() {
     lpgChannel1_mode = static_cast<LPGMode>((lpgChannel1_mode + 1) % 3);
     Serial.print("LPG Channel 1 mode: ");
     switch (lpgChannel1_mode) {
-      case LPG_MODE_COMBI: Serial.println("COMBI"); break;
-      case LPG_MODE_VCA: Serial.println("VCA"); break;
-      case LPG_MODE_LP: Serial.println("LP"); break;
+      case LPG_MODE_COMBI: Serial.println("COMBI (env controls cutoff+amp)"); break;
+      case LPG_MODE_VCA: Serial.println("VCA (env controls amplitude)"); break;
+      case LPG_MODE_LP: Serial.println("LP (env controls cutoff)"); break;
     }
   }
 
@@ -692,9 +764,9 @@ void loop() {
     lpgChannel2_mode = static_cast<LPGMode>((lpgChannel2_mode + 1) % 3);
     Serial.print("LPG Channel 2 mode: ");
     switch (lpgChannel2_mode) {
-      case LPG_MODE_COMBI: Serial.println("COMBI"); break;
-      case LPG_MODE_VCA: Serial.println("VCA"); break;
-      case LPG_MODE_LP: Serial.println("LP"); break;
+      case LPG_MODE_COMBI: Serial.println("COMBI (env controls cutoff+amp)"); break;
+      case LPG_MODE_VCA: Serial.println("VCA (env controls amplitude)"); break;
+      case LPG_MODE_LP: Serial.println("LP (env controls cutoff)"); break;
     }
   }
 
@@ -707,7 +779,7 @@ void loop() {
   readSequencerValues();
   updateSequencer();
 
-  // HANDLE ENV RELEASE 
+  // HANDLE ENV RELEASE
   float gateDurationMs = eg_decayTime * 1000.0f;
   if (gateDurationMs > STEP_DURATION_MS) {
     gateDurationMs = STEP_DURATION_MS;
@@ -716,7 +788,7 @@ void loop() {
   if (gateOpen && (millis() - stepStartTime) > gateDurationMs) {
     gateOpen = false;
   }
-  
+
   // DEBUG OUTPUT
   static unsigned long lastPrint = 0;
   if (millis() - lastPrint > 500) {
@@ -730,18 +802,30 @@ void loop() {
     Serial.print(BPM);
     Serial.print(" | MIDI CV: ");
     Serial.print(midiPitchCV);
-    Serial.print(" st");
+    Serial.print(" | EnvMod Ch1: ");
+    Serial.print(envModDepth_ch1);
+    Serial.print(" | EnvMod Ch2: ");
+    Serial.print(envModDepth_ch2);
     
+    // Show LP mode specific info
+    if (lpgChannel1_mode == LPG_MODE_LP) {
+      Serial.print(" | Ch1 Cutoff: ");
+      Serial.print(lpgCh1_baseCutoff);
+    }
+    if (lpgChannel2_mode == LPG_MODE_LP) {
+      Serial.print(" | Ch2 Cutoff: ");
+      Serial.print(lpgCh2_baseCutoff);
+    }
+
     // Show MIDI status
     if (midiNoteReceived) {
       Serial.print(" | Note: ");
       Serial.print(lastMidiNote);
       midiNoteReceived = false;
     }
-    
+
     Serial.println();
-    
+
     lastPrint = millis();
   }
-  
 }
