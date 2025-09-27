@@ -2,14 +2,21 @@
 #include <MIDI.h>
 //#include "buchla_lpg.h"
 
-// MUX PINS
-#define MUX_S0 0
-#define MUX_S1 1
-#define MUX_S2 2
-#define MUX_S3 3
-#define MUX_SIG A0  // MUX signal pin
+// MUX PINS - FIRST MUX
+#define MUX1_S0 0
+#define MUX1_S1 1
+#define MUX1_S2 2
+#define MUX1_S3 3
+#define MUX1_SIG A0  // MUX signal pin
 
-// MUX CHANNEL ASSIGNMENTS
+// MUX PINS - SECOND MUX
+#define MUX2_S0 4
+#define MUX2_S1 5
+#define MUX2_S2 6
+#define MUX2_S3 7
+#define MUX2_SIG A1  // Second MUX signal pin
+
+// MUX CHANNEL ASSIGNMENTS (FIRST MUX - keeping all existing pots on MUX1)
 #define MOD_OSC_PITCH_CHANNEL 0       // C0 - modOsc_pitch
 #define MOD_AMOUNT_CHANNEL 1          // C1 - modOsc_modAmount
 #define COMPLEX_OSC_PITCH_CHANNEL 2   // C2 - complexOsc_pitch
@@ -27,8 +34,29 @@
 #define ASD_DECAY_CHANNEL 14          // C14 - BUCHLA DECAY // RELEASE
 #define CLOCK_CHANNEL 15              // C15 - CLOCK
 
+// MUX CHANNEL ASSIGNMENTS (SECOND MUX - currently empty, ready for future use)
+// You can add new potentiometers to these channels as needed
+#define MUX2_CHANNEL_0 0
+#define MUX2_CHANNEL_1 1
+#define MUX2_CHANNEL_2 2
+#define MUX2_CHANNEL_3 3
+#define MUX2_CHANNEL_4 4
+#define MUX2_CHANNEL_5 5
+#define MUX2_CHANNEL_6 6
+#define MUX2_CHANNEL_7 7
+#define MUX2_CHANNEL_8 8
+#define MUX2_CHANNEL_9 9
+#define MUX2_CHANNEL_10 10
+#define MUX2_CHANNEL_11 11
+#define MUX2_CHANNEL_12 12
+#define MUX2_CHANNEL_13 13
+#define MUX2_CHANNEL_14 14
+#define MUX2_CHANNEL_15 15
+
 #define SEQUENCER_TOGGLE_BUTTON 19    // SEQ TOGGLE
 #define MODULATION_TOGGLE_BUTTON 20   // MODULATION TOGGLE
+#define LPG_CH1_TOGGLE_BUTTON 21   // LPG CHANNEL 1 TOGGLE
+#define LPG_CH2_TOGGLE_BUTTON 22   // LPG CHANNEL 2 TOGGLE
 
 // MIDI Settings
 #define MIDI_RX_PIN 30  // USART1 Rx (Digital pin 30)
@@ -36,12 +64,16 @@
 // DEFINE DAISYSEED
 DaisyHardware hw;
 
-//INIT OSCILLATORS, FILTER, AND WAVEFOLDER
+//INIT OSCILLATORS, FILTER
 static Oscillator complexOsc;         // PRIMARY COMPLEX OSC
 static Oscillator complexOscTri;      // SECONDARY COMPLEX OSC (triangle)
 static Oscillator modOsc;             // MODULATION OSC
 static MoogLadder complexOsc_analogFilter;  // FILTER - HIGH CUT AT 15kHz FOR "ANALOGUE" FEEL OF WAVEFORMS
 static MoogLadder modOsc_analogFilter;      // FILTER FOR MOD OSCILLATOR
+
+// INIT LPG
+static MoogLadder lpgChannel1_filter;      // FILTER FOR BUCHLA LPG CH1
+static MoogLadder lpgChannel2_filter;      // FILTER FOR BUCHLA LPG CH2
 
 // OSCILLATOR PARAMETER VARIABLES
 float complexOsc_basePitch;     // COMPLEX OSC BASE PITCH
@@ -52,12 +84,12 @@ float complexOsc_foldAmount;    // COMPLEX OSC WAVEFOLDING AMOUNT (0.0 = no fold
 float complexOsc_level;         // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
 float modOsc_level;             // MODULATION OSC LEVEL CONTROLl (0.0 to 1.0)
 
-// ADSR ENVELOPE VARIABLES
+// ADSR ENVELOPE VARIABLES & OBJECT
+Adsr env;               // ADSR envelope
 float eg_attackTime;    // ATTACK time in seconds
 float eg_decayTime;     // DECAY time in seconds (will control gate duration)
 float eg_sustainLevel;  // SUSTAIN level (0.0 to 1.0)
 float eg_releaseTime;   // RELEASE time in seconds
-Adsr env;               // ADSR envelope
 
 // ENVELOPE STATE VARIABLES
 bool gateOpen = false;           // Whether the envelope gate is open
@@ -80,6 +112,8 @@ bool useAmplitudeModulation = false;  // false = FM, true = AM
 // BUTTONS
 Switch sequencerToggle;   // SEQUENCER CLOCK TOGGLE
 Switch modulationToggle;  // MODULATION TYPE TOGGLE
+Switch lpgToggle_channel1;// LPG CH1 MODE TOGGLE 
+Switch lpgToggle_channel2;// LPG CH2 MODE TOGGLE 
 
 // MIDI Object
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
@@ -152,19 +186,40 @@ float wavefolder(float input, float amount) {
   return (input * (1.0f - wetDryMix)) + ((scaledInput * wetDryMix) * 0.25);
 }
 
-// MUX
-void setMuxChannel(int channel) {
-  digitalWrite(MUX_S0, channel & 0x01);
-  digitalWrite(MUX_S1, channel & 0x02);
-  digitalWrite(MUX_S2, channel & 0x04);
-  digitalWrite(MUX_S3, channel & 0x08);
+// MUX FUNCTIONS
+void setMux1Channel(int channel) {
+  digitalWrite(MUX1_S0, channel & 0x01);
+  digitalWrite(MUX1_S1, channel & 0x02);
+  digitalWrite(MUX1_S2, channel & 0x04);
+  digitalWrite(MUX1_S3, channel & 0x08);
 }
 
-float readMuxChannel(int channel, float minVal, float maxVal, bool logarithmic = false) {
-  setMuxChannel(channel);
+void setMux2Channel(int channel) {
+  digitalWrite(MUX2_S0, channel & 0x01);
+  digitalWrite(MUX2_S1, channel & 0x02);
+  digitalWrite(MUX2_S2, channel & 0x04);
+  digitalWrite(MUX2_S3, channel & 0x08);
+}
+
+float readMux1Channel(int channel, float minVal, float maxVal, bool logarithmic = false) {
+  setMux1Channel(channel);
   delayMicroseconds(10);
 
-  int rawValue = analogRead(MUX_SIG);
+  int rawValue = analogRead(MUX1_SIG);
+  float normalizedValue = rawValue / 65535.0f;
+
+  if (logarithmic) {
+    return linearToLog(normalizedValue, minVal, maxVal);
+  } else {
+    return minVal + (maxVal - minVal) * normalizedValue;
+  }
+}
+
+float readMux2Channel(int channel, float minVal, float maxVal, bool logarithmic = false) {
+  setMux2Channel(channel);
+  delayMicroseconds(10);
+
+  int rawValue = analogRead(MUX2_SIG);
   float normalizedValue = rawValue / 65535.0f;
 
   if (logarithmic) {
@@ -197,11 +252,11 @@ void advanceStep() {
 
 // Read all sequencer potentiometers
 void readSequencerValues() {
-  sequencerValues[0] = readMuxChannel(SEQ_STEP_1_CHANNEL, 0.0f, 48.0f);
-  sequencerValues[1] = readMuxChannel(SEQ_STEP_2_CHANNEL, 0.0f, 48.0f);
-  sequencerValues[2] = readMuxChannel(SEQ_STEP_3_CHANNEL, 0.0f, 48.0f);
-  sequencerValues[3] = readMuxChannel(SEQ_STEP_4_CHANNEL, 0.0f, 48.0f);
-  sequencerValues[4] = readMuxChannel(SEQ_STEP_5_CHANNEL, 0.0f, 48.0f);
+  sequencerValues[0] = readMux1Channel(SEQ_STEP_1_CHANNEL, 0.0f, 48.0f);
+  sequencerValues[1] = readMux1Channel(SEQ_STEP_2_CHANNEL, 0.0f, 48.0f);
+  sequencerValues[2] = readMux1Channel(SEQ_STEP_3_CHANNEL, 0.0f, 48.0f);
+  sequencerValues[3] = readMux1Channel(SEQ_STEP_4_CHANNEL, 0.0f, 48.0f);
+  sequencerValues[4] = readMux1Channel(SEQ_STEP_5_CHANNEL, 0.0f, 48.0f);
 }
 
 // MIDI Note On handler
@@ -296,7 +351,18 @@ void AudioCallback(float **in, float **out, size_t size) {
         modulated_complexOsc *= envValue;
         modulated_modOsc *= envValue;
 
-        float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+        // APPLY LPG FILTERS AFTER MODULATION
+        // Calculate filter cutoff based on oscillator levels (logarithmic from 500Hz to 15kHz)
+        float lpg1_cutoff = 500.0f + (complexOsc_level * complexOsc_level * 19500.0f);
+        float lpg2_cutoff = 500.0f + (modOsc_level * modOsc_level * 19500.0f);
+        
+        lpgChannel1_filter.SetFreq(lpg1_cutoff);
+        lpgChannel2_filter.SetFreq(lpg2_cutoff);
+        
+        float lpg1_output = lpgChannel1_filter.Process(modulated_complexOsc);
+        float lpg2_output = lpgChannel2_filter.Process(modulated_modOsc);
+
+        float oscillatorSum_signal = lpg1_output + lpg2_output;
         out[0][i] = oscillatorSum_signal;
         out[1][i] = oscillatorSum_signal;
       } else {
@@ -323,7 +389,19 @@ void AudioCallback(float **in, float **out, size_t size) {
         modulated_complexOsc *= envValue;
         modulated_modOsc *= envValue;
 
-        float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+        // APPLY LPG FILTERS AFTER MODULATION
+        // Calculate filter cutoff based on oscillator levels (logarithmic from 500Hz to 15kHz)
+        float lpg1_cutoff = 500.0f + (complexOsc_level * complexOsc_level * 19500.0f);
+        float lpg2_cutoff = 500.0f + (modOsc_level * modOsc_level * 19500.0f);
+        
+        lpgChannel1_filter.SetFreq(lpg1_cutoff);
+        lpgChannel2_filter.SetFreq(lpg2_cutoff);
+        
+        float lpg1_output = lpgChannel1_filter.Process(modulated_complexOsc);
+        float lpg2_output = lpgChannel2_filter.Process(modulated_modOsc);
+
+        // OUTPUT SUMMATION
+        float oscillatorSum_signal = lpg1_output + lpg2_output;
         out[0][i] = oscillatorSum_signal;
         out[1][i] = oscillatorSum_signal;
       }
@@ -353,13 +431,23 @@ void AudioCallback(float **in, float **out, size_t size) {
       modulated_complexOsc *= envValue;
       modulated_modOsc *= envValue;
 
-      float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+      // APPLY LPG FILTERS AFTER MODULATION
+      // Calculate filter cutoff based on oscillator levels (logarithmic from 500Hz to 15kHz)
+      float lpg1_cutoff = 500.0f + (complexOsc_level * complexOsc_level * 14500.0f);
+      float lpg2_cutoff = 500.0f + (modOsc_level * modOsc_level * 14500.0f);
+      
+      lpgChannel1_filter.SetFreq(lpg1_cutoff);
+      lpgChannel2_filter.SetFreq(lpg2_cutoff);
+      
+      float lpg1_output = lpgChannel1_filter.Process(modulated_complexOsc);
+      float lpg2_output = lpgChannel2_filter.Process(modulated_modOsc);
+
+      float oscillatorSum_signal = lpg1_output + lpg2_output;
       out[0][i] = oscillatorSum_signal;
       out[1][i] = oscillatorSum_signal;
     }
   }
 }
-
 
 void setup() {
   Serial.begin(115200);  // Increased baud rate for faster debugging
@@ -367,17 +455,31 @@ void setup() {
   // BUTTON INIT - Fixed the modulationToggle pin assignment
   sequencerToggle.Init(1000, true, SEQUENCER_TOGGLE_BUTTON, INPUT_PULLUP);
   modulationToggle.Init(1000, true, MODULATION_TOGGLE_BUTTON, INPUT_PULLUP);
+  lpgToggle_channel1.Init(1000, true, LPG_CH1_TOGGLE_BUTTON, INPUT_PULLUP);
+  lpgToggle_channel2.Init(1000, true, LPG_CH2_TOGGLE_BUTTON, INPUT_PULLUP);
 
   // INIT MUX_1 PINS
-  pinMode(MUX_S0, OUTPUT);
-  pinMode(MUX_S1, OUTPUT);
-  pinMode(MUX_S2, OUTPUT);
-  pinMode(MUX_S3, OUTPUT);
+  pinMode(MUX1_S0, OUTPUT);
+  pinMode(MUX1_S1, OUTPUT);
+  pinMode(MUX1_S2, OUTPUT);
+  pinMode(MUX1_S3, OUTPUT);
 
-  digitalWrite(MUX_S0, LOW);
-  digitalWrite(MUX_S1, LOW);
-  digitalWrite(MUX_S2, LOW);
-  digitalWrite(MUX_S3, LOW);
+  // INIT MUX_2 PINS
+  pinMode(MUX2_S0, OUTPUT);
+  pinMode(MUX2_S1, OUTPUT);
+  pinMode(MUX2_S2, OUTPUT);
+  pinMode(MUX2_S3, OUTPUT);
+
+  // Set both MUXes to initial state
+  digitalWrite(MUX1_S0, LOW);
+  digitalWrite(MUX1_S1, LOW);
+  digitalWrite(MUX1_S2, LOW);
+  digitalWrite(MUX1_S3, LOW);
+  
+  digitalWrite(MUX2_S0, LOW);
+  digitalWrite(MUX2_S1, LOW);
+  digitalWrite(MUX2_S2, LOW);
+  digitalWrite(MUX2_S3, LOW);
 
   // INIT 16-BIT ADC
   analogReadResolution(16);
@@ -417,6 +519,15 @@ void setup() {
   modOsc_analogFilter.Init(sample_rate);
   modOsc_analogFilter.SetFreq(15000.0f);
   modOsc_analogFilter.SetRes(0.3f);
+
+  // INIT LPG FILTERS
+  lpgChannel1_filter.Init(sample_rate);
+  lpgChannel1_filter.SetFreq(15000.0f);
+  lpgChannel1_filter.SetRes(0.0f);  // No resonance
+  
+  lpgChannel2_filter.Init(sample_rate);
+  lpgChannel2_filter.SetFreq(15000.0f);
+  lpgChannel2_filter.SetRes(0.0f);  // No resonance
 
   // INIT ADSR ENVELOPE
   env.Init(sample_rate);
@@ -461,10 +572,11 @@ void setup() {
   // Start audio callback
   DAISY.begin(AudioCallback);
 
-  Serial.println("Weasel Initialised with MIDI functionality");
+  Serial.println("Weasel Initialised with MIDI functionality and second MUX");
   Serial.println("Use button 19 to toggle between internal clock and MIDI note triggers");
   Serial.println("Use button 20 to toggle between FM and AM modulation");
   Serial.println("Current modulation: FM");
+  Serial.println("LPG filters initialized in COMBI mode (15kHz cutoff, no resonance)");
 }
 
 void loop() {
@@ -477,25 +589,46 @@ void loop() {
     midiNoteActive = false;
   }
 
-  // POTENTIOMETER HANDLING
-  modOsc_pitch = readMuxChannel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true);
-  modOsc_modAmount = readMuxChannel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
-  complexOsc_basePitch = readMuxChannel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
-  complexOsc_timbreAmount = readMuxChannel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);
-  complexOsc_foldAmount = readMuxChannel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);
-  complexOsc_level = readMuxChannel(COMPLEX_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);
-  modOsc_level = readMuxChannel(MOD_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);
+  // POTENTIOMETER HANDLING - ALL FROM FIRST MUX (no changes to existing functionality)
+  modOsc_pitch = readMux1Channel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true);
+  modOsc_modAmount = readMux1Channel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
+  complexOsc_basePitch = readMux1Channel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
+  complexOsc_timbreAmount = readMux1Channel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);
+  complexOsc_foldAmount = readMux1Channel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);
+  complexOsc_level = readMux1Channel(COMPLEX_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);
+  modOsc_level = readMux1Channel(MOD_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);
 
-  eg_attackTime = readMuxChannel(ASD_ATTACK_CHANNEL, 0.002f, 10.0f, true);
-  eg_decayTime = readMuxChannel(ASD_SUSTAIN_CHANNEL, 0.002f, 10.0f, true);
+  eg_attackTime = readMux1Channel(ASD_ATTACK_CHANNEL, 0.002f, 10.0f, true);
+  eg_decayTime = readMux1Channel(ASD_SUSTAIN_CHANNEL, 0.002f, 10.0f, true);
   eg_sustainLevel = 1.0f;
-  eg_releaseTime = readMuxChannel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);
+  eg_releaseTime = readMux1Channel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);
 
-  BPM = readMuxChannel(CLOCK_CHANNEL, 20.0f, 160.0f);
+  BPM = readMux1Channel(CLOCK_CHANNEL, 20.0f, 160.0f);
+
+  // READ SECOND MUX CHANNELS (for future use - currently just reading but not using the values)
+  // You can add functionality for these as needed
+  float mux2_ch0 = readMux2Channel(MUX2_CHANNEL_0, 0.0f, 1.0f);
+  float mux2_ch1 = readMux2Channel(MUX2_CHANNEL_1, 0.0f, 1.0f);
+  float mux2_ch2 = readMux2Channel(MUX2_CHANNEL_2, 0.0f, 1.0f);
+  float mux2_ch3 = readMux2Channel(MUX2_CHANNEL_3, 0.0f, 1.0f);
+  float mux2_ch4 = readMux2Channel(MUX2_CHANNEL_4, 0.0f, 1.0f);
+  float mux2_ch5 = readMux2Channel(MUX2_CHANNEL_5, 0.0f, 1.0f);
+  float mux2_ch6 = readMux2Channel(MUX2_CHANNEL_6, 0.0f, 1.0f);
+  float mux2_ch7 = readMux2Channel(MUX2_CHANNEL_7, 0.0f, 1.0f);
+  float mux2_ch8 = readMux2Channel(MUX2_CHANNEL_8, 0.0f, 1.0f);
+  float mux2_ch9 = readMux2Channel(MUX2_CHANNEL_9, 0.0f, 1.0f);
+  float mux2_ch10 = readMux2Channel(MUX2_CHANNEL_10, 0.0f, 1.0f);
+  float mux2_ch11 = readMux2Channel(MUX2_CHANNEL_11, 0.0f, 1.0f);
+  float mux2_ch12 = readMux2Channel(MUX2_CHANNEL_12, 0.0f, 1.0f);
+  float mux2_ch13 = readMux2Channel(MUX2_CHANNEL_13, 0.0f, 1.0f);
+  float mux2_ch14 = readMux2Channel(MUX2_CHANNEL_14, 0.0f, 1.0f);
+  float mux2_ch15 = readMux2Channel(MUX2_CHANNEL_15, 0.0f, 1.0f);
 
   // BUTTON HANDLING
   sequencerToggle.Debounce();
   modulationToggle.Debounce();
+  lpgToggle_channel1.Debounce();
+  lpgToggle_channel2.Debounce();
 
   // TOGGLE MIDI SEQUENCER TRIGGER
   if (sequencerToggle.RisingEdge()) {
