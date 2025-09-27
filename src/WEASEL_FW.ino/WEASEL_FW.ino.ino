@@ -61,6 +61,13 @@
 // MIDI Settings
 #define MIDI_RX_PIN 30  // USART1 Rx (Digital pin 30)
 
+// LPG Mode Definitions
+enum LPGMode {
+  LPG_MODE_COMBI = 0,
+  LPG_MODE_VCA = 1,
+  LPG_MODE_LP = 2
+};
+
 // DEFINE DAISYSEED
 DaisyHardware hw;
 
@@ -108,6 +115,10 @@ bool useMidiClock = false;  // false = internal clock, true = MIDI note triggers
 
 // MODULATION TYPE CONTROL
 bool useAmplitudeModulation = false;  // false = FM, true = AM
+
+// LPG MODE CONTROL
+LPGMode lpgChannel1_mode = LPG_MODE_COMBI;  // Default to COMBI mode
+LPGMode lpgChannel2_mode = LPG_MODE_COMBI;  // Default to COMBI mode
 
 // BUTTONS
 Switch sequencerToggle;   // SEQUENCER CLOCK TOGGLE
@@ -184,6 +195,48 @@ float wavefolder(float input, float amount) {
   }
 
   return (input * (1.0f - wetDryMix)) + ((scaledInput * wetDryMix) * 0.25);
+}
+
+// Function to apply LPG processing based on mode
+void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLevel) {
+  switch (mode) {
+    case LPG_MODE_COMBI:
+      // COMBI mode: frequency range 500Hz to 20kHz with no resonance
+      filter.SetFreq(500.0f + (channelLevel * channelLevel * 19500.0f));
+      filter.SetRes(0.0f);
+      signal = filter.Process(signal);
+      break;
+      
+    case LPG_MODE_VCA:
+      // VCA mode: filter slightly active, frequency range 16kHz to 20kHz with no resonance
+      filter.SetFreq(16000.0f + (channelLevel * 4000.0f));
+      filter.SetRes(0.0f);
+      signal = filter.Process(signal);
+      break;
+      
+    case LPG_MODE_LP:
+      // LP mode: safe implementation with instability protection
+      float cutoff = 20.0f + (channelLevel * 19980.0f); // 20Hz to 20kHz
+      filter.SetFreq(cutoff);
+      
+      // Safe resonance curve
+      float resonance = pow(channelLevel, 1.8f) * 0.9f;
+      resonance = fminf(resonance, 0.92f);
+      
+      // Soft clipping for high resonance
+      if (resonance > 0.85f) {
+        resonance = 0.85f + (resonance - 0.85f) * 0.3f;
+      }
+      
+      filter.SetRes(resonance);
+      
+      // Input gain compensation
+      float safeGain = 1.0f / (1.0f + resonance * 0.5f);
+      signal *= safeGain;
+      
+      signal = filter.Process(signal);
+      break;
+  }
 }
 
 // MUX FUNCTIONS
@@ -351,18 +404,11 @@ void AudioCallback(float **in, float **out, size_t size) {
         modulated_complexOsc *= envValue;
         modulated_modOsc *= envValue;
 
-        // APPLY LPG FILTERS AFTER MODULATION
-        // Calculate filter cutoff based on oscillator levels (logarithmic from 500Hz to 15kHz)
-        float lpg1_cutoff = 500.0f + (complexOsc_level * complexOsc_level * 19500.0f);
-        float lpg2_cutoff = 500.0f + (modOsc_level * modOsc_level * 19500.0f);
-        
-        lpgChannel1_filter.SetFreq(lpg1_cutoff);
-        lpgChannel2_filter.SetFreq(lpg2_cutoff);
-        
-        float lpg1_output = lpgChannel1_filter.Process(modulated_complexOsc);
-        float lpg2_output = lpgChannel2_filter.Process(modulated_modOsc);
+        // APPLY LPG FILTERS BASED ON CURRENT MODE
+        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level);
+        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level);
 
-        float oscillatorSum_signal = lpg1_output + lpg2_output;
+        float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
         out[0][i] = oscillatorSum_signal;
         out[1][i] = oscillatorSum_signal;
       } else {
@@ -389,19 +435,12 @@ void AudioCallback(float **in, float **out, size_t size) {
         modulated_complexOsc *= envValue;
         modulated_modOsc *= envValue;
 
-        // APPLY LPG FILTERS AFTER MODULATION
-        // Calculate filter cutoff based on oscillator levels (logarithmic from 500Hz to 15kHz)
-        float lpg1_cutoff = 500.0f + (complexOsc_level * complexOsc_level * 19500.0f);
-        float lpg2_cutoff = 500.0f + (modOsc_level * modOsc_level * 19500.0f);
-        
-        lpgChannel1_filter.SetFreq(lpg1_cutoff);
-        lpgChannel2_filter.SetFreq(lpg2_cutoff);
-        
-        float lpg1_output = lpgChannel1_filter.Process(modulated_complexOsc);
-        float lpg2_output = lpgChannel2_filter.Process(modulated_modOsc);
+        // APPLY LPG FILTERS BASED ON CURRENT MODE
+        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level);
+        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level);
 
         // OUTPUT SUMMATION
-        float oscillatorSum_signal = lpg1_output + lpg2_output;
+        float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
         out[0][i] = oscillatorSum_signal;
         out[1][i] = oscillatorSum_signal;
       }
@@ -431,18 +470,11 @@ void AudioCallback(float **in, float **out, size_t size) {
       modulated_complexOsc *= envValue;
       modulated_modOsc *= envValue;
 
-      // APPLY LPG FILTERS AFTER MODULATION
-      // Calculate filter cutoff based on oscillator levels (logarithmic from 500Hz to 15kHz)
-      float lpg1_cutoff = 500.0f + (complexOsc_level * complexOsc_level * 14500.0f);
-      float lpg2_cutoff = 500.0f + (modOsc_level * modOsc_level * 14500.0f);
-      
-      lpgChannel1_filter.SetFreq(lpg1_cutoff);
-      lpgChannel2_filter.SetFreq(lpg2_cutoff);
-      
-      float lpg1_output = lpgChannel1_filter.Process(modulated_complexOsc);
-      float lpg2_output = lpgChannel2_filter.Process(modulated_modOsc);
+      // APPLY LPG FILTERS BASED ON CURRENT MODE
+      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level);
+      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level);
 
-      float oscillatorSum_signal = lpg1_output + lpg2_output;
+      float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
       out[0][i] = oscillatorSum_signal;
       out[1][i] = oscillatorSum_signal;
     }
@@ -576,7 +608,7 @@ void setup() {
   Serial.println("Use button 19 to toggle between internal clock and MIDI note triggers");
   Serial.println("Use button 20 to toggle between FM and AM modulation");
   Serial.println("Current modulation: FM");
-  Serial.println("LPG filters initialized in COMBI mode (15kHz cutoff, no resonance)");
+  Serial.println("LPG Channel 1: COMBI mode | LPG Channel 2: COMBI mode");
 }
 
 void loop() {
@@ -642,6 +674,28 @@ void loop() {
     useAmplitudeModulation = !useAmplitudeModulation;
     Serial.print("Modulation type: ");
     Serial.println(useAmplitudeModulation ? "AM (Amplitude Modulation)" : "FM (Frequency Modulation)");
+  }
+
+  // TOGGLE LPG CHANNEL 1 MODE
+  if (lpgToggle_channel1.RisingEdge()) {
+    lpgChannel1_mode = static_cast<LPGMode>((lpgChannel1_mode + 1) % 3);
+    Serial.print("LPG Channel 1 mode: ");
+    switch (lpgChannel1_mode) {
+      case LPG_MODE_COMBI: Serial.println("COMBI"); break;
+      case LPG_MODE_VCA: Serial.println("VCA"); break;
+      case LPG_MODE_LP: Serial.println("LP"); break;
+    }
+  }
+
+  // TOGGLE LPG CHANNEL 2 MODE
+  if (lpgToggle_channel2.RisingEdge()) {
+    lpgChannel2_mode = static_cast<LPGMode>((lpgChannel2_mode + 1) % 3);
+    Serial.print("LPG Channel 2 mode: ");
+    switch (lpgChannel2_mode) {
+      case LPG_MODE_COMBI: Serial.println("COMBI"); break;
+      case LPG_MODE_VCA: Serial.println("VCA"); break;
+      case LPG_MODE_LP: Serial.println("LP"); break;
+    }
   }
 
   // ADR PARAMETERS
