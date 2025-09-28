@@ -442,7 +442,7 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // For Channel 1 (complex oscillator)
     if (lpgChannel1_mode == LPG_MODE_LP) {
-      ch1_level = 1.0f;                       // Static level in LP mode
+      ch1_level = 0.3f;                       // Reduced static level in LP mode to match other modes
       ch1_cutoffControl = lpgCh1_baseCutoff;  // Use cutoff control pot
     } else if (lpgChannel1_mode == LPG_MODE_VCA || lpgChannel1_mode == LPG_MODE_COMBI) {
       ch1_level = 1.0f;                      // Use full level in VCA/COMBI mode - level controlled by LPG
@@ -454,7 +454,7 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // For Channel 2 (modulator oscillator)
     if (lpgChannel2_mode == LPG_MODE_LP) {
-      ch2_level = 1.0f;                       // Static level in LP mode
+      ch2_level = 0.3f;                       // Reduced static level in LP mode to match other modes
       ch2_cutoffControl = lpgCh2_baseCutoff;  // Use cutoff control pot
     } else if (lpgChannel2_mode == LPG_MODE_VCA || lpgChannel2_mode == LPG_MODE_COMBI) {
       ch2_level = 1.0f;                  // Use full level in VCA/COMBI mode - level controlled by LPG
