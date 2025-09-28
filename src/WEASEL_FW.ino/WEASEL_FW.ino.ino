@@ -206,76 +206,93 @@ float wavefolder(float input, float amount) {
 
 // Function to apply LPG processing based on mode with envelope modulation depth
 void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLevel, float baseCutoffControl, float envValue, float modDepth) {
-    float outputGain = 1.0f;
-    
-    // Apply modulation depth to envelope value
-    // modDepth = 0.0: no envelope effect, modDepth = 1.0: full envelope effect
-    float modulatedEnv = envValue * modDepth;
-    
-    switch (mode) {
-        case LPG_MODE_COMBI: {
-            // COMBI mode: envelope controls BOTH cutoff AND amplitude with modulation depth
-            // Base cutoff determined by channel level (20Hz to 20kHz)
-            float baseCutoff = 20.0f + (channelLevel * 19980.0f);
-            
-            // Envelope opens the filter from base cutoff up to 20kHz
-            float combiCutoff = baseCutoff + ((20000.0f - baseCutoff) * modulatedEnv);
-            filter.SetFreq(fminf(combiCutoff, 20000.0f));
-            filter.SetRes(0.0f);
-            
-            // Apply amplitude modulation from envelope with modulation depth
-            float amplitudeMod = 1.0f - modDepth + modulatedEnv;
-            signal *= fmaxf(amplitudeMod, 0.0f); // Ensure non-negative
-            
-            outputGain = 1.0f;
-            signal = filter.Process(signal) * outputGain;
-            break;
+  float outputGain = 1.0f;
+
+  // Apply modulation depth to envelope value
+  // modDepth = 0.0: no envelope effect, modDepth = 1.0: full envelope effect
+  float modulatedEnv = envValue * modDepth;
+
+  switch (mode) {
+    case LPG_MODE_COMBI:
+      {
+        // COMBI mode: MUX1 C5/C6 control base level AND base cutoff
+        // MUX2 C0/C1 control envelope modulation for BOTH level AND cutoff
+
+        // Calculate final level: baseLevel + envelope modulation (same as VCA mode)
+        float baseLevel = channelLevel;  // From MUX1 C5/C6
+        float modulatedLevel = baseLevel + ((1.0f - baseLevel) * modulatedEnv);
+
+        // Apply the level to the signal
+        signal *= modulatedLevel;
+
+        // Base cutoff determined by channel level (20Hz to 20kHz)
+        float baseCutoff = 20.0f + (channelLevel * 17980.0f);
+
+        // Envelope opens the filter from base cutoff up to 20kHz
+        float combiCutoff = baseCutoff + ((18000.0f - baseCutoff) * modulatedEnv);
+        filter.SetFreq(fminf(combiCutoff, 18000.0f));
+        filter.SetRes(0.0f);
+
+        outputGain = 1.0f;
+        signal = filter.Process(signal) * outputGain;
+        break;
+      }
+
+    case LPG_MODE_VCA:
+      {
+        // VCA mode: MUX1 C5/C6 control base level, MUX2 C0/C1 control envelope modulation amount
+
+        // Calculate final level: baseLevel + envelope modulation
+        float baseLevel = channelLevel;  // From MUX1 C5/C6
+        float modulatedLevel = baseLevel + ((1.0f - baseLevel) * modulatedEnv);
+
+        // Apply the level to the signal
+        signal *= modulatedLevel;
+
+        // Filter cutoff increases with oscillator level (Buchla characteristic)
+        float baseCutoff = 1200.0f + (channelLevel * 17800.0f);
+
+        // Envelope also opens the filter slightly for timbral variation
+        float vcaCutoff = baseCutoff + ((19000.0f - baseCutoff) * modulatedEnv * 0.5f);
+        filter.SetFreq(fminf(vcaCutoff, 19000.0f));
+        filter.SetRes(0.0f);
+
+        outputGain = 1.0f;
+        signal = filter.Process(signal) * outputGain;
+        break;
+      }
+
+    case LPG_MODE_LP:
+      {
+        // LP mode: envelope controls ONLY the filter cutoff with modulation depth
+        // Base cutoff determined by baseCutoffControl parameter (20Hz to 18kHz)
+        float baseCutoff = 20.0f + (baseCutoffControl * 17980.0f);
+
+        // Envelope opens the filter from base cutoff up to 18kHz
+        float lpCutoff = baseCutoff + ((18000.0f - baseCutoff) * modulatedEnv);
+        filter.SetFreq(fminf(lpCutoff, 18000.0f));
+
+        // Safe resonance curve based on baseCutoffControl only (not envelope)
+        float resonance = pow(baseCutoffControl, 1.8f) * 0.9f;
+        resonance = fminf(resonance, 0.92f);
+
+        if (resonance > 0.85f) {
+          resonance = 0.85f + (resonance - 0.85f) * 0.3f;
         }
-            
-        case LPG_MODE_VCA: {
-            // VCA mode: filter wide open, envelope controls ONLY amplitude with modulation depth
-            filter.SetFreq(20000.0f); // Filter wide open
-            filter.SetRes(0.0f);
-            
-            // Apply amplitude modulation from envelope with modulation depth
-            float amplitudeMod = 1.0f - modDepth + modulatedEnv;
-            signal *= fmaxf(amplitudeMod, 0.0f); // Ensure non-negative
-            
-            outputGain = 1.0f;
-            signal = filter.Process(signal) * outputGain;
-            break;
-        }
-            
-        case LPG_MODE_LP: {
-            // LP mode: envelope controls ONLY the filter cutoff with modulation depth
-            // Base cutoff determined by baseCutoffControl parameter (20Hz to 20kHz)
-            float baseCutoff = 20.0f + (baseCutoffControl * 19980.0f);
-            
-            // Envelope opens the filter from base cutoff up to 20kHz
-            float lpCutoff = baseCutoff + ((20000.0f - baseCutoff) * modulatedEnv);
-            filter.SetFreq(fminf(lpCutoff, 20000.0f));
-            
-            // Safe resonance curve based on baseCutoffControl only (not envelope)
-            float resonance = pow(baseCutoffControl, 1.8f) * 0.9f;
-            resonance = fminf(resonance, 0.92f);
-            
-            if (resonance > 0.85f) {
-                resonance = 0.85f + (resonance - 0.85f) * 0.3f;
-            }
-            
-            filter.SetRes(resonance);
-            
-            // Input gain compensation
-            float safeGain = 1.0f / (1.0f + resonance * 0.5f);
-            signal *= safeGain;
-            
-            // Boost for LP mode
-            outputGain = 2.5f + (resonance * 3.0f);
-            
-            signal = filter.Process(signal) * outputGain;
-            break;
-        }
-    }
+
+        filter.SetRes(resonance);
+
+        // Input gain compensation
+        float safeGain = 1.0f / (1.0f + resonance * 0.5f);
+        signal *= safeGain;
+
+        // Boost for LP mode
+        outputGain = 2.5f + (resonance * 3.0f);
+
+        signal = filter.Process(signal) * outputGain;
+        break;
+      }
+  }
 }
 
 // MUX FUNCTIONS
@@ -422,23 +439,29 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // Determine the appropriate parameters for each channel based on LPG mode
     float ch1_level, ch1_cutoffControl, ch2_level, ch2_cutoffControl;
-    
+
     // For Channel 1 (complex oscillator)
     if (lpgChannel1_mode == LPG_MODE_LP) {
-        ch1_level = 1.0f;  // Static level in LP mode
-        ch1_cutoffControl = lpgCh1_baseCutoff;  // Use cutoff control pot
+      ch1_level = 1.0f;                       // Static level in LP mode
+      ch1_cutoffControl = lpgCh1_baseCutoff;  // Use cutoff control pot
+    } else if (lpgChannel1_mode == LPG_MODE_VCA || lpgChannel1_mode == LPG_MODE_COMBI) {
+      ch1_level = 1.0f;                      // Use full level in VCA/COMBI mode - level controlled by LPG
+      ch1_cutoffControl = complexOsc_level;  // Use level pot for cutoff control
     } else {
-        ch1_level = complexOsc_level;  // Use level pot
-        ch1_cutoffControl = complexOsc_level;  // Use level for cutoff in non-LP modes
+      ch1_level = complexOsc_level;          // Use level pot (for any other modes)
+      ch1_cutoffControl = complexOsc_level;  // Use level for cutoff
     }
-    
+
     // For Channel 2 (modulator oscillator)
     if (lpgChannel2_mode == LPG_MODE_LP) {
-        ch2_level = 1.0f;  // Static level in LP mode
-        ch2_cutoffControl = lpgCh2_baseCutoff;  // Use cutoff control pot
+      ch2_level = 1.0f;                       // Static level in LP mode
+      ch2_cutoffControl = lpgCh2_baseCutoff;  // Use cutoff control pot
+    } else if (lpgChannel2_mode == LPG_MODE_VCA || lpgChannel2_mode == LPG_MODE_COMBI) {
+      ch2_level = 1.0f;                  // Use full level in VCA/COMBI mode - level controlled by LPG
+      ch2_cutoffControl = modOsc_level;  // Use level pot for cutoff control
     } else {
-        ch2_level = modOsc_level;  // Use level pot
-        ch2_cutoffControl = modOsc_level;  // Use level for cutoff in non-LP modes
+      ch2_level = modOsc_level;          // Use level pot (for any other modes)
+      ch2_cutoffControl = modOsc_level;  // Use level for cutoff
     }
 
     // APPLY MODULATION BASED ON SELECTED TYPE
@@ -464,8 +487,8 @@ void AudioCallback(float** in, float** out, size_t size) {
         float modulated_complexOsc = complexOsc_foldedSignal * ch1_level;
 
         // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth
-        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, ch1_level, ch1_cutoffControl, envValue, envModDepth_ch1);
-        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, ch2_level, ch2_cutoffControl, envValue, envModDepth_ch2);
+        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
         float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
         out[0][i] = oscillatorSum_signal;
@@ -491,8 +514,8 @@ void AudioCallback(float** in, float** out, size_t size) {
         float modulated_complexOsc = complexOsc_foldedSignal * ch1_level * amSignal;
 
         // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth
-        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, ch1_level, ch1_cutoffControl, envValue, envModDepth_ch1);
-        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, ch2_level, ch2_cutoffControl, envValue, envModDepth_ch2);
+        processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+        processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
         // OUTPUT SUMMATION
         float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
@@ -522,8 +545,8 @@ void AudioCallback(float** in, float** out, size_t size) {
       float modulated_complexOsc = complexOsc_foldedSignal * ch1_level;
 
       // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth
-      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, ch1_level, ch1_cutoffControl, envValue, envModDepth_ch1);
-      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, ch2_level, ch2_cutoffControl, envValue, envModDepth_ch2);
+      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
       float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
       out[0][i] = oscillatorSum_signal;
@@ -688,11 +711,11 @@ void loop() {
   complexOsc_basePitch = readMux1Channel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
   complexOsc_timbreAmount = readMux1Channel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);
   complexOsc_foldAmount = readMux1Channel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);
-  
+
   // Always read the level pots, but they'll be used differently based on LPG mode
   complexOsc_level = readMux1Channel(COMPLEX_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);
   modOsc_level = readMux1Channel(MOD_OSC_LEVEL_CHANNEL, 0.0f, 1.0f);
-  
+
   // In LP mode, use the level pots as cutoff controls
   if (lpgChannel1_mode == LPG_MODE_LP) {
     lpgCh1_baseCutoff = complexOsc_level;
@@ -701,8 +724,8 @@ void loop() {
     lpgCh2_baseCutoff = modOsc_level;
   }
 
-  eg_attackTime = readMux1Channel(ASD_ATTACK_CHANNEL, 0.002f, 10.0f, true);
-  eg_decayTime = readMux1Channel(ASD_SUSTAIN_CHANNEL, 0.002f, 10.0f, true);
+  eg_attackTime = readMux1Channel(ASD_ATTACK_CHANNEL, 0.02f, 10.0f, true);
+  eg_decayTime = readMux1Channel(ASD_SUSTAIN_CHANNEL, 0.02f, 10.0f, true);
   eg_sustainLevel = 1.0f;
   eg_releaseTime = readMux1Channel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);
 
@@ -806,7 +829,7 @@ void loop() {
     Serial.print(envModDepth_ch1);
     Serial.print(" | EnvMod Ch2: ");
     Serial.print(envModDepth_ch2);
-    
+
     // Show LP mode specific info
     if (lpgChannel1_mode == LPG_MODE_LP) {
       Serial.print(" | Ch1 Cutoff: ");
