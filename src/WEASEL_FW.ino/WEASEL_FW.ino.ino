@@ -729,7 +729,7 @@ void loop() {
   eg_sustainLevel = 1.0f;
   eg_releaseTime = readMux1Channel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);
 
-  BPM = readMux1Channel(CLOCK_CHANNEL, 1.0f, 750.0f);
+  BPM = readMux1Channel(CLOCK_CHANNEL, 1.0f, 1000.0f);
 
   // READ ENVELOPE MODULATION DEPTH CONTROLS FROM SECOND MUX
   envModDepth_ch1 = readMux2Channel(ENV_MOD_DEPTH_CH1, 0.0f, 1.0f);  // Channel 1 modulation depth
