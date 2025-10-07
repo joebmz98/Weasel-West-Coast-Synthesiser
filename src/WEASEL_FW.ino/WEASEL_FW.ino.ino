@@ -16,6 +16,11 @@
 #define MUX2_S3 7
 #define MUX2_SIG A1  // Second MUX signal pin
 
+// BUTTON MATRIX PINS
+#define BUTTON_COL 8   // Column pin
+#define BUTTON_ROW0 9  // Row 0 pin  
+#define BUTTON_ROW1 10 // Row 1 pin
+
 // MUX CHANNEL ASSIGNMENTS (FIRST MUX - keeping all existing pots on MUX1)
 #define MOD_OSC_PITCH_CHANNEL 0       // C0 - modOsc_pitch
 #define MOD_AMOUNT_CHANNEL 1          // C1 - modOsc_modAmount
@@ -132,6 +137,12 @@ Switch sequencerToggle;     // SEQUENCER CLOCK TOGGLE
 Switch modulationToggle;    // MODULATION TYPE TOGGLE
 Switch lpgToggle_channel1;  // LPG CH1 MODE TOGGLE
 Switch lpgToggle_channel2;  // LPG CH2 MODE TOGGLE
+
+// BUTTON MATRIX VARIABLES
+bool buttonStates[2] = {false, false};  // Store states for row0 and row1
+bool lastButtonStates[2] = {false, false};
+unsigned long lastButtonRead = 0;
+const unsigned long BUTTON_READ_INTERVAL = 50;  // Read buttons every 50ms
 
 // MIDI Object
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
@@ -335,6 +346,41 @@ float readMux2Channel(int channel, float minVal, float maxVal, bool logarithmic 
     return linearToLog(normalizedValue, minVal, maxVal);
   } else {
     return minVal + (maxVal - minVal) * normalizedValue;
+  }
+}
+
+// BUTTON MATRIX FUNCTIONS
+void initButtonMatrix() {
+  pinMode(BUTTON_COL, OUTPUT);
+  pinMode(BUTTON_ROW0, INPUT_PULLDOWN);
+  pinMode(BUTTON_ROW1, INPUT_PULLDOWN);
+  
+  digitalWrite(BUTTON_COL, HIGH); // Set column high (pull-up)
+}
+
+void readButtonMatrix() {
+  // Set column to HIGH (active)
+  digitalWrite(BUTTON_COL, HIGH);
+  delayMicroseconds(10); // Small delay for stabilization
+  
+  // Read each row
+  lastButtonStates[0] = buttonStates[0];
+  lastButtonStates[1] = buttonStates[1];
+  
+  buttonStates[0] = (digitalRead(BUTTON_ROW0) == HIGH);
+  buttonStates[1] = (digitalRead(BUTTON_ROW1) == HIGH);
+  
+  // Set column back to LOW to save power (optional)
+  digitalWrite(BUTTON_COL, LOW);
+}
+
+void printButtonStates() {
+  // Print button states only when they change
+  if (buttonStates[0] != lastButtonStates[0] || buttonStates[1] != lastButtonStates[1]) {
+    Serial.print("Button Matrix - Row0: ");
+    Serial.print(buttonStates[0] ? "HIGH" : "LOW");
+    Serial.print(" | Row1: ");
+    Serial.println(buttonStates[1] ? "HIGH" : "LOW");
   }
 }
 
@@ -558,6 +604,9 @@ void AudioCallback(float** in, float** out, size_t size) {
 void setup() {
   Serial.begin(115200);  // Increased baud rate for faster debugging
 
+  // INIT BUTTON MATRIX
+  initButtonMatrix();
+
   // BUTTON INIT - Fixed the modulationToggle pin assignment
   sequencerToggle.Init(1000, true, SEQUENCER_TOGGLE_BUTTON, INPUT_PULLUP);
   modulationToggle.Init(1000, true, MODULATION_TOGGLE_BUTTON, INPUT_PULLUP);
@@ -693,6 +742,7 @@ void setup() {
   Serial.println("LPG Channel 1: COMBI mode | LPG Channel 2: COMBI mode");
   Serial.println("MUX2 C0: Env modulation depth for Ch1 | MUX2 C1: Env modulation depth for Ch2");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
+  Serial.println("Button Matrix initialized - monitoring Row0 and Row1");
 }
 
 void loop() {
@@ -703,6 +753,13 @@ void loop() {
   // CHECK MIDI TIMEOUT
   if (midiNoteActive && (millis() - lastMidiNoteTime > MIDI_NOTE_TIMEOUT)) {
     midiNoteActive = false;
+  }
+
+  // READ BUTTON MATRIX
+  if (millis() - lastButtonRead > BUTTON_READ_INTERVAL) {
+    readButtonMatrix();
+    printButtonStates();
+    lastButtonRead = millis();
   }
 
   // POTENTIOMETER HANDLING - ALL FROM FIRST MUX
