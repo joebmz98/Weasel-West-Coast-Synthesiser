@@ -103,6 +103,10 @@ float lpgCh2_baseCutoff = 0.5f;  // Base cutoff for Channel 2 in LP mode (0.0 to
 float envModDepth_ch1 = 1.0f;  // Envelope modulation depth for channel 1 (complex osc)
 float envModDepth_ch2 = 1.0f;  // Envelope modulation depth for channel 2 (mod osc)
 
+// WAVEFOLDER ENVELOPE MODULATION
+float wavefolderEnvModDepth = 0.0f;  // Depth of envelope modulation on wavefolder (0.0 to 1.0)
+bool wavefolderEnvModEnabled = false; // Whether envelope modulation of wavefolder is active
+
 // ADSR ENVELOPE VARIABLES & OBJECT
 Adsr env;               // ADSR envelope
 float eg_attackTime;    // ATTACK time in seconds
@@ -380,7 +384,16 @@ void printButtonStates() {
     Serial.print("Button Matrix - Row0: ");
     Serial.print(buttonStates[0] ? "HIGH" : "LOW");
     Serial.print(" | Row1: ");
-    Serial.println(buttonStates[1] ? "HIGH" : "LOW");
+    Serial.print(buttonStates[1] ? "HIGH" : "LOW");
+    
+    // Check if wavefolder envelope modulation was enabled/disabled
+    if (buttonStates[0] != lastButtonStates[0]) {
+      wavefolderEnvModEnabled = buttonStates[0];
+      Serial.print(" | Wavefolder Env Mod: ");
+      Serial.print(wavefolderEnvModEnabled ? "ENABLED" : "DISABLED");
+    }
+    
+    Serial.println();
   }
 }
 
@@ -483,6 +496,16 @@ void AudioCallback(float** in, float** out, size_t size) {
     // Get envelope value once per sample
     float envValue = env.Process(gateOpen);
 
+    // Calculate modulated wavefolder amount if enabled
+    float currentFoldAmount = complexOsc_foldAmount;
+    if (wavefolderEnvModEnabled) {
+      // Envelope modulates the wavefolder amount
+      // Base amount from pot + envelope modulation (0 to full amount based on envelope)
+      currentFoldAmount = complexOsc_foldAmount + (wavefolderEnvModDepth * envValue);
+      // Clamp to prevent excessive folding
+      currentFoldAmount = fminf(currentFoldAmount, 1.0f);
+    }
+
     // Determine the appropriate parameters for each channel based on LPG mode
     float ch1_level, ch1_cutoffControl, ch2_level, ch2_cutoffControl;
 
@@ -528,7 +551,7 @@ void AudioCallback(float** in, float** out, size_t size) {
         float complexOsc_triSignal = complexOscTri.Process();
         float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
         float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
-        float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
+        float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, currentFoldAmount);
 
         float modulated_complexOsc = complexOsc_foldedSignal * ch1_level;
 
@@ -554,7 +577,7 @@ void AudioCallback(float** in, float** out, size_t size) {
         float complexOsc_triSignal = complexOscTri.Process();
         float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
         float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
-        float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
+        float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, currentFoldAmount);
 
         // Apply AM
         float modulated_complexOsc = complexOsc_foldedSignal * ch1_level * amSignal;
@@ -586,7 +609,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       float complexOsc_triSignal = complexOscTri.Process();
       float complexOsc_rawSignal = (complexOsc_sineSignal * (1.0f - complexOsc_timbreAmount)) + (complexOsc_triSignal * complexOsc_timbreAmount);
       float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
-      float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, complexOsc_foldAmount);
+      float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, currentFoldAmount);
 
       float modulated_complexOsc = complexOsc_foldedSignal * ch1_level;
 
@@ -713,6 +736,10 @@ void setup() {
   envModDepth_ch1 = 1.0f;
   envModDepth_ch2 = 1.0f;
 
+  // WAVEFOLDER ENVELOPE MODULATION INIT
+  wavefolderEnvModDepth = 1.0f;  // Default modulation depth
+  wavefolderEnvModEnabled = false;
+
   // ADSR INIT
   eg_attackTime = 0.1f;
   eg_decayTime = 0.1f;
@@ -743,6 +770,7 @@ void setup() {
   Serial.println("MUX2 C0: Env modulation depth for Ch1 | MUX2 C1: Env modulation depth for Ch2");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
   Serial.println("Button Matrix initialized - monitoring Row0 and Row1");
+  Serial.println("Connect Y0 to X0 to enable envelope modulation of wavefolder amount");
 }
 
 void loop() {
@@ -792,8 +820,10 @@ void loop() {
   envModDepth_ch1 = readMux2Channel(ENV_MOD_DEPTH_CH1, 0.0f, 1.0f);  // Channel 1 modulation depth
   envModDepth_ch2 = readMux2Channel(ENV_MOD_DEPTH_CH2, 0.0f, 1.0f);  // Channel 2 modulation depth
 
+  // Use one of the unused MUX2 channels to control wavefolder envelope modulation depth
+  wavefolderEnvModDepth = readMux2Channel(MUX2_CHANNEL_2, 0.0f, 1.0f);
+
   // READ REMAINING SECOND MUX CHANNELS (for future use)
-  float mux2_ch2 = readMux2Channel(MUX2_CHANNEL_2, 0.0f, 1.0f);
   float mux2_ch3 = readMux2Channel(MUX2_CHANNEL_3, 0.0f, 1.0f);
   float mux2_ch4 = readMux2Channel(MUX2_CHANNEL_4, 0.0f, 1.0f);
   float mux2_ch5 = readMux2Channel(MUX2_CHANNEL_5, 0.0f, 1.0f);
@@ -886,6 +916,15 @@ void loop() {
     Serial.print(envModDepth_ch1);
     Serial.print(" | EnvMod Ch2: ");
     Serial.print(envModDepth_ch2);
+    
+    // Show wavefolder envelope modulation status
+    Serial.print(" | Wavefolder Env Mod: ");
+    Serial.print(wavefolderEnvModEnabled ? "ON" : "OFF");
+    if (wavefolderEnvModEnabled) {
+      Serial.print(" (Depth: ");
+      Serial.print(wavefolderEnvModDepth);
+      Serial.print(")");
+    }
 
     // Show LP mode specific info
     if (lpgChannel1_mode == LPG_MODE_LP) {
