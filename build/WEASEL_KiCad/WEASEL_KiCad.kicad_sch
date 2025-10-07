@@ -17884,13 +17884,13 @@
 	)
 	(symbol
 		(lib_id "Device:R_Potentiometer")
-		(at 604.52 54.61 270)
+		(at 604.52 54.61 90)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "535761fe-6a69-4a81-97ea-86f69fa24914")
 		(property "Reference" "RV12"
 			(at 604.52 48.26 90)
