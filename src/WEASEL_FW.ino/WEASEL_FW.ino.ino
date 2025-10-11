@@ -16,10 +16,10 @@
 #define MUX2_S3 7
 #define MUX2_SIG A1  // Second MUX signal pin
 
-// BUTTON MATRIX PINS
-#define BUTTON_COL 8   // Column pin
-#define BUTTON_ROW0 9  // Row 0 pin  
-#define BUTTON_ROW1 10 // Row 1 pin
+// BUTTON MATRIX PINS - Prepared for multiple columns
+#define BUTTON_COL0 8   // Column 0 pin
+#define BUTTON_ROW0 9   // Row 0 pin  
+#define BUTTON_ROW1 10  // Row 1 pin
 
 // MUX CHANNEL ASSIGNMENTS (FIRST MUX - keeping all existing pots on MUX1)
 #define MOD_OSC_PITCH_CHANNEL 0       // C0 - modOsc_pitch
@@ -42,8 +42,8 @@
 // MUX CHANNEL ASSIGNMENTS (SECOND MUX - modulation depth controls)
 #define ENV_MOD_DEPTH_CH1 0  // C0 - Envelope modulation depth for Channel 1 (complex osc)
 #define ENV_MOD_DEPTH_CH2 1  // C1 - Envelope modulation depth for Channel 2 (mod osc)
-#define MUX2_CHANNEL_2 2
-#define MUX2_CHANNEL_3 3
+#define WAVEFOLDER_ENV_MOD_DEPTH 2  // C2 - Wavefolder envelope modulation depth
+#define SEQ_CV_WAVEFOLDER_MOD_DEPTH 3  // C3 - Sequencer CV to wavefolder modulation depth
 #define MUX2_CHANNEL_4 4
 #define MUX2_CHANNEL_5 5
 #define MUX2_CHANNEL_6 6
@@ -103,9 +103,13 @@ float lpgCh2_baseCutoff = 0.5f;  // Base cutoff for Channel 2 in LP mode (0.0 to
 float envModDepth_ch1 = 1.0f;  // Envelope modulation depth for channel 1 (complex osc)
 float envModDepth_ch2 = 1.0f;  // Envelope modulation depth for channel 2 (mod osc)
 
-// WAVEFOLDER ENVELOPE MODULATION
+// WAVEFOLDER MODULATION
 float wavefolderEnvModDepth = 0.0f;  // Depth of envelope modulation on wavefolder (0.0 to 1.0)
 bool wavefolderEnvModEnabled = false; // Whether envelope modulation of wavefolder is active
+
+// SEQUENCER CV WAVEFOLDER MODULATION
+float seqCVWavefolderModDepth = 0.0f;  // Depth of sequencer CV modulation on wavefolder (0.0 to 1.0)
+bool seqCVWavefolderModEnabled = false; // Whether sequencer CV modulation of wavefolder is active
 
 // ADSR ENVELOPE VARIABLES & OBJECT
 Adsr env;               // ADSR envelope
@@ -142,9 +146,9 @@ Switch modulationToggle;    // MODULATION TYPE TOGGLE
 Switch lpgToggle_channel1;  // LPG CH1 MODE TOGGLE
 Switch lpgToggle_channel2;  // LPG CH2 MODE TOGGLE
 
-// BUTTON MATRIX VARIABLES
-bool buttonStates[2] = {false, false};  // Store states for row0 and row1
-bool lastButtonStates[2] = {false, false};
+// BUTTON MATRIX VARIABLES - Prepared for multiple columns
+bool buttonStates[1][2] = {{false, false}};  // Store states for [col][row] - currently 1 column x 2 rows
+bool lastButtonStates[1][2] = {{false, false}};
 unsigned long lastButtonRead = 0;
 const unsigned long BUTTON_READ_INTERVAL = 50;  // Read buttons every 50ms
 
@@ -353,44 +357,67 @@ float readMux2Channel(int channel, float minVal, float maxVal, bool logarithmic 
   }
 }
 
-// BUTTON MATRIX FUNCTIONS
+// BUTTON MATRIX FUNCTIONS - Prepared for multiple columns
 void initButtonMatrix() {
-  pinMode(BUTTON_COL, OUTPUT);
+  pinMode(BUTTON_COL0, OUTPUT);
   pinMode(BUTTON_ROW0, INPUT_PULLDOWN);
   pinMode(BUTTON_ROW1, INPUT_PULLDOWN);
   
-  digitalWrite(BUTTON_COL, HIGH); // Set column high (pull-up)
+  // Start with column LOW
+  digitalWrite(BUTTON_COL0, LOW);
 }
 
 void readButtonMatrix() {
-  // Set column to HIGH (active)
-  digitalWrite(BUTTON_COL, HIGH);
+  // Scan column 0
+  digitalWrite(BUTTON_COL0, HIGH);
   delayMicroseconds(10); // Small delay for stabilization
   
-  // Read each row
-  lastButtonStates[0] = buttonStates[0];
-  lastButtonStates[1] = buttonStates[1];
+  // Read rows for column 0
+  lastButtonStates[0][0] = buttonStates[0][0];
+  lastButtonStates[0][1] = buttonStates[0][1];
   
-  buttonStates[0] = (digitalRead(BUTTON_ROW0) == HIGH);
-  buttonStates[1] = (digitalRead(BUTTON_ROW1) == HIGH);
+  buttonStates[0][0] = (digitalRead(BUTTON_ROW0) == HIGH);
+  buttonStates[0][1] = (digitalRead(BUTTON_ROW1) == HIGH);
   
-  // Set column back to LOW to save power (optional)
-  digitalWrite(BUTTON_COL, LOW);
+  // Deactivate column
+  digitalWrite(BUTTON_COL0, LOW);
+  
+  // Update modulation enable flags based on button states
+  // Row0 (Y0) + Col0 enables envelope modulation of wavefolder
+  wavefolderEnvModEnabled = buttonStates[0][0];
+  
+  // Row1 (Y1) + Col0 enables sequencer CV modulation of wavefolder
+  seqCVWavefolderModEnabled = buttonStates[0][1];
 }
 
 void printButtonStates() {
   // Print button states only when they change
-  if (buttonStates[0] != lastButtonStates[0] || buttonStates[1] != lastButtonStates[1]) {
-    Serial.print("Button Matrix - Row0: ");
-    Serial.print(buttonStates[0] ? "HIGH" : "LOW");
-    Serial.print(" | Row1: ");
-    Serial.print(buttonStates[1] ? "HIGH" : "LOW");
+  bool anyChange = false;
+  for (int col = 0; col < 1; col++) {
+    for (int row = 0; row < 2; row++) {
+      if (buttonStates[col][row] != lastButtonStates[col][row]) {
+        anyChange = true;
+        break;
+      }
+    }
+    if (anyChange) break;
+  }
+  
+  if (anyChange) {
+    Serial.print("Button Matrix - Col0: [");
+    Serial.print(buttonStates[0][0] ? "HIGH" : "LOW");
+    Serial.print(",");
+    Serial.print(buttonStates[0][1] ? "HIGH" : "LOW");
+    Serial.print("]");
     
-    // Check if wavefolder envelope modulation was enabled/disabled
-    if (buttonStates[0] != lastButtonStates[0]) {
-      wavefolderEnvModEnabled = buttonStates[0];
+    // Show modulation status changes
+    if (buttonStates[0][0] != lastButtonStates[0][0]) {
       Serial.print(" | Wavefolder Env Mod: ");
       Serial.print(wavefolderEnvModEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (buttonStates[0][1] != lastButtonStates[0][1]) {
+      Serial.print(" | Seq CV Wavefolder Mod: ");
+      Serial.print(seqCVWavefolderModEnabled ? "ENABLED" : "DISABLED");
     }
     
     Serial.println();
@@ -496,15 +523,26 @@ void AudioCallback(float** in, float** out, size_t size) {
     // Get envelope value once per sample
     float envValue = env.Process(gateOpen);
 
-    // Calculate modulated wavefolder amount if enabled
+    // Calculate modulated wavefolder amount with multiple modulation sources
     float currentFoldAmount = complexOsc_foldAmount;
+    
+    // Apply envelope modulation if enabled
     if (wavefolderEnvModEnabled) {
       // Envelope modulates the wavefolder amount
-      // Base amount from pot + envelope modulation (0 to full amount based on envelope)
-      currentFoldAmount = complexOsc_foldAmount + (wavefolderEnvModDepth * envValue);
-      // Clamp to prevent excessive folding
-      currentFoldAmount = fminf(currentFoldAmount, 1.0f);
+      currentFoldAmount += (wavefolderEnvModDepth * envValue);
     }
+    
+    // Apply sequencer CV modulation if enabled
+    if (seqCVWavefolderModEnabled) {
+      // Convert sequencer CV (in semitones) to a modulation amount
+      // Normalize sequencer CV to 0-1 range (assuming 0-48 semitones range)
+      float seqCVMod = sequencerPitchOffset / 48.0f;
+      // Apply modulation with depth control
+      currentFoldAmount += (seqCVWavefolderModDepth * seqCVMod);
+    }
+    
+    // Clamp to prevent excessive folding
+    currentFoldAmount = fminf(fmaxf(currentFoldAmount, 0.0f), 1.0f);
 
     // Determine the appropriate parameters for each channel based on LPG mode
     float ch1_level, ch1_cutoffControl, ch2_level, ch2_cutoffControl;
@@ -736,9 +774,11 @@ void setup() {
   envModDepth_ch1 = 1.0f;
   envModDepth_ch2 = 1.0f;
 
-  // WAVEFOLDER ENVELOPE MODULATION INIT
+  // WAVEFOLDER MODULATION INIT
   wavefolderEnvModDepth = 1.0f;  // Default modulation depth
   wavefolderEnvModEnabled = false;
+  seqCVWavefolderModDepth = 1.0f;  // Default modulation depth
+  seqCVWavefolderModEnabled = false;
 
   // ADSR INIT
   eg_attackTime = 0.1f;
@@ -768,9 +808,11 @@ void setup() {
   Serial.println("Current modulation: FM");
   Serial.println("LPG Channel 1: COMBI mode | LPG Channel 2: COMBI mode");
   Serial.println("MUX2 C0: Env modulation depth for Ch1 | MUX2 C1: Env modulation depth for Ch2");
+  Serial.println("MUX2 C2: Wavefolder Env Mod Depth | MUX2 C3: Sequencer CV Wavefolder Mod Depth");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
-  Serial.println("Button Matrix initialized - monitoring Row0 and Row1");
+  Serial.println("Button Matrix initialized with column scanning");
   Serial.println("Connect Y0 to X0 to enable envelope modulation of wavefolder amount");
+  Serial.println("Connect Y1 to X0 to enable sequencer CV modulation of wavefolder amount");
 }
 
 void loop() {
@@ -820,11 +862,11 @@ void loop() {
   envModDepth_ch1 = readMux2Channel(ENV_MOD_DEPTH_CH1, 0.0f, 1.0f);  // Channel 1 modulation depth
   envModDepth_ch2 = readMux2Channel(ENV_MOD_DEPTH_CH2, 0.0f, 1.0f);  // Channel 2 modulation depth
 
-  // Use one of the unused MUX2 channels to control wavefolder envelope modulation depth
-  wavefolderEnvModDepth = readMux2Channel(MUX2_CHANNEL_2, 0.0f, 1.0f);
+  // READ WAVEFOLDER MODULATION DEPTH CONTROLS
+  wavefolderEnvModDepth = readMux2Channel(WAVEFOLDER_ENV_MOD_DEPTH, 0.0f, 1.0f);  // Wavefolder envelope mod depth
+  seqCVWavefolderModDepth = readMux2Channel(SEQ_CV_WAVEFOLDER_MOD_DEPTH, 0.0f, 1.0f);  // Sequencer CV wavefolder mod depth
 
   // READ REMAINING SECOND MUX CHANNELS (for future use)
-  float mux2_ch3 = readMux2Channel(MUX2_CHANNEL_3, 0.0f, 1.0f);
   float mux2_ch4 = readMux2Channel(MUX2_CHANNEL_4, 0.0f, 1.0f);
   float mux2_ch5 = readMux2Channel(MUX2_CHANNEL_5, 0.0f, 1.0f);
   float mux2_ch6 = readMux2Channel(MUX2_CHANNEL_6, 0.0f, 1.0f);
@@ -917,12 +959,20 @@ void loop() {
     Serial.print(" | EnvMod Ch2: ");
     Serial.print(envModDepth_ch2);
     
-    // Show wavefolder envelope modulation status
+    // Show wavefolder modulation status
     Serial.print(" | Wavefolder Env Mod: ");
     Serial.print(wavefolderEnvModEnabled ? "ON" : "OFF");
     if (wavefolderEnvModEnabled) {
       Serial.print(" (Depth: ");
       Serial.print(wavefolderEnvModDepth);
+      Serial.print(")");
+    }
+    
+    Serial.print(" | Seq CV Wavefolder Mod: ");
+    Serial.print(seqCVWavefolderModEnabled ? "ON" : "OFF");
+    if (seqCVWavefolderModEnabled) {
+      Serial.print(" (Depth: ");
+      Serial.print(seqCVWavefolderModDepth);
       Serial.print(")");
     }
 
