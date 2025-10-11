@@ -44,7 +44,7 @@
 #define ENV_MOD_DEPTH_CH2 1  // C1 - Envelope modulation depth for Channel 2 (mod osc)
 #define WAVEFOLDER_ENV_MOD_DEPTH 2  // C2 - Wavefolder envelope modulation depth
 #define SEQ_CV_WAVEFOLDER_MOD_DEPTH 3  // C3 - Sequencer CV to wavefolder modulation depth
-#define MUX2_CHANNEL_4 4
+#define REVERB_MIX 4  // C4 - Reverb wet/dry mix
 #define MUX2_CHANNEL_5 5
 #define MUX2_CHANNEL_6 6
 #define MUX2_CHANNEL_7 7
@@ -86,6 +86,9 @@ static MoogLadder modOsc_analogFilter;      // FILTER FOR MOD OSCILLATOR
 static MoogLadder lpgChannel1_filter;  // FILTER FOR BUCHLA LPG CH1
 static MoogLadder lpgChannel2_filter;  // FILTER FOR BUCHLA LPG CH2
 
+// INIT REVERB
+ReverbSc verb;
+
 // OSCILLATOR PARAMETER VARIABLES
 float complexOsc_basePitch;     // COMPLEX OSC BASE PITCH
 float modOsc_pitch;             // MOD OSC BASE PITCH
@@ -110,6 +113,9 @@ bool wavefolderEnvModEnabled = false; // Whether envelope modulation of wavefold
 // SEQUENCER CV WAVEFOLDER MODULATION
 float seqCVWavefolderModDepth = 0.0f;  // Depth of sequencer CV modulation on wavefolder (0.0 to 1.0)
 bool seqCVWavefolderModEnabled = false; // Whether sequencer CV modulation of wavefolder is active
+
+// REVERB CONTROL
+float reverbMix = 0.0f;  // Reverb wet/dry mix (0.0 = dry, 1.0 = wet)
 
 // ADSR ENVELOPE VARIABLES & OBJECT
 Adsr env;               // ADSR envelope
@@ -598,8 +604,17 @@ void AudioCallback(float** in, float** out, size_t size) {
         processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
         float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
-        out[0][i] = oscillatorSum_signal;
-        out[1][i] = oscillatorSum_signal;
+        
+        // APPLY REVERB
+        float wetL, wetR;
+        verb.Process(oscillatorSum_signal, oscillatorSum_signal, &wetL, &wetR);
+        
+        // Mix dry and wet signals
+        float finalL = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetL * reverbMix);
+        float finalR = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetR * reverbMix);
+        
+        out[0][i] = finalL;
+        out[1][i] = finalR;
       } else {
         // Apply AM with proper level handling
         float amSignal = 1.0f + (amDepth * modOsc_filteredSignal);
@@ -626,8 +641,17 @@ void AudioCallback(float** in, float** out, size_t size) {
 
         // OUTPUT SUMMATION
         float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
-        out[0][i] = oscillatorSum_signal;
-        out[1][i] = oscillatorSum_signal;
+        
+        // APPLY REVERB
+        float wetL, wetR;
+        verb.Process(oscillatorSum_signal, oscillatorSum_signal, &wetL, &wetR);
+        
+        // Mix dry and wet signals
+        float finalL = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetL * reverbMix);
+        float finalR = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetR * reverbMix);
+        
+        out[0][i] = finalL;
+        out[1][i] = finalR;
       }
 
     } else {
@@ -656,8 +680,17 @@ void AudioCallback(float** in, float** out, size_t size) {
       processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
       float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
-      out[0][i] = oscillatorSum_signal;
-      out[1][i] = oscillatorSum_signal;
+      
+      // APPLY REVERB
+      float wetL, wetR;
+      verb.Process(oscillatorSum_signal, oscillatorSum_signal, &wetL, &wetR);
+      
+      // Mix dry and wet signals
+      float finalL = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetL * reverbMix);
+      float finalR = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetR * reverbMix);
+      
+      out[0][i] = finalL;
+      out[1][i] = finalR;
     }
   }
 }
@@ -748,6 +781,11 @@ void setup() {
   // INIT ADSR ENVELOPE
   env.Init(sample_rate);
 
+  // REVERB INIT
+  verb.Init(sample_rate);
+  verb.SetFeedback(0.85f);
+  verb.SetLpFreq(18000.0f);
+
   complexOsc.SetWaveform(complexOsc.WAVE_SIN);
   complexOsc.SetAmp(1.0);
 
@@ -780,6 +818,9 @@ void setup() {
   seqCVWavefolderModDepth = 1.0f;  // Default modulation depth
   seqCVWavefolderModEnabled = false;
 
+  // REVERB INIT
+  reverbMix = 0.0f;  // Start with dry signal
+
   // ADSR INIT
   eg_attackTime = 0.1f;
   eg_decayTime = 0.1f;
@@ -809,6 +850,7 @@ void setup() {
   Serial.println("LPG Channel 1: COMBI mode | LPG Channel 2: COMBI mode");
   Serial.println("MUX2 C0: Env modulation depth for Ch1 | MUX2 C1: Env modulation depth for Ch2");
   Serial.println("MUX2 C2: Wavefolder Env Mod Depth | MUX2 C3: Sequencer CV Wavefolder Mod Depth");
+  Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet)");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
   Serial.println("Button Matrix initialized with column scanning");
   Serial.println("Connect Y0 to X0 to enable envelope modulation of wavefolder amount");
@@ -869,8 +911,10 @@ void loop() {
   wavefolderEnvModDepth = readMux2Channel(WAVEFOLDER_ENV_MOD_DEPTH, 0.0f, 1.0f);  // Wavefolder envelope mod depth
   seqCVWavefolderModDepth = readMux2Channel(SEQ_CV_WAVEFOLDER_MOD_DEPTH, 0.0f, 1.0f);  // Sequencer CV wavefolder mod depth
 
+  // READ REVERB MIX FROM MUX2 C4
+  reverbMix = readMux2Channel(REVERB_MIX, 0.0f, 1.0f);  // Reverb wet/dry mix
+
   // READ REMAINING SECOND MUX CHANNELS (for future use)
-  float mux2_ch4 = readMux2Channel(MUX2_CHANNEL_4, 0.0f, 1.0f);
   float mux2_ch5 = readMux2Channel(MUX2_CHANNEL_5, 0.0f, 1.0f);
   float mux2_ch6 = readMux2Channel(MUX2_CHANNEL_6, 0.0f, 1.0f);
   float mux2_ch7 = readMux2Channel(MUX2_CHANNEL_7, 0.0f, 1.0f);
@@ -978,6 +1022,10 @@ void loop() {
       Serial.print(seqCVWavefolderModDepth);
       Serial.print(")");
     }
+    
+    // Show reverb status
+    Serial.print(" | Reverb Mix: ");
+    Serial.print(reverbMix);
 
     // Show LP mode specific info
     if (lpgChannel1_mode == LPG_MODE_LP) {
