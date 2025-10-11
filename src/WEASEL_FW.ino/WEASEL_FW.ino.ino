@@ -817,6 +817,9 @@ void setup() {
 
 void loop() {
 
+  // 16 BIT ADC
+  analogReadResolution(16);
+
   // MIDI PROCESS
   MIDI.read();
 
