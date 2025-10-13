@@ -123,6 +123,7 @@ bool wavefolderEnvModEnabled = false;  // Whether envelope modulation of wavefol
 float seqCVWavefolderModDepth = 0.0f;    // Depth of sequencer CV modulation on wavefolder (0.0 to 1.0)
 bool seqCVModOscPitchEnabled = false;    // Whether sequencer CV controls modOsc pitch
 bool seqCVWavefolderModEnabled = false;  // Whether sequencer CV modulation of wavefolder is active
+bool seqCVModAmountEnabled = false;      // NEW: Whether sequencer CV controls modOsc_modAmount
 
 // REVERB CONTROL
 float reverbMix = 0.0f;  // Reverb wet/dry mix (0.0 = dry, 1.0 = wet)
@@ -462,6 +463,9 @@ void readButtonMatrix() {
   // B0 + A1 enables sequencer CV control of modOsc pitch
   seqCVModOscPitchEnabled = matrixStates[0][1];
 
+  // B0 + A2 enables sequencer CV control of modOsc_modAmount (NEW)
+  seqCVModAmountEnabled = matrixStates[0][2];
+
   // B0 + A4 enables sequencer CV modulation of wavefolder
   seqCVWavefolderModEnabled = matrixStates[0][4];
 
@@ -474,7 +478,10 @@ void printButtonStates() {
   bool anyChange = false;
 
   // Check only the buttons we're using for modulation
-  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1]) {  // ADD THIS LINE
+  if (matrixStates[0][4] != lastMatrixStates[0][4] || 
+      matrixStates[1][4] != lastMatrixStates[1][4] || 
+      matrixStates[0][1] != lastMatrixStates[0][1] ||
+      matrixStates[0][2] != lastMatrixStates[0][2]) {  // ADDED B0+A2
     anyChange = true;
   }
 
@@ -484,8 +491,10 @@ void printButtonStates() {
     Serial.print(matrixStates[0][4] ? "HIGH" : "LOW");
     Serial.print(" | B1+A4: ");
     Serial.print(matrixStates[1][4] ? "HIGH" : "LOW");
-    Serial.print(" | B0+A1: ");                         // ADD THIS LINE
-    Serial.print(matrixStates[0][1] ? "HIGH" : "LOW");  // ADD THIS LINE
+    Serial.print(" | B0+A1: ");                         
+    Serial.print(matrixStates[0][1] ? "HIGH" : "LOW");  
+    Serial.print(" | B0+A2: ");                         // NEW
+    Serial.print(matrixStates[0][2] ? "HIGH" : "LOW");  // NEW
 
     // Show modulation status changes
     if (matrixStates[0][4] != lastMatrixStates[0][4]) {
@@ -496,9 +505,13 @@ void printButtonStates() {
       Serial.print(" | Wavefolder Env Mod: ");
       Serial.print(wavefolderEnvModEnabled ? "ENABLED" : "DISABLED");
     }
-    if (matrixStates[0][1] != lastMatrixStates[0][1]) {  // ADD THIS BLOCK
+    if (matrixStates[0][1] != lastMatrixStates[0][1]) {  
       Serial.print(" | Seq CV ModOsc Pitch: ");
       Serial.print(seqCVModOscPitchEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[0][2] != lastMatrixStates[0][2]) {  // NEW
+      Serial.print(" | Seq CV Mod Amount: ");
+      Serial.print(seqCVModAmountEnabled ? "ENABLED" : "DISABLED");
     }
 
     Serial.println();
@@ -613,6 +626,20 @@ void AudioCallback(float** in, float** out, size_t size) {
     // Get envelope value once per sample
     float envValue = env.Process(gateOpen);
 
+    // Calculate modulated modulation amount with sequencer CV if enabled
+    float currentModAmount = modOsc_modAmount;
+
+    // Apply sequencer CV to modulation amount if B0+A2 is pressed
+    if (seqCVModAmountEnabled) {
+      // Convert sequencer CV (in semitones) to a modulation amount
+      // Normalize sequencer CV to 0-1 range (assuming 0-48 semitones range)
+      float seqCVMod = sequencerPitchOffset / 48.0f;
+      // Use C1 pot as base level and add sequencer CV modulation
+      currentModAmount = modOsc_modAmount + (seqCVMod * 400.0f); // Scale appropriately
+      // Clamp to prevent excessive modulation
+      currentModAmount = fminf(fmaxf(currentModAmount, 0.0f), 800.0f);
+    }
+
     // Calculate modulated wavefolder amount with multiple modulation sources
     float currentFoldAmount = complexOsc_foldAmount;
 
@@ -664,7 +691,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     // APPLY MODULATION BASED ON SELECTED TYPE
     if (useAmplitudeModulation) {
       // AMPLITUDE MODULATION (AM) - FIXED IMPLEMENTATION
-      float amDepth = modOsc_modAmount * 0.5f;
+      float amDepth = currentModAmount * 0.5f;  // Use the potentially modulated amount
 
       // Reduced modulator level for AM mode (consistent in both cases)
       float modulated_modOsc = modOsc_filteredSignal * ch2_level * 0.85f;
@@ -743,7 +770,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       // Full modulator level for FM mode
       float modulated_modOsc = modOsc_filteredSignal * ch2_level;
 
-      float modulationDepth = modOsc_modAmount * 1.0f;
+      float modulationDepth = currentModAmount * 1.0f;  // Use the potentially modulated amount
       float modulatorSignal = modOsc_filteredSignal * modulationDepth;
       float complexOsc_modulatedFreq = complexOsc_freq + modulatorSignal - 16.0f;
       complexOsc_modulatedFreq = max(complexOsc_modulatedFreq, 17.0f);
@@ -901,6 +928,7 @@ void setup() {
   wavefolderEnvModEnabled = false;
   seqCVWavefolderModDepth = 1.0f;  // Default modulation depth
   seqCVWavefolderModEnabled = false;
+  seqCVModAmountEnabled = false;   // NEW: Sequencer CV control of mod amount disabled by default
 
   // REVERB INIT
   reverbMix = 0.0f;  // Start with dry signal
@@ -936,7 +964,7 @@ void setup() {
   Serial.println("MUX2 C2: Wavefolder Env Mod Depth | MUX2 C3: Sequencer CV Wavefolder Mod Depth");
   Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet)");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
-  Serial.println("4x7 Button Matrix initialized - B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
+  Serial.println("4x7 Button Matrix initialized - B0+A2: Seq CV Mod Amount | B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
 }
 
 void loop() {
@@ -961,7 +989,7 @@ void loop() {
 
   // POTENTIOMETER HANDLING - ALL FROM FIRST MUX
   modOsc_pitch = readMux1Channel(MOD_OSC_PITCH_CHANNEL, 16.35f, 2500.0f, true);
-  modOsc_modAmount = readMux1Channel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
+  modOsc_modAmount = readMux1Channel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);  // This is the base level
   complexOsc_basePitch = readMux1Channel(COMPLEX_OSC_PITCH_CHANNEL, 55.0f, 1760.0f, true);
   complexOsc_timbreAmount = readMux1Channel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);
   complexOsc_foldAmount = readMux1Channel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 1.0f);
@@ -1087,6 +1115,13 @@ void loop() {
     Serial.print(envModDepth_ch1);
     Serial.print(" | EnvMod Ch2: ");
     Serial.print(envModDepth_ch2);
+
+    // Show modulation amount status
+    Serial.print(" | Mod Amount: ");
+    Serial.print(modOsc_modAmount);
+    if (seqCVModAmountEnabled) {
+      Serial.print(" (Seq CV Active)");
+    }
 
     // Show wavefolder modulation status
     Serial.print(" | Wavefolder Env Mod: ");
