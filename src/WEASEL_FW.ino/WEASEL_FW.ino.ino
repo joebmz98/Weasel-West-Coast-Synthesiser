@@ -124,6 +124,7 @@ float seqCVWavefolderModDepth = 0.0f;    // Depth of sequencer CV modulation on 
 bool seqCVModOscPitchEnabled = false;    // Whether sequencer CV controls modOsc pitch
 bool seqCVWavefolderModEnabled = false;  // Whether sequencer CV modulation of wavefolder is active
 bool seqCVModAmountEnabled = false;      // NEW: Whether sequencer CV controls modOsc_modAmount
+bool seqCVComplexOscPitchEnabled = false; // NEW: Whether sequencer CV controls complexOsc pitch
 
 // REVERB CONTROL
 float reverbMix = 0.0f;  // Reverb wet/dry mix (0.0 = dry, 1.0 = wet)
@@ -463,8 +464,11 @@ void readButtonMatrix() {
   // B0 + A1 enables sequencer CV control of modOsc pitch
   seqCVModOscPitchEnabled = matrixStates[0][1];
 
-  // B0 + A2 enables sequencer CV control of modOsc_modAmount (NEW)
+  // B0 + A2 enables sequencer CV control of modOsc_modAmount
   seqCVModAmountEnabled = matrixStates[0][2];
+
+  // B0 + A3 enables sequencer CV control of complexOsc pitch (NEW)
+  seqCVComplexOscPitchEnabled = matrixStates[0][3];
 
   // B0 + A4 enables sequencer CV modulation of wavefolder
   seqCVWavefolderModEnabled = matrixStates[0][4];
@@ -481,7 +485,8 @@ void printButtonStates() {
   if (matrixStates[0][4] != lastMatrixStates[0][4] || 
       matrixStates[1][4] != lastMatrixStates[1][4] || 
       matrixStates[0][1] != lastMatrixStates[0][1] ||
-      matrixStates[0][2] != lastMatrixStates[0][2]) {  // ADDED B0+A2
+      matrixStates[0][2] != lastMatrixStates[0][2] ||
+      matrixStates[0][3] != lastMatrixStates[0][3]) {  // ADDED B0+A3
     anyChange = true;
   }
 
@@ -493,8 +498,10 @@ void printButtonStates() {
     Serial.print(matrixStates[1][4] ? "HIGH" : "LOW");
     Serial.print(" | B0+A1: ");                         
     Serial.print(matrixStates[0][1] ? "HIGH" : "LOW");  
-    Serial.print(" | B0+A2: ");                         // NEW
-    Serial.print(matrixStates[0][2] ? "HIGH" : "LOW");  // NEW
+    Serial.print(" | B0+A2: ");                         
+    Serial.print(matrixStates[0][2] ? "HIGH" : "LOW");  
+    Serial.print(" | B0+A3: ");                         // NEW
+    Serial.print(matrixStates[0][3] ? "HIGH" : "LOW");  // NEW
 
     // Show modulation status changes
     if (matrixStates[0][4] != lastMatrixStates[0][4]) {
@@ -509,9 +516,13 @@ void printButtonStates() {
       Serial.print(" | Seq CV ModOsc Pitch: ");
       Serial.print(seqCVModOscPitchEnabled ? "ENABLED" : "DISABLED");
     }
-    if (matrixStates[0][2] != lastMatrixStates[0][2]) {  // NEW
+    if (matrixStates[0][2] != lastMatrixStates[0][2]) {  
       Serial.print(" | Seq CV Mod Amount: ");
       Serial.print(seqCVModAmountEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[0][3] != lastMatrixStates[0][3]) {  // NEW
+      Serial.print(" | Seq CV ComplexOsc Pitch: ");
+      Serial.print(seqCVComplexOscPitchEnabled ? "ENABLED" : "DISABLED");
     }
 
     Serial.println();
@@ -619,8 +630,17 @@ void AudioCallback(float** in, float** out, size_t size) {
     // APPLY ANALOG FILTER TO MOD OSCILLATOR
     float modOsc_filteredSignal = modOsc_analogFilter.Process(modOsc_signal);
 
-    // PROCESS COMPLEX OSCILLATOR with combined pitch modulation
-    float modulatedComplexBasePitch = complexOsc_basePitch * pitchRatio;
+    // PROCESS COMPLEX OSCILLATOR with pitch modulation
+    float modulatedComplexBasePitch;
+    
+    if (seqCVComplexOscPitchEnabled) {
+      // When B0+A3 is pressed: complexOsc pitch = C2 pot + sequencer CV + MIDI CV
+      modulatedComplexBasePitch = complexOsc_basePitch * pitchRatio;
+    } else {
+      // Normal operation: complexOsc pitch = only C2 pot (no sequencer CV)
+      modulatedComplexBasePitch = complexOsc_basePitch;
+    }
+    
     float complexOsc_freq = modulatedComplexBasePitch;
 
     // Get envelope value once per sample
@@ -928,7 +948,8 @@ void setup() {
   wavefolderEnvModEnabled = false;
   seqCVWavefolderModDepth = 1.0f;  // Default modulation depth
   seqCVWavefolderModEnabled = false;
-  seqCVModAmountEnabled = false;   // NEW: Sequencer CV control of mod amount disabled by default
+  seqCVModAmountEnabled = false;   // Sequencer CV control of mod amount disabled by default
+  seqCVComplexOscPitchEnabled = false; // NEW: Sequencer CV control of complexOsc pitch disabled by default
 
   // REVERB INIT
   reverbMix = 0.0f;  // Start with dry signal
@@ -964,7 +985,7 @@ void setup() {
   Serial.println("MUX2 C2: Wavefolder Env Mod Depth | MUX2 C3: Sequencer CV Wavefolder Mod Depth");
   Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet)");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
-  Serial.println("4x7 Button Matrix initialized - B0+A2: Seq CV Mod Amount | B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
+  Serial.println("4x7 Button Matrix initialized - B0+A2: Seq CV Mod Amount | B0+A3: Seq CV ComplexOsc Pitch | B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
 }
 
 void loop() {
@@ -1120,6 +1141,13 @@ void loop() {
     Serial.print(" | Mod Amount: ");
     Serial.print(modOsc_modAmount);
     if (seqCVModAmountEnabled) {
+      Serial.print(" (Seq CV Active)");
+    }
+
+    // Show complex oscillator pitch status
+    Serial.print(" | ComplexOsc Pitch: ");
+    Serial.print(complexOsc_basePitch);
+    if (seqCVComplexOscPitchEnabled) {
       Serial.print(" (Seq CV Active)");
     }
 
