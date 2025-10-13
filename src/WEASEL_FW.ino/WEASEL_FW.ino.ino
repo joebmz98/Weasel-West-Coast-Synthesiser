@@ -18,7 +18,7 @@
 
 // NEW 4x7 BUTTON MATRIX PINS
 #define MATRIX_COL0 19  // Column 0 (B0)
-#define MATRIX_COL1 20  // Column 1 (B1) 
+#define MATRIX_COL1 20  // Column 1 (B1)
 #define MATRIX_COL2 21  // Column 2 (B2)
 #define MATRIX_COL3 22  // Column 3 (B3)
 #define MATRIX_ROW0 23  // Row 0 (A0)
@@ -30,10 +30,10 @@
 #define MATRIX_ROW6 29  // Row 6 (A6)
 
 // MOVED BUTTON PINS
-#define SEQUENCER_TOGGLE_BUTTON 8    // SEQ TOGGLE (moved from 19)
-#define MODULATION_TOGGLE_BUTTON 9   // MODULATION TOGGLE (moved from 20)
-#define LPG_CH1_TOGGLE_BUTTON 10     // LPG CHANNEL 1 TOGGLE (moved from 21)
-#define LPG_CH2_TOGGLE_BUTTON 11     // LPG CHANNEL 2 TOGGLE (moved from 22)
+#define SEQUENCER_TOGGLE_BUTTON 8   // SEQ TOGGLE (moved from 19)
+#define MODULATION_TOGGLE_BUTTON 9  // MODULATION TOGGLE (moved from 20)
+#define LPG_CH1_TOGGLE_BUTTON 10    // LPG CHANNEL 1 TOGGLE (moved from 21)
+#define LPG_CH2_TOGGLE_BUTTON 11    // LPG CHANNEL 2 TOGGLE (moved from 22)
 
 // MUX CHANNEL ASSIGNMENTS (FIRST MUX - keeping all existing pots on MUX1)
 #define MOD_OSC_PITCH_CHANNEL 0       // C0 - modOsc_pitch
@@ -54,11 +54,11 @@
 #define CLOCK_CHANNEL 15              // C15 - CLOCK
 
 // MUX CHANNEL ASSIGNMENTS (SECOND MUX - modulation depth controls)
-#define ENV_MOD_DEPTH_CH1 0  // C0 - Envelope modulation depth for Channel 1 (complex osc)
-#define ENV_MOD_DEPTH_CH2 1  // C1 - Envelope modulation depth for Channel 2 (mod osc)
-#define WAVEFOLDER_ENV_MOD_DEPTH 2  // C2 - Wavefolder envelope modulation depth
+#define ENV_MOD_DEPTH_CH1 0            // C0 - Envelope modulation depth for Channel 1 (complex osc)
+#define ENV_MOD_DEPTH_CH2 1            // C1 - Envelope modulation depth for Channel 2 (mod osc)
+#define WAVEFOLDER_ENV_MOD_DEPTH 2     // C2 - Wavefolder envelope modulation depth
 #define SEQ_CV_WAVEFOLDER_MOD_DEPTH 3  // C3 - Sequencer CV to wavefolder modulation depth
-#define REVERB_MIX 4  // C4 - Reverb wet/dry mix
+#define REVERB_MIX 4                   // C4 - Reverb wet/dry mix
 #define MUX2_CHANNEL_5 5
 #define MUX2_CHANNEL_6 6
 #define MUX2_CHANNEL_7 7
@@ -116,12 +116,13 @@ float envModDepth_ch1 = 1.0f;  // Envelope modulation depth for channel 1 (compl
 float envModDepth_ch2 = 1.0f;  // Envelope modulation depth for channel 2 (mod osc)
 
 // WAVEFOLDER MODULATION
-float wavefolderEnvModDepth = 0.0f;  // Depth of envelope modulation on wavefolder (0.0 to 1.0)
-bool wavefolderEnvModEnabled = false; // Whether envelope modulation of wavefolder is active
+float wavefolderEnvModDepth = 0.0f;    // Depth of envelope modulation on wavefolder (0.0 to 1.0)
+bool wavefolderEnvModEnabled = false;  // Whether envelope modulation of wavefolder is active
 
-// SEQUENCER CV WAVEFOLDER MODULATION
-float seqCVWavefolderModDepth = 0.0f;  // Depth of sequencer CV modulation on wavefolder (0.0 to 1.0)
-bool seqCVWavefolderModEnabled = false; // Whether sequencer CV modulation of wavefolder is active
+// SEQUENCER CV MODULATION
+float seqCVWavefolderModDepth = 0.0f;    // Depth of sequencer CV modulation on wavefolder (0.0 to 1.0)
+bool seqCVModOscPitchEnabled = false;    // Whether sequencer CV controls modOsc pitch
+bool seqCVWavefolderModEnabled = false;  // Whether sequencer CV modulation of wavefolder is active
 
 // REVERB CONTROL
 float reverbMix = 0.0f;  // Reverb wet/dry mix (0.0 = dry, 1.0 = wet)
@@ -162,8 +163,8 @@ Switch lpgToggle_channel1;  // LPG CH1 MODE TOGGLE
 Switch lpgToggle_channel2;  // LPG CH2 MODE TOGGLE
 
 // NEW 4x7 BUTTON MATRIX VARIABLES
-bool matrixStates[4][7] = {{false}};  // Store states for [col][row] - 4 columns x 7 rows
-bool lastMatrixStates[4][7] = {{false}};
+bool matrixStates[4][7] = { { false } };  // Store states for [col][row] - 4 columns x 7 rows
+bool lastMatrixStates[4][7] = { { false } };
 unsigned long lastMatrixRead = 0;
 const unsigned long MATRIX_READ_INTERVAL = 50;  // Read matrix every 50ms
 
@@ -238,7 +239,7 @@ float wavefolder(float input, float amount) {
   return (input * (1.0f - wetDryMix)) + ((scaledInput * wetDryMix) * 0.25);
 }
 
-// Function to apply LPG processing based on mode with envelope modulation depth
+// Function to apply LPG processing based on mode with envelope modulation depth - Buchla style
 void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLevel, float baseCutoffControl, float envValue, float modDepth) {
   float outputGain = 1.0f;
 
@@ -246,17 +247,21 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
   // modDepth = 0.0: no envelope effect, modDepth = 1.0: full envelope effect
   float modulatedEnv = envValue * modDepth;
 
+  // For Buchla-style behavior: modDepth controls how much the envelope affects the signal
+  // When modDepth = 0, the envelope has no effect but the base signal still passes
+  // When modDepth = 1, full envelope control
+
   switch (mode) {
     case LPG_MODE_COMBI:
       {
         // COMBI mode: MUX1 C5/C6 control base level AND base cutoff
         // MUX2 C0/C1 control envelope modulation for BOTH level AND cutoff
 
-        // Calculate final level: baseLevel + envelope modulation (same as VCA mode)
+        // Calculate final level: interpolate between base level and envelope-controlled level
         float baseLevel = channelLevel;  // From MUX1 C5/C6
         float modulatedLevel = baseLevel + ((1.0f - baseLevel) * modulatedEnv);
-
-        // Apply the level to the signal
+        
+        // Apply the interpolated level to the signal
         signal *= modulatedLevel;
 
         // Base cutoff determined by channel level (20Hz to 20kHz)
@@ -276,11 +281,11 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
       {
         // VCA mode: MUX1 C5/C6 control base level, MUX2 C0/C1 control envelope modulation amount
 
-        // Calculate final level: baseLevel + envelope modulation
+        // Calculate final level: interpolate between base level and envelope-controlled level
         float baseLevel = channelLevel;  // From MUX1 C5/C6
         float modulatedLevel = baseLevel + ((1.0f - baseLevel) * modulatedEnv);
 
-        // Apply the level to the signal
+        // Apply the interpolated level to the signal
         signal *= modulatedLevel;
 
         // Filter cutoff increases with oscillator level (Buchla characteristic)
@@ -379,7 +384,7 @@ void initButtonMatrix() {
   pinMode(MATRIX_COL1, OUTPUT);
   pinMode(MATRIX_COL2, OUTPUT);
   pinMode(MATRIX_COL3, OUTPUT);
-  
+
   // Initialize row pins as inputs with pulldown
   pinMode(MATRIX_ROW0, INPUT_PULLDOWN);
   pinMode(MATRIX_ROW1, INPUT_PULLDOWN);
@@ -388,7 +393,7 @@ void initButtonMatrix() {
   pinMode(MATRIX_ROW4, INPUT_PULLDOWN);
   pinMode(MATRIX_ROW5, INPUT_PULLDOWN);
   pinMode(MATRIX_ROW6, INPUT_PULLDOWN);
-  
+
   // Start with all columns LOW
   digitalWrite(MATRIX_COL0, LOW);
   digitalWrite(MATRIX_COL1, LOW);
@@ -400,8 +405,8 @@ void readButtonMatrix() {
   // Scan each column one at a time
   for (int col = 0; col < 4; col++) {
     // Activate current column
-    switch(col) {
-      case 0: 
+    switch (col) {
+      case 0:
         digitalWrite(MATRIX_COL0, HIGH);
         digitalWrite(MATRIX_COL1, LOW);
         digitalWrite(MATRIX_COL2, LOW);
@@ -426,15 +431,15 @@ void readButtonMatrix() {
         digitalWrite(MATRIX_COL3, HIGH);
         break;
     }
-    
-    delayMicroseconds(10); // Small delay for stabilization
-    
+
+    delayMicroseconds(10);  // Small delay for stabilization
+
     // Read all 7 rows for this column
     for (int row = 0; row < 7; row++) {
       lastMatrixStates[col][row] = matrixStates[col][row];
-      
+
       // Read the appropriate row pin
-      switch(row) {
+      switch (row) {
         case 0: matrixStates[col][row] = (digitalRead(MATRIX_ROW0) == HIGH); break;
         case 1: matrixStates[col][row] = (digitalRead(MATRIX_ROW1) == HIGH); break;
         case 2: matrixStates[col][row] = (digitalRead(MATRIX_ROW2) == HIGH); break;
@@ -445,17 +450,21 @@ void readButtonMatrix() {
       }
     }
   }
-  
+
   // Deactivate all columns
   digitalWrite(MATRIX_COL0, LOW);
   digitalWrite(MATRIX_COL1, LOW);
   digitalWrite(MATRIX_COL2, LOW);
   digitalWrite(MATRIX_COL3, LOW);
-  
+
   // Update modulation enable flags based on new matrix positions
+
+  // B0 + A1 enables sequencer CV control of modOsc pitch
+  seqCVModOscPitchEnabled = matrixStates[0][1];
+
   // B0 + A4 enables sequencer CV modulation of wavefolder
   seqCVWavefolderModEnabled = matrixStates[0][4];
-  
+
   // B1 + A4 enables envelope modulation of wavefolder
   wavefolderEnvModEnabled = matrixStates[1][4];
 }
@@ -463,20 +472,21 @@ void readButtonMatrix() {
 void printButtonStates() {
   // Print button states only when they change for the specific buttons we care about
   bool anyChange = false;
-  
+
   // Check only the buttons we're using for modulation
-  if (matrixStates[0][4] != lastMatrixStates[0][4] || 
-      matrixStates[1][4] != lastMatrixStates[1][4]) {
+  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1]) {  // ADD THIS LINE
     anyChange = true;
   }
-  
+
   if (anyChange) {
     Serial.print("Button Matrix - ");
     Serial.print("B0+A4: ");
     Serial.print(matrixStates[0][4] ? "HIGH" : "LOW");
     Serial.print(" | B1+A4: ");
     Serial.print(matrixStates[1][4] ? "HIGH" : "LOW");
-    
+    Serial.print(" | B0+A1: ");                         // ADD THIS LINE
+    Serial.print(matrixStates[0][1] ? "HIGH" : "LOW");  // ADD THIS LINE
+
     // Show modulation status changes
     if (matrixStates[0][4] != lastMatrixStates[0][4]) {
       Serial.print(" | Seq CV Wavefolder Mod: ");
@@ -486,7 +496,11 @@ void printButtonStates() {
       Serial.print(" | Wavefolder Env Mod: ");
       Serial.print(wavefolderEnvModEnabled ? "ENABLED" : "DISABLED");
     }
-    
+    if (matrixStates[0][1] != lastMatrixStates[0][1]) {  // ADD THIS BLOCK
+      Serial.print(" | Seq CV ModOsc Pitch: ");
+      Serial.print(seqCVModOscPitchEnabled ? "ENABLED" : "DISABLED");
+    }
+
     Serial.println();
   }
 }
@@ -575,8 +589,17 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     float pitchRatio = semitonesToRatio(totalPitchOffset);
 
-    // PROCESS MODULATOR OSCILLATOR with combined pitch modulation
-    float modulatedModPitch = modOsc_pitch * pitchRatio;
+    // PROCESS MODULATOR OSCILLATOR with pitch modulation
+    float modulatedModPitch;
+
+    if (seqCVModOscPitchEnabled) {
+      // When B0+A1 is pressed: modOsc pitch = C0 pot + sequencer CV (same as complexOsc)
+      modulatedModPitch = modOsc_pitch * pitchRatio;
+    } else {
+      // Normal operation: modOsc pitch = only C0 pot (no sequencer CV)
+      modulatedModPitch = modOsc_pitch;
+    }
+
     modOsc.SetFreq(modulatedModPitch);
     float modOsc_signal = modOsc.Process();
 
@@ -592,13 +615,13 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // Calculate modulated wavefolder amount with multiple modulation sources
     float currentFoldAmount = complexOsc_foldAmount;
-    
+
     // Apply envelope modulation if enabled
     if (wavefolderEnvModEnabled) {
       // Envelope modulates the wavefolder amount
       currentFoldAmount += (wavefolderEnvModDepth * envValue);
     }
-    
+
     // Apply sequencer CV modulation if enabled
     if (seqCVWavefolderModEnabled) {
       // Convert sequencer CV (in semitones) to a modulation amount
@@ -607,7 +630,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       // Apply modulation with depth control
       currentFoldAmount += (seqCVWavefolderModDepth * seqCVMod);
     }
-    
+
     // Clamp to prevent excessive folding
     currentFoldAmount = fminf(fmaxf(currentFoldAmount, 0.0f), 1.0f);
 
@@ -665,15 +688,15 @@ void AudioCallback(float** in, float** out, size_t size) {
         processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
         float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
-        
+
         // APPLY REVERB
         float wetL, wetR;
         verb.Process(oscillatorSum_signal, oscillatorSum_signal, &wetL, &wetR);
-        
+
         // Mix dry and wet signals
         float finalL = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetL * reverbMix);
         float finalR = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetR * reverbMix);
-        
+
         out[0][i] = finalL;
         out[1][i] = finalR;
       } else {
@@ -702,15 +725,15 @@ void AudioCallback(float** in, float** out, size_t size) {
 
         // OUTPUT SUMMATION
         float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
-        
+
         // APPLY REVERB
         float wetL, wetR;
         verb.Process(oscillatorSum_signal, oscillatorSum_signal, &wetL, &wetR);
-        
+
         // Mix dry and wet signals
         float finalL = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetL * reverbMix);
         float finalR = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetR * reverbMix);
-        
+
         out[0][i] = finalL;
         out[1][i] = finalR;
       }
@@ -741,15 +764,15 @@ void AudioCallback(float** in, float** out, size_t size) {
       processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
       float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
-      
+
       // APPLY REVERB
       float wetL, wetR;
       verb.Process(oscillatorSum_signal, oscillatorSum_signal, &wetL, &wetR);
-      
+
       // Mix dry and wet signals
       float finalL = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetL * reverbMix);
       float finalR = (oscillatorSum_signal * (1.0f - reverbMix)) + (wetR * reverbMix);
-      
+
       out[0][i] = finalL;
       out[1][i] = finalR;
     }
@@ -967,7 +990,7 @@ void loop() {
   envModDepth_ch2 = readMux2Channel(ENV_MOD_DEPTH_CH2, 0.0f, 1.0f);  // Channel 2 modulation depth
 
   // READ WAVEFOLDER MODULATION DEPTH CONTROLS
-  wavefolderEnvModDepth = readMux2Channel(WAVEFOLDER_ENV_MOD_DEPTH, 0.0f, 1.0f);  // Wavefolder envelope mod depth
+  wavefolderEnvModDepth = readMux2Channel(WAVEFOLDER_ENV_MOD_DEPTH, 0.0f, 1.0f);       // Wavefolder envelope mod depth
   seqCVWavefolderModDepth = readMux2Channel(SEQ_CV_WAVEFOLDER_MOD_DEPTH, 0.0f, 1.0f);  // Sequencer CV wavefolder mod depth
 
   // READ REVERB MIX FROM MUX2 C4
@@ -1064,7 +1087,7 @@ void loop() {
     Serial.print(envModDepth_ch1);
     Serial.print(" | EnvMod Ch2: ");
     Serial.print(envModDepth_ch2);
-    
+
     // Show wavefolder modulation status
     Serial.print(" | Wavefolder Env Mod: ");
     Serial.print(wavefolderEnvModEnabled ? "ON" : "OFF");
@@ -1073,7 +1096,7 @@ void loop() {
       Serial.print(wavefolderEnvModDepth);
       Serial.print(")");
     }
-    
+
     Serial.print(" | Seq CV Wavefolder Mod: ");
     Serial.print(seqCVWavefolderModEnabled ? "ON" : "OFF");
     if (seqCVWavefolderModEnabled) {
@@ -1081,7 +1104,7 @@ void loop() {
       Serial.print(seqCVWavefolderModDepth);
       Serial.print(")");
     }
-    
+
     // Show reverb status
     Serial.print(" | Reverb Mix: ");
     Serial.print(reverbMix);
