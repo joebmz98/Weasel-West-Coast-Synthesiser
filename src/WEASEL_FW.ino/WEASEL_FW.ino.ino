@@ -16,10 +16,24 @@
 #define MUX2_S3 7
 #define MUX2_SIG A1  // Second MUX signal pin
 
-// BUTTON MATRIX PINS - Prepared for multiple columns
-#define BUTTON_COL0 8   // Column 0 pin
-#define BUTTON_ROW0 9   // Row 0 pin  
-#define BUTTON_ROW1 10  // Row 1 pin
+// NEW 4x7 BUTTON MATRIX PINS
+#define MATRIX_COL0 19  // Column 0 (B0)
+#define MATRIX_COL1 20  // Column 1 (B1) 
+#define MATRIX_COL2 21  // Column 2 (B2)
+#define MATRIX_COL3 22  // Column 3 (B3)
+#define MATRIX_ROW0 23  // Row 0 (A0)
+#define MATRIX_ROW1 24  // Row 1 (A1)
+#define MATRIX_ROW2 25  // Row 2 (A2)
+#define MATRIX_ROW3 26  // Row 3 (A3)
+#define MATRIX_ROW4 27  // Row 4 (A4) - Used for wavefolder modulation
+#define MATRIX_ROW5 28  // Row 5 (A5)
+#define MATRIX_ROW6 29  // Row 6 (A6)
+
+// MOVED BUTTON PINS
+#define SEQUENCER_TOGGLE_BUTTON 8    // SEQ TOGGLE (moved from 19)
+#define MODULATION_TOGGLE_BUTTON 9   // MODULATION TOGGLE (moved from 20)
+#define LPG_CH1_TOGGLE_BUTTON 10     // LPG CHANNEL 1 TOGGLE (moved from 21)
+#define LPG_CH2_TOGGLE_BUTTON 11     // LPG CHANNEL 2 TOGGLE (moved from 22)
 
 // MUX CHANNEL ASSIGNMENTS (FIRST MUX - keeping all existing pots on MUX1)
 #define MOD_OSC_PITCH_CHANNEL 0       // C0 - modOsc_pitch
@@ -56,11 +70,6 @@
 #define MUX2_CHANNEL_13 13
 #define MUX2_CHANNEL_14 14
 #define MUX2_CHANNEL_15 15
-
-#define SEQUENCER_TOGGLE_BUTTON 19   // SEQ TOGGLE
-#define MODULATION_TOGGLE_BUTTON 20  // MODULATION TOGGLE
-#define LPG_CH1_TOGGLE_BUTTON 21     // LPG CHANNEL 1 TOGGLE
-#define LPG_CH2_TOGGLE_BUTTON 22     // LPG CHANNEL 2 TOGGLE
 
 // MIDI Settings
 #define MIDI_RX_PIN 30  // USART1 Rx (Digital pin 30)
@@ -152,11 +161,11 @@ Switch modulationToggle;    // MODULATION TYPE TOGGLE
 Switch lpgToggle_channel1;  // LPG CH1 MODE TOGGLE
 Switch lpgToggle_channel2;  // LPG CH2 MODE TOGGLE
 
-// BUTTON MATRIX VARIABLES - Prepared for multiple columns
-bool buttonStates[1][2] = {{false, false}};  // Store states for [col][row] - currently 1 column x 2 rows
-bool lastButtonStates[1][2] = {{false, false}};
-unsigned long lastButtonRead = 0;
-const unsigned long BUTTON_READ_INTERVAL = 50;  // Read buttons every 50ms
+// NEW 4x7 BUTTON MATRIX VARIABLES
+bool matrixStates[4][7] = {{false}};  // Store states for [col][row] - 4 columns x 7 rows
+bool lastMatrixStates[4][7] = {{false}};
+unsigned long lastMatrixRead = 0;
+const unsigned long MATRIX_READ_INTERVAL = 50;  // Read matrix every 50ms
 
 // MIDI Object
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
@@ -363,67 +372,119 @@ float readMux2Channel(int channel, float minVal, float maxVal, bool logarithmic 
   }
 }
 
-// BUTTON MATRIX FUNCTIONS - Prepared for multiple columns
+// NEW 4x7 BUTTON MATRIX FUNCTIONS
 void initButtonMatrix() {
-  pinMode(BUTTON_COL0, OUTPUT);
-  pinMode(BUTTON_ROW0, INPUT_PULLDOWN);
-  pinMode(BUTTON_ROW1, INPUT_PULLDOWN);
+  // Initialize column pins as outputs
+  pinMode(MATRIX_COL0, OUTPUT);
+  pinMode(MATRIX_COL1, OUTPUT);
+  pinMode(MATRIX_COL2, OUTPUT);
+  pinMode(MATRIX_COL3, OUTPUT);
   
-  // Start with column LOW
-  digitalWrite(BUTTON_COL0, LOW);
+  // Initialize row pins as inputs with pulldown
+  pinMode(MATRIX_ROW0, INPUT_PULLDOWN);
+  pinMode(MATRIX_ROW1, INPUT_PULLDOWN);
+  pinMode(MATRIX_ROW2, INPUT_PULLDOWN);
+  pinMode(MATRIX_ROW3, INPUT_PULLDOWN);
+  pinMode(MATRIX_ROW4, INPUT_PULLDOWN);
+  pinMode(MATRIX_ROW5, INPUT_PULLDOWN);
+  pinMode(MATRIX_ROW6, INPUT_PULLDOWN);
+  
+  // Start with all columns LOW
+  digitalWrite(MATRIX_COL0, LOW);
+  digitalWrite(MATRIX_COL1, LOW);
+  digitalWrite(MATRIX_COL2, LOW);
+  digitalWrite(MATRIX_COL3, LOW);
 }
 
 void readButtonMatrix() {
-  // Scan column 0
-  digitalWrite(BUTTON_COL0, HIGH);
-  delayMicroseconds(10); // Small delay for stabilization
+  // Scan each column one at a time
+  for (int col = 0; col < 4; col++) {
+    // Activate current column
+    switch(col) {
+      case 0: 
+        digitalWrite(MATRIX_COL0, HIGH);
+        digitalWrite(MATRIX_COL1, LOW);
+        digitalWrite(MATRIX_COL2, LOW);
+        digitalWrite(MATRIX_COL3, LOW);
+        break;
+      case 1:
+        digitalWrite(MATRIX_COL0, LOW);
+        digitalWrite(MATRIX_COL1, HIGH);
+        digitalWrite(MATRIX_COL2, LOW);
+        digitalWrite(MATRIX_COL3, LOW);
+        break;
+      case 2:
+        digitalWrite(MATRIX_COL0, LOW);
+        digitalWrite(MATRIX_COL1, LOW);
+        digitalWrite(MATRIX_COL2, HIGH);
+        digitalWrite(MATRIX_COL3, LOW);
+        break;
+      case 3:
+        digitalWrite(MATRIX_COL0, LOW);
+        digitalWrite(MATRIX_COL1, LOW);
+        digitalWrite(MATRIX_COL2, LOW);
+        digitalWrite(MATRIX_COL3, HIGH);
+        break;
+    }
+    
+    delayMicroseconds(10); // Small delay for stabilization
+    
+    // Read all 7 rows for this column
+    for (int row = 0; row < 7; row++) {
+      lastMatrixStates[col][row] = matrixStates[col][row];
+      
+      // Read the appropriate row pin
+      switch(row) {
+        case 0: matrixStates[col][row] = (digitalRead(MATRIX_ROW0) == HIGH); break;
+        case 1: matrixStates[col][row] = (digitalRead(MATRIX_ROW1) == HIGH); break;
+        case 2: matrixStates[col][row] = (digitalRead(MATRIX_ROW2) == HIGH); break;
+        case 3: matrixStates[col][row] = (digitalRead(MATRIX_ROW3) == HIGH); break;
+        case 4: matrixStates[col][row] = (digitalRead(MATRIX_ROW4) == HIGH); break;
+        case 5: matrixStates[col][row] = (digitalRead(MATRIX_ROW5) == HIGH); break;
+        case 6: matrixStates[col][row] = (digitalRead(MATRIX_ROW6) == HIGH); break;
+      }
+    }
+  }
   
-  // Read rows for column 0
-  lastButtonStates[0][0] = buttonStates[0][0];
-  lastButtonStates[0][1] = buttonStates[0][1];
+  // Deactivate all columns
+  digitalWrite(MATRIX_COL0, LOW);
+  digitalWrite(MATRIX_COL1, LOW);
+  digitalWrite(MATRIX_COL2, LOW);
+  digitalWrite(MATRIX_COL3, LOW);
   
-  buttonStates[0][0] = (digitalRead(BUTTON_ROW0) == HIGH);
-  buttonStates[0][1] = (digitalRead(BUTTON_ROW1) == HIGH);
+  // Update modulation enable flags based on new matrix positions
+  // B0 + A4 enables sequencer CV modulation of wavefolder
+  seqCVWavefolderModEnabled = matrixStates[0][4];
   
-  // Deactivate column
-  digitalWrite(BUTTON_COL0, LOW);
-  
-  // Update modulation enable flags based on button states
-  // Row0 (Y0) + Col0 enables envelope modulation of wavefolder
-  wavefolderEnvModEnabled = buttonStates[0][0];
-  
-  // Row1 (Y1) + Col0 enables sequencer CV modulation of wavefolder
-  seqCVWavefolderModEnabled = buttonStates[0][1];
+  // B1 + A4 enables envelope modulation of wavefolder
+  wavefolderEnvModEnabled = matrixStates[1][4];
 }
 
 void printButtonStates() {
-  // Print button states only when they change
+  // Print button states only when they change for the specific buttons we care about
   bool anyChange = false;
-  for (int col = 0; col < 1; col++) {
-    for (int row = 0; row < 2; row++) {
-      if (buttonStates[col][row] != lastButtonStates[col][row]) {
-        anyChange = true;
-        break;
-      }
-    }
-    if (anyChange) break;
+  
+  // Check only the buttons we're using for modulation
+  if (matrixStates[0][4] != lastMatrixStates[0][4] || 
+      matrixStates[1][4] != lastMatrixStates[1][4]) {
+    anyChange = true;
   }
   
   if (anyChange) {
-    Serial.print("Button Matrix - Col0: [");
-    Serial.print(buttonStates[0][0] ? "HIGH" : "LOW");
-    Serial.print(",");
-    Serial.print(buttonStates[0][1] ? "HIGH" : "LOW");
-    Serial.print("]");
+    Serial.print("Button Matrix - ");
+    Serial.print("B0+A4: ");
+    Serial.print(matrixStates[0][4] ? "HIGH" : "LOW");
+    Serial.print(" | B1+A4: ");
+    Serial.print(matrixStates[1][4] ? "HIGH" : "LOW");
     
     // Show modulation status changes
-    if (buttonStates[0][0] != lastButtonStates[0][0]) {
-      Serial.print(" | Wavefolder Env Mod: ");
-      Serial.print(wavefolderEnvModEnabled ? "ENABLED" : "DISABLED");
-    }
-    if (buttonStates[0][1] != lastButtonStates[0][1]) {
+    if (matrixStates[0][4] != lastMatrixStates[0][4]) {
       Serial.print(" | Seq CV Wavefolder Mod: ");
       Serial.print(seqCVWavefolderModEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[1][4] != lastMatrixStates[1][4]) {
+      Serial.print(" | Wavefolder Env Mod: ");
+      Serial.print(wavefolderEnvModEnabled ? "ENABLED" : "DISABLED");
     }
     
     Serial.println();
@@ -698,10 +759,10 @@ void AudioCallback(float** in, float** out, size_t size) {
 void setup() {
   Serial.begin(115200);  // Increased baud rate for faster debugging
 
-  // INIT BUTTON MATRIX
+  // INIT NEW 4x7 BUTTON MATRIX
   initButtonMatrix();
 
-  // BUTTON INIT - Fixed the modulationToggle pin assignment
+  // BUTTON INIT - Updated pin assignments
   sequencerToggle.Init(1000, true, SEQUENCER_TOGGLE_BUTTON, INPUT_PULLUP);
   modulationToggle.Init(1000, true, MODULATION_TOGGLE_BUTTON, INPUT_PULLUP);
   lpgToggle_channel1.Init(1000, true, LPG_CH1_TOGGLE_BUTTON, INPUT_PULLUP);
@@ -843,18 +904,16 @@ void setup() {
   // Start audio callback
   DAISY.begin(AudioCallback);
 
-  Serial.println("Weasel Initialised with MIDI functionality and second MUX");
-  Serial.println("Use button 19 to toggle between internal clock and MIDI note triggers");
-  Serial.println("Use button 20 to toggle between FM and AM modulation");
+  Serial.println("Weasel Initialised with 4x7 Button Matrix and updated pin assignments");
+  Serial.println("Use button D8 to toggle between internal clock and MIDI note triggers");
+  Serial.println("Use button D9 to toggle between FM and AM modulation");
   Serial.println("Current modulation: FM");
   Serial.println("LPG Channel 1: COMBI mode | LPG Channel 2: COMBI mode");
   Serial.println("MUX2 C0: Env modulation depth for Ch1 | MUX2 C1: Env modulation depth for Ch2");
   Serial.println("MUX2 C2: Wavefolder Env Mod Depth | MUX2 C3: Sequencer CV Wavefolder Mod Depth");
   Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet)");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
-  Serial.println("Button Matrix initialized with column scanning");
-  Serial.println("Connect Y0 to X0 to enable envelope modulation of wavefolder amount");
-  Serial.println("Connect Y1 to X0 to enable sequencer CV modulation of wavefolder amount");
+  Serial.println("4x7 Button Matrix initialized - B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
 }
 
 void loop() {
@@ -870,11 +929,11 @@ void loop() {
     midiNoteActive = false;
   }
 
-  // READ BUTTON MATRIX
-  if (millis() - lastButtonRead > BUTTON_READ_INTERVAL) {
+  // READ NEW 4x7 BUTTON MATRIX
+  if (millis() - lastMatrixRead > MATRIX_READ_INTERVAL) {
     readButtonMatrix();
     printButtonStates();
-    lastButtonRead = millis();
+    lastMatrixRead = millis();
   }
 
   // POTENTIOMETER HANDLING - ALL FROM FIRST MUX
