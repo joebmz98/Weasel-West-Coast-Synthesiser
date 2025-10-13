@@ -17,17 +17,17 @@
 #define MUX2_SIG A1  // Second MUX signal pin
 
 // NEW 4x7 BUTTON MATRIX PINS
-#define MATRIX_COL0 19  // Column 0 (B0)
-#define MATRIX_COL1 20  // Column 1 (B1)
-#define MATRIX_COL2 21  // Column 2 (B2)
-#define MATRIX_COL3 22  // Column 3 (B3)
-#define MATRIX_ROW0 23  // Row 0 (A0)
-#define MATRIX_ROW1 24  // Row 1 (A1)
-#define MATRIX_ROW2 25  // Row 2 (A2)
-#define MATRIX_ROW3 26  // Row 3 (A3)
-#define MATRIX_ROW4 27  // Row 4 (A4) - Used for wavefolder modulation
-#define MATRIX_ROW5 28  // Row 5 (A5)
-#define MATRIX_ROW6 29  // Row 6 (A6)
+#define MATRIX_COL0 19  // Column 0 (B0) // SEQUENCER CV OUT
+#define MATRIX_COL1 20  // Column 1 (B1) // EG CV OUT
+#define MATRIX_COL2 21  // Column 2 (B2) // PULSAR CV OUT
+#define MATRIX_COL3 22  // Column 3 (B3) // RANDOM VOLTAGE CV OUT
+#define MATRIX_ROW0 23  // Row 0 (A0) // PULSAR PERIOD MODULATION
+#define MATRIX_ROW1 24  // Row 1 (A1) // MOD OSC FREQ
+#define MATRIX_ROW2 25  // Row 2 (A2) // MOD OSC MOD AMOUNT
+#define MATRIX_ROW3 26  // Row 3 (A3) // COMPLEX OSC PITCH
+#define MATRIX_ROW4 27  // Row 4 (A4) // COMPLEX OSC WAVEFOLDER AMOUNT
+#define MATRIX_ROW5 28  // Row 5 (A5) // LPG CH1 LEVEL MODULATION
+#define MATRIX_ROW6 29  // Row 6 (A6) // LPG CH2 LEVEL MODULATION
 
 // MOVED BUTTON PINS
 #define SEQUENCER_TOGGLE_BUTTON 8   // SEQ TOGGLE (moved from 19)
@@ -88,8 +88,9 @@ DaisyHardware hw;
 static Oscillator complexOsc;               // PRIMARY COMPLEX OSC
 static Oscillator complexOscTri;            // SECONDARY COMPLEX OSC (triangle)
 static Oscillator modOsc;                   // MODULATION OSC
-static MoogLadder complexOsc_analogFilter;  // FILTER - HIGH CUT AT 15kHz FOR "ANALOGUE" FEEL OF WAVEFORMS
+static MoogLadder complexOsc_analogFilter;  // FILTER - HIGH CUT FOR "ANALOGUE" FEEL OF WAVEFORMS
 static MoogLadder modOsc_analogFilter;      // FILTER FOR MOD OSCILLATOR
+static Oscillator pulsarOsc;                // PULSAR OSC 
 
 // INIT LPG
 static MoogLadder lpgChannel1_filter;  // FILTER FOR BUCHLA LPG CH1
@@ -106,6 +107,7 @@ float complexOsc_timbreAmount;  // COMPLEX OSC TIMBRE WAVEMORPHING AMOUNT (0.0 =
 float complexOsc_foldAmount;    // COMPLEX OSC WAVEFOLDING AMOUNT (0.0 = no fold, 1.0 = max fold)
 float complexOsc_level;         // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
 float modOsc_level;             // MODULATION OSC LEVEL CONTROL (0.0 to 1.0)
+float pulsarOsc_period;         // PULSAR OSC FREQUENCY
 
 // LP MODE CUTOFF CONTROL VARIABLES
 float lpgCh1_baseCutoff = 0.5f;  // Base cutoff for Channel 1 in LP mode (0.0 to 1.0)
@@ -889,6 +891,7 @@ void setup() {
   complexOsc.Init(sample_rate);
   complexOscTri.Init(sample_rate);
   modOsc.Init(sample_rate);
+  pulsarOsc.Init(sample_rate);
 
   // INIT COMPLEX OSC FILTER
   complexOsc_analogFilter.Init(sample_rate);
@@ -917,6 +920,7 @@ void setup() {
   verb.SetFeedback(0.85f);
   verb.SetLpFreq(18000.0f);
 
+  // OSCILLATORS INIT
   complexOsc.SetWaveform(complexOsc.WAVE_SIN);
   complexOsc.SetAmp(1.0);
 
@@ -925,6 +929,9 @@ void setup() {
 
   modOsc.SetWaveform(modOsc.WAVE_TRI);
   modOsc.SetAmp(0.5);
+
+  pulsarOsc.SetWaveform(complexOsc.WAVE_SAW);
+  pulsarOsc.SetAmp(1.0);
 
   // OSC INIT
   complexOsc_basePitch = 440.0f;
