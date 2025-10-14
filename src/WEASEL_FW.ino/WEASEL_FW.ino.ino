@@ -59,7 +59,7 @@
 #define WAVEFOLDER_ENV_MOD_DEPTH 2     // C2 - Wavefolder envelope modulation depth
 #define SEQ_CV_WAVEFOLDER_MOD_DEPTH 3  // C3 - Sequencer CV to wavefolder modulation depth
 #define REVERB_MIX 4                   // C4 - Reverb wet/dry mix
-#define MUX2_CHANNEL_5 5
+#define PULSAR_OSC_FREQ_CHANNEL 5      // C5 - Pulsar oscillator frequency
 #define MUX2_CHANNEL_6 6
 #define MUX2_CHANNEL_7 7
 #define MUX2_CHANNEL_8 8
@@ -615,6 +615,11 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     float pitchRatio = semitonesToRatio(totalPitchOffset);
 
+    // PROCESS PULSAR OSCILLATOR (for modulation use only)
+    pulsarOsc.SetFreq(pulsarOsc_period);
+    float pulsarOsc_signal = pulsarOsc.Process();
+    // Note: pulsarOsc_signal is available for modulation but not sent to output
+
     // PROCESS MODULATOR OSCILLATOR with pitch modulation
     float modulatedModPitch;
 
@@ -941,6 +946,7 @@ void setup() {
   complexOsc_foldAmount = 0.0f;
   complexOsc_level = 1.0f;
   modOsc_level = 1.0f;
+  pulsarOsc_period = 1.0f;  // Start at 1Hz
 
   // LP MODE CUTOFF INIT
   lpgCh1_baseCutoff = 0.5f;
@@ -990,7 +996,7 @@ void setup() {
   Serial.println("LPG Channel 1: COMBI mode | LPG Channel 2: COMBI mode");
   Serial.println("MUX2 C0: Env modulation depth for Ch1 | MUX2 C1: Env modulation depth for Ch2");
   Serial.println("MUX2 C2: Wavefolder Env Mod Depth | MUX2 C3: Sequencer CV Wavefolder Mod Depth");
-  Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet)");
+  Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet) | MUX2 C5: Pulsar Osc Frequency (1-500Hz)");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
   Serial.println("4x7 Button Matrix initialized - B0+A2: Seq CV Mod Amount | B0+A3: Seq CV ComplexOsc Pitch | B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
 }
@@ -1052,8 +1058,10 @@ void loop() {
   // READ REVERB MIX FROM MUX2 C4
   reverbMix = readMux2Channel(REVERB_MIX, 0.0f, 1.0f);  // Reverb wet/dry mix
 
+  // READ PULSAR OSCILLATOR FREQUENCY FROM MUX2 C5 (NEW)
+  pulsarOsc_period = readMux2Channel(PULSAR_OSC_FREQ_CHANNEL, 1.0f, 500.0f, true);  // 1Hz to 500Hz logarithmic
+
   // READ REMAINING SECOND MUX CHANNELS (for future use)
-  float mux2_ch5 = readMux2Channel(MUX2_CHANNEL_5, 0.0f, 1.0f);
   float mux2_ch6 = readMux2Channel(MUX2_CHANNEL_6, 0.0f, 1.0f);
   float mux2_ch7 = readMux2Channel(MUX2_CHANNEL_7, 0.0f, 1.0f);
   float mux2_ch8 = readMux2Channel(MUX2_CHANNEL_8, 0.0f, 1.0f);
@@ -1143,6 +1151,11 @@ void loop() {
     Serial.print(envModDepth_ch1);
     Serial.print(" | EnvMod Ch2: ");
     Serial.print(envModDepth_ch2);
+
+    // Show pulsar oscillator status (NEW)
+    Serial.print(" | Pulsar Freq: ");
+    Serial.print(pulsarOsc_period);
+    Serial.print("Hz");
 
     // Show modulation amount status
     Serial.print(" | Mod Amount: ");
