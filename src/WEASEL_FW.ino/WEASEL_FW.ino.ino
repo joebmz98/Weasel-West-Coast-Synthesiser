@@ -127,7 +127,8 @@ bool seqCVModOscPitchEnabled = false;    // Whether sequencer CV controls modOsc
 bool seqCVWavefolderModEnabled = false;  // Whether sequencer CV modulation of wavefolder is active
 bool seqCVModAmountEnabled = false;      // Whether sequencer CV controls modOsc_modAmount
 bool seqCVComplexOscPitchEnabled = false; // Whether sequencer CV controls complexOsc pitch
-bool pulsarModOscPitchEnabled = false;   // NEW: Whether pulsar oscillator modulates modOsc pitch
+bool pulsarModOscPitchEnabled = false;   // Whether pulsar oscillator modulates modOsc pitch
+bool pulsarModAmountEnabled = false;     // Whether pulsar oscillator modulates modOsc modAmount
 
 // REVERB CONTROL
 float reverbMix = 0.0f;  // Reverb wet/dry mix (0.0 = dry, 1.0 = wet)
@@ -467,11 +468,14 @@ void readButtonMatrix() {
   // B0 + A1 enables sequencer CV control of modOsc pitch
   seqCVModOscPitchEnabled = matrixStates[0][1];
 
-  // B2 + A1 enables pulsar oscillator modulation of modOsc pitch (NEW)
+  // B2 + A1 enables pulsar oscillator modulation of modOsc pitch
   pulsarModOscPitchEnabled = matrixStates[2][1];
 
   // B0 + A2 enables sequencer CV control of modOsc_modAmount
   seqCVModAmountEnabled = matrixStates[0][2];
+
+  // B2 + A2 enables pulsar oscillator modulation of modOsc_modAmount
+  pulsarModAmountEnabled = matrixStates[2][2];
 
   // B0 + A3 enables sequencer CV control of complexOsc pitch
   seqCVComplexOscPitchEnabled = matrixStates[0][3];
@@ -493,7 +497,8 @@ void printButtonStates() {
       matrixStates[0][1] != lastMatrixStates[0][1] ||
       matrixStates[0][2] != lastMatrixStates[0][2] ||
       matrixStates[0][3] != lastMatrixStates[0][3] ||
-      matrixStates[2][1] != lastMatrixStates[2][1]) {  // ADDED B2+A1
+      matrixStates[2][1] != lastMatrixStates[2][1] ||
+      matrixStates[2][2] != lastMatrixStates[2][2]) {
     anyChange = true;
   }
 
@@ -505,10 +510,12 @@ void printButtonStates() {
     Serial.print(matrixStates[1][4] ? "HIGH" : "LOW");
     Serial.print(" | B0+A1: ");                         
     Serial.print(matrixStates[0][1] ? "HIGH" : "LOW");  
-    Serial.print(" | B2+A1: ");                         // NEW
-    Serial.print(matrixStates[2][1] ? "HIGH" : "LOW");  // NEW
+    Serial.print(" | B2+A1: ");                         
+    Serial.print(matrixStates[2][1] ? "HIGH" : "LOW");  
     Serial.print(" | B0+A2: ");                         
     Serial.print(matrixStates[0][2] ? "HIGH" : "LOW");  
+    Serial.print(" | B2+A2: ");                         
+    Serial.print(matrixStates[2][2] ? "HIGH" : "LOW");  
     Serial.print(" | B0+A3: ");                         
     Serial.print(matrixStates[0][3] ? "HIGH" : "LOW");  
 
@@ -525,13 +532,17 @@ void printButtonStates() {
       Serial.print(" | Seq CV ModOsc Pitch: ");
       Serial.print(seqCVModOscPitchEnabled ? "ENABLED" : "DISABLED");
     }
-    if (matrixStates[2][1] != lastMatrixStates[2][1]) {  // NEW
+    if (matrixStates[2][1] != lastMatrixStates[2][1]) {  
       Serial.print(" | Pulsar ModOsc Pitch: ");
       Serial.print(pulsarModOscPitchEnabled ? "ENABLED" : "DISABLED");
     }
     if (matrixStates[0][2] != lastMatrixStates[0][2]) {  
       Serial.print(" | Seq CV Mod Amount: ");
       Serial.print(seqCVModAmountEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[2][2] != lastMatrixStates[2][2]) {  
+      Serial.print(" | Pulsar Mod Amount: ");
+      Serial.print(pulsarModAmountEnabled ? "ENABLED" : "DISABLED");
     }
     if (matrixStates[0][3] != lastMatrixStates[0][3]) {  
       Serial.print(" | Seq CV ComplexOsc Pitch: ");
@@ -679,7 +690,8 @@ void AudioCallback(float** in, float** out, size_t size) {
     // Get envelope value once per sample
     float envValue = env.Process(gateOpen);
 
-    // Calculate modulated modulation amount with sequencer CV if enabled
+    // Calculate modulated modulation amount with multiple sources
+    // Start with the base level from C1 pot
     float currentModAmount = modOsc_modAmount;
 
     // Apply sequencer CV to modulation amount if B0+A2 is pressed
@@ -689,9 +701,30 @@ void AudioCallback(float** in, float** out, size_t size) {
       float seqCVMod = sequencerPitchOffset / 48.0f;
       // Use C1 pot as base level and add sequencer CV modulation
       currentModAmount = modOsc_modAmount + (seqCVMod * 400.0f); // Scale appropriately
-      // Clamp to prevent excessive modulation
-      currentModAmount = fminf(fmaxf(currentModAmount, 0.0f), 800.0f);
     }
+
+    // Apply pulsar oscillator modulation to modAmount if B2+A2 is pressed
+    if (pulsarModAmountEnabled) {
+      // The C1 pot provides the BASE modulation amount
+      // The pulsar oscillator modulates AROUND this base level
+      
+      // Convert pulsar signal (-1 to 1) to a bipolar modulation amount
+      // Scale the pulsar modulation to be meaningful relative to the base level
+      float pulsarModDepth = 1000.0f; // Depth of pulsar modulation (0.0 to 1.0)
+      
+      // Calculate the maximum modulation range based on the base level
+      // This ensures the modulation is proportional to the base level
+      float maxModulationRange = modOsc_modAmount * pulsarModDepth;
+      
+      // Apply the pulsar modulation around the base level
+      float pulsarAmountMod = pulsarOsc_signal * maxModulationRange;
+      
+      // Add the pulsar modulation to create the final modulated amount
+      currentModAmount = modOsc_modAmount + pulsarAmountMod;
+    }
+
+    // Clamp to prevent excessive modulation
+    currentModAmount = fminf(fmaxf(currentModAmount, 0.0f), 800.0f);
 
     // Calculate modulated wavefolder amount with multiple modulation sources
     float currentFoldAmount = complexOsc_foldAmount;
@@ -990,6 +1023,7 @@ void setup() {
   seqCVModAmountEnabled = false;   // Sequencer CV control of mod amount disabled by default
   seqCVComplexOscPitchEnabled = false; // Sequencer CV control of complexOsc pitch disabled by default
   pulsarModOscPitchEnabled = false;   // Pulsar oscillator modulation of modOsc pitch disabled by default
+  pulsarModAmountEnabled = false;     // Pulsar oscillator modulation of modAmount disabled by default
 
   // REVERB INIT
   reverbMix = 0.0f;  // Start with dry signal
@@ -1027,7 +1061,8 @@ void setup() {
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
   Serial.println("4x7 Button Matrix initialized:");
   Serial.println("  B0+A1: Seq CV ModOsc Pitch | B2+A1: Pulsar ModOsc Pitch");
-  Serial.println("  B0+A2: Seq CV Mod Amount | B0+A3: Seq CV ComplexOsc Pitch");
+  Serial.println("  B0+A2: Seq CV Mod Amount | B2+A2: Pulsar Mod Amount (NEW)");
+  Serial.println("  B0+A3: Seq CV ComplexOsc Pitch");
   Serial.println("  B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
 }
 
@@ -1187,7 +1222,10 @@ void loop() {
     Serial.print(pulsarOsc_period);
     Serial.print("Hz");
     if (pulsarModOscPitchEnabled) {
-      Serial.print(" (Modulating ModOsc)");
+      Serial.print(" (Modulating ModOsc Pitch)");
+    }
+    if (pulsarModAmountEnabled) {
+      Serial.print(" (Modulating Mod Amount)");
     }
 
     // Show modulation amount status
@@ -1195,6 +1233,9 @@ void loop() {
     Serial.print(modOsc_modAmount);
     if (seqCVModAmountEnabled) {
       Serial.print(" (Seq CV Active)");
+    }
+    if (pulsarModAmountEnabled) {
+      Serial.print(" (Pulsar Active)");
     }
 
     // Show complex oscillator pitch status
