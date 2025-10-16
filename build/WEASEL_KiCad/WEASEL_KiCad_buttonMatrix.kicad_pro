@@ -486,7 +486,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "gbrs/buttonMatrix_gbrs/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
