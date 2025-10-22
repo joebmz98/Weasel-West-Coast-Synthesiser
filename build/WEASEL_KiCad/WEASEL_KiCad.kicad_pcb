@@ -60943,16 +60943,6 @@
 		(uuid "9722f7a6-2cd3-4540-b3f2-52897d678821")
 	)
 	(gr_line
-		(start 262.25 249.25)
-		(end 260 249.25)
-		(stroke
-			(width 0.2)
-			(type default)
-		)
-		(layer "F.SilkS")
-		(uuid "974c7125-3355-47f9-9d94-46829c762ac3")
-	)
-	(gr_line
 		(start 143.9981 265.1816)
 		(end 147.7481 258.6816)
 		(stroke
@@ -62895,8 +62885,8 @@
 		(uuid "deeb5288-1a64-4b63-a689-204ebb9c457f")
 	)
 	(gr_line
-		(start 262.25 269.5)
-		(end 262.25 249.25)
+		(start 260 269.5)
+		(end 260 249.25)
 		(stroke
 			(width 0.2)
 			(type default)
