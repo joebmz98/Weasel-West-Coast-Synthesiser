@@ -693,7 +693,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     // Both can be active simultaneously
     
     float finalAMMix = baseModAmount / 800.0f; // Base AM mix from C1 pot (0.0-1.0)
-    float finalFMDepth = baseModAmount * 2.0f;  // Base FM depth from C1 pot
+    float finalFMDepth = baseModAmount * 3.0f;  // Base FM depth from C1 pot
 
     // Apply sequencer CV modulation if B0+A2 is pressed
     if (seqCVModAmountEnabled) {
