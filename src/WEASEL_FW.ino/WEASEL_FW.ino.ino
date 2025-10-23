@@ -130,15 +130,15 @@ float wavefolderEnvModDepth = 0.0f;    // Depth of envelope modulation on wavefo
 bool wavefolderEnvModEnabled = false;  // Whether envelope modulation of wavefolder is active
 
 // SEQUENCER CV MODULATION
-float seqCVWavefolderModDepth = 0.0f;      // Depth of sequencer CV modulation on wavefolder (0.0 to 1.0)
-bool seqCVModOscPitchEnabled = false;      // Whether sequencer CV controls modOsc pitch
-bool seqCVWavefolderModEnabled = false;    // Whether sequencer CV modulation of wavefolder is active
-bool seqCVModAmountEnabled = false;        // Whether sequencer CV controls modOsc_modAmount
-bool seqCVComplexOscPitchEnabled = false;  // Whether sequencer CV controls complexOsc pitch
-bool pulsarModOscPitchEnabled = false;     // Whether pulsar envelope modulates modOsc pitch
-bool pulsarModAmountEnabled = false;       // Whether pulsar envelope modulates modOsc modAmount
-bool pulsarSelfModEnabled = false;         // Whether pulsar envelope modulates its own decay time (B2+A0)
-bool pulsarModComplexOscPitchEnabled = false; // Whether pulsar envelope modulates complexOsc pitch (B2+A3)
+float seqCVWavefolderModDepth = 0.0f;          // Depth of sequencer CV modulation on wavefolder (0.0 to 1.0)
+bool seqCVModOscPitchEnabled = false;          // Whether sequencer CV controls modOsc pitch
+bool seqCVWavefolderModEnabled = false;        // Whether sequencer CV modulation of wavefolder is active
+bool seqCVModAmountEnabled = false;            // Whether sequencer CV controls modOsc_modAmount
+bool seqCVComplexOscPitchEnabled = false;      // Whether sequencer CV controls complexOsc pitch
+bool pulsarModOscPitchEnabled = false;         // Whether pulsar envelope modulates modOsc pitch
+bool pulsarModAmountEnabled = false;           // Whether pulsar envelope modulates modOsc modAmount
+bool pulsarSelfModEnabled = false;             // Whether pulsar envelope modulates its own decay time (B2+A0)
+bool pulsarModComplexOscPitchEnabled = false;  // Whether pulsar envelope modulates complexOsc pitch (B2+A3)
 
 // REVERB CONTROL
 float reverbMix = 0.0f;  // Reverb wet/dry mix (0.0 = dry, 1.0 = wet)
@@ -668,21 +668,21 @@ void AudioCallback(float** in, float** out, size_t size) {
       pulsarADEnv.Retrigger(false);
       pulsarADEnv.Retrigger(true);
     }
-    
+
     // Process the envelope and convert to sawtooth shape
     float pulsarEnvValue = pulsarADEnv.Process(pulsarEnv_gate);
-    
+
     // Convert envelope to REGULAR sawtooth shape (starts low, rises to high)
     pulsarEnv_sawtoothValue = pulsarEnvValue;
-    
+
     // APPLY SELF-MODULATION IF B2+A0 IS PRESSED
     if (pulsarSelfModEnabled) {
       // Use the sawtooth value to modulate the decay time
       // Scale the modulation appropriately (0.1x to 2x of base decay time)
-      float modAmount = 0.5f; // Modulation depth (can be made into a parameter)
+      float modAmount = 0.5f;  // Modulation depth (can be made into a parameter)
       float modFactor = 1.0f + (pulsarEnv_sawtoothValue * modAmount);
       pulsarEnv_modulatedDecayTime = pulsarEnv_baseDecayTime * modFactor;
-      
+
       // Clamp to reasonable values
       pulsarEnv_modulatedDecayTime = fmaxf(pulsarEnv_modulatedDecayTime, 0.001f);
       pulsarEnv_modulatedDecayTime = fminf(pulsarEnv_modulatedDecayTime, 20.0f);
@@ -690,7 +690,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       // No self-modulation, use base decay time
       pulsarEnv_modulatedDecayTime = pulsarEnv_baseDecayTime;
     }
-    
+
     // Update envelope parameters with current decay time
     pulsarADEnv.SetTime(ADSR_SEG_ATTACK, pulsarEnv_attackTime);
     pulsarADEnv.SetTime(ADSR_SEG_DECAY, pulsarEnv_modulatedDecayTime);
@@ -710,12 +710,12 @@ void AudioCallback(float** in, float** out, size_t size) {
     if (pulsarModOscPitchEnabled) {
       // Scale the pulsar envelope to create meaningful pitch modulation
       // The envelope ranges from 0 to 1 (sawtooth shape)
-      float pulsarModAmount = 0.5f; // You can make this a pot-controlled parameter if desired
-      
+      float pulsarModAmount = 0.5f;  // You can make this a pot-controlled parameter if desired
+
       // Use multiplicative scaling for frequency modulation
       float pulsarPitchMod = 1.0f + (pulsarEnv_sawtoothValue * pulsarModAmount);
       modulatedModPitch = baseModPitch * pulsarPitchMod;
-      
+
       // Clamp to prevent excessive frequencies
       modulatedModPitch = fmaxf(modulatedModPitch, 1.0f);
       modulatedModPitch = fminf(modulatedModPitch, 10000.0f);
@@ -731,10 +731,10 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // PROCESS COMPLEX OSCILLATOR with pitch modulation
     float modulatedComplexBasePitch;
-    
+
     // Calculate base pitch from C2 pot
     float baseComplexPitch = complexOsc_basePitch;
-    
+
     // Apply sequencer CV modulation if B0+A3 is pressed
     if (seqCVComplexOscPitchEnabled) {
       baseComplexPitch *= pitchRatio;
@@ -744,19 +744,19 @@ void AudioCallback(float** in, float** out, size_t size) {
     if (pulsarModComplexOscPitchEnabled) {
       // Scale the pulsar envelope to create meaningful pitch modulation
       // The envelope ranges from 0 to 1 (sawtooth shape)
-      float pulsarModAmount = 0.5f; // You can make this a pot-controlled parameter if desired
-      
+      float pulsarModAmount = 0.5f;  // You can make this a pot-controlled parameter if desired
+
       // Use multiplicative scaling for frequency modulation (same as modOsc)
       float pulsarPitchMod = 1.0f + (pulsarEnv_sawtoothValue * pulsarModAmount);
       modulatedComplexBasePitch = baseComplexPitch * pulsarPitchMod;
-      
+
       // Clamp to prevent excessive frequencies
       modulatedComplexBasePitch = fmaxf(modulatedComplexBasePitch, 1.0f);
       modulatedComplexBasePitch = fminf(modulatedComplexBasePitch, 10000.0f);
     } else {
       modulatedComplexBasePitch = baseComplexPitch;
     }
-    
+
     float complexOsc_freq = modulatedComplexBasePitch;
 
     // Get envelope value once per sample
@@ -766,46 +766,45 @@ void AudioCallback(float** in, float** out, size_t size) {
     float baseModAmount = modOsc_modAmount;
 
     // MODULATION ROUTING:
-    // When B0+A2 is pressed: Sequencer CV modulates AM mix (AM mode) or FM depth (FM mode)
-    // When B2+A2 is pressed: Pulsar envelope modulates AM mix (AM mode) or FM depth (FM mode)
+    // When B0+A2 is pressed: Sequencer CV modulates AM depth (AM mode) or FM depth (FM mode)
+    // When B2+A2 is pressed: Pulsar envelope modulates AM depth (AM mode) or FM depth (FM mode)
     // Both can be active simultaneously
-    
-    float finalAMMix = baseModAmount / 800.0f; // Base AM mix from C1 pot (0.0-1.0)
-    float finalFMDepth = baseModAmount * 3.0f;  // Base FM depth from C1 pot
+
+    // FIXED: Better scaling for AM depth - map 0-800 range to 0.0-1.0 more intuitively
+    float finalAMDepth = baseModAmount / 800.0f;  // Base AM depth from C1 pot (0.0-1.0)
+    float finalFMDepth = baseModAmount * 3.0f;    // Base FM depth from C1 pot
 
     // Apply sequencer CV modulation if B0+A2 is pressed
     if (seqCVModAmountEnabled) {
       // Convert sequencer CV (in semitones) to a modulation amount
       // Normalize sequencer CV to 0-1 range (assuming 0-48 semitones range)
       float seqCVMod = sequencerPitchOffset / 48.0f;
-      
+
       if (useAmplitudeModulation) {
-        // In AM mode: sequencer CV modulates the AM mix
-        finalAMMix = fminf(fmaxf(finalAMMix + (seqCVMod * 0.5f), 0.0f), 1.0f);
+        // In AM mode: sequencer CV modulates the AM depth
+        // Add up to 0.5 to the depth (so sequencer can double the depth)
+        finalAMDepth = fminf(fmaxf(finalAMDepth + (seqCVMod * 0.5f), 0.0f), 1.0f);
       } else {
         // In FM mode: sequencer CV modulates the FM depth
-        finalFMDepth += (seqCVMod * 400.0f); // Scale appropriately for FM
+        finalFMDepth += (seqCVMod * 400.0f);  // Scale appropriately for FM
       }
     }
 
     // Apply pulsar envelope modulation if B2+A2 is pressed
     if (pulsarModAmountEnabled) {
-      // Scale the pulsar envelope for meaningful modulation
-      float pulsarModDepth = 0.5f; // Depth of pulsar modulation
-      
       if (useAmplitudeModulation) {
-        // In AM mode: pulsar envelope modulates the AM mix
-        float pulsarMixMod = pulsarEnv_sawtoothValue * pulsarModDepth * 0.5f;
-        finalAMMix = fminf(fmaxf(finalAMMix + pulsarMixMod, 0.0f), 1.0f);
+        // FIXED: Use appropriate pulsar modulation for AM (was 500.0f - way too high!)
+        float pulsarDepthMod = pulsarEnv_sawtoothValue * 0.5f;  // Now adds up to 0.5 to AM depth
+        finalAMDepth = fminf(fmaxf(finalAMDepth + pulsarDepthMod, 0.0f), 1.0f);
       } else {
-        // In FM mode: pulsar envelope modulates the FM depth
-        float pulsarDepthMod = pulsarEnv_sawtoothValue * pulsarModDepth * finalFMDepth;
+        // FM mode: pulsar envelope modulates the FM depth
+        float pulsarDepthMod = pulsarEnv_sawtoothValue * 200.0f;  // This is fine for FM
         finalFMDepth += pulsarDepthMod;
       }
     }
 
     // Clamp to prevent excessive values
-    finalAMMix = fminf(fmaxf(finalAMMix, 0.0f), 1.0f);
+    finalAMDepth = fminf(fmaxf(finalAMDepth, 0.0f), 1.0f);
     finalFMDepth = fminf(fmaxf(finalFMDepth, 0.0f), 1600.0f);
 
     // Calculate modulated wavefolder amount with multiple modulation sources
@@ -858,12 +857,12 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // APPLY MODULATION BASED ON SELECTED TYPE
     if (useAmplitudeModulation) {
-      // AMPLITUDE MODULATION (AM) - DRY/WET MIX IMPLEMENTATION
-      
-      // Reduced modulator level for AM mode
-      float modulated_modOsc = modOsc_filteredSignal * ch2_level * 0.85f;
+      // TRADITIONAL AMPLITUDE MODULATION (AM)
+      // C1 MUX1 pot controls modulation depth (0.0-1.0)
+      // At 0 depth: no modulation, constant amplitude
+      // At full depth: full modulation depth
 
-      // Generate both dry (clean) and wet (AM) signals
+      // Generate complex oscillator signal
       complexOsc.SetFreq(complexOsc_freq);
       complexOscTri.SetFreq(complexOsc_freq);
 
@@ -873,48 +872,34 @@ void AudioCallback(float** in, float** out, size_t size) {
       float complexOsc_filteredSignal = complexOsc_analogFilter.Process(complexOsc_rawSignal);
       float complexOsc_foldedSignal = wavefolder(complexOsc_filteredSignal, currentFoldAmount);
 
-      // Dry signal (clean complex oscillator)
-      float drySignal = complexOsc_foldedSignal * ch1_level;
+      // Generate modulator signal (scaled appropriately for AM)
+      // Use bipolar modulation for proper AM (oscillates between -1 and 1)
+      float modSignal = modOsc_filteredSignal * 50.0f;  // Reduced level for AM
 
-      // Wet signal (AM modulated)
-      float wetSignal;
-      if (finalAMMix > 0.001f) {
-        // STRONGER AM depth for audible modulation
-        float amDepth = 10.0f; // Increased modulation depth
-        
-        // Generate AM signal - use bipolar modulation for more dramatic effect
-        float amSignal = 1.0f + (amDepth * modOsc_filteredSignal);
-        amSignal = fmaxf(fminf(amSignal, 2.0f), 0.0f); // Increased clamping range
+      // Traditional AM formula: carrier * (1 + depth * modulator)
+      // This gives us the classic AM sound where depth controls how much the modulator affects the amplitude
+      float amSignal = complexOsc_foldedSignal * ch1_level * (1.0f + (finalAMDepth * modSignal));
+      
+      // Clamp to prevent excessive amplitudes
+      amSignal = fmaxf(amSignal, -1.0f);
+      amSignal = fminf(amSignal, 1.0f);
 
-        // Apply low-pass filtering to the AM signal to reduce aliasing
-        static float prevAmSignal = 1.0f;
-        float filteredAmSignal = 0.5f * amSignal + 0.5f * prevAmSignal;
-        prevAmSignal = filteredAmSignal;
+      // Apply low-pass filtering to reduce aliasing in AM signal
+      static float prevAmSignal = 0.0f;
+      float filteredAmSignal = 0.9f * amSignal + 0.1f * prevAmSignal;
+      prevAmSignal = filteredAmSignal;
 
-        // Apply AM - ensure the wet signal is clearly different from dry
-        wetSignal = complexOsc_foldedSignal * ch1_level * filteredAmSignal;
-      } else {
-        wetSignal = drySignal; // When mix is 0, wet = dry
-      }
+      float modulated_complexOsc = filteredAmSignal;
 
-      // Mix dry and wet signals based on finalAMMix
-      float modulated_complexOsc;
-      if (finalAMMix < 0.001f) {
-        // 0% mix - only dry signal
-        modulated_complexOsc = drySignal;
-      } else if (finalAMMix > 0.999f) {
-        // 100% mix - only wet signal
-        modulated_complexOsc = wetSignal;
-      } else {
-        // Blend between dry and wet
-        modulated_complexOsc = (drySignal * (1.0f - finalAMMix)) + (wetSignal * finalAMMix);
-      }
-
-      // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth
-      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+      // Process modulator through LPG (for monitoring/feedback purposes)
+      float modulated_modOsc = modOsc_filteredSignal * ch2_level;
       processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
-      float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
+      // APPLY LPG FILTER TO AM SIGNAL with envelope modulation depth
+      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+
+      // Mix: mostly AM signal with a tiny bit of modulator for character
+      float oscillatorSum_signal = modulated_complexOsc + (modulated_modOsc * 0.05f);
 
       // APPLY REVERB
       float wetL, wetR;
@@ -928,7 +913,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       out[1][i] = finalR;
 
     } else {
-      // FREQUENCY MODULATION (FM)
+      // FREQUENCY MODULATION (FM) - UNCHANGED
       // Full modulator level for FM mode
       float modulated_modOsc = modOsc_filteredSignal * ch2_level;
 
@@ -1107,12 +1092,12 @@ void setup() {
   wavefolderEnvModEnabled = false;
   seqCVWavefolderModDepth = 1.0f;  // Default modulation depth
   seqCVWavefolderModEnabled = false;
-  seqCVModAmountEnabled = false;        // Sequencer CV control of mod amount disabled by default
-  seqCVComplexOscPitchEnabled = false;  // Sequencer CV control of complexOsc pitch disabled by default
-  pulsarModOscPitchEnabled = false;     // Pulsar envelope modulation of modOsc pitch disabled by default
-  pulsarModAmountEnabled = false;       // Pulsar envelope modulation of modAmount disabled by default
-  pulsarSelfModEnabled = false;         // Pulsar self-modulation disabled by default
-  pulsarModComplexOscPitchEnabled = false; // Pulsar envelope modulation of complexOsc pitch disabled by default
+  seqCVModAmountEnabled = false;            // Sequencer CV control of mod amount disabled by default
+  seqCVComplexOscPitchEnabled = false;      // Sequencer CV control of complexOsc pitch disabled by default
+  pulsarModOscPitchEnabled = false;         // Pulsar envelope modulation of modOsc pitch disabled by default
+  pulsarModAmountEnabled = false;           // Pulsar envelope modulation of modAmount disabled by default
+  pulsarSelfModEnabled = false;             // Pulsar self-modulation disabled by default
+  pulsarModComplexOscPitchEnabled = false;  // Pulsar envelope modulation of complexOsc pitch disabled by default
 
   // REVERB INIT
   reverbMix = 0.0f;  // Start with dry signal
