@@ -794,11 +794,11 @@ void AudioCallback(float** in, float** out, size_t size) {
     if (pulsarModAmountEnabled) {
       if (useAmplitudeModulation) {
         // FIXED: Use appropriate pulsar modulation for AM (was 500.0f - way too high!)
-        float pulsarDepthMod = pulsarEnv_sawtoothValue * 0.5f;  // Now adds up to 0.5 to AM depth
+        float pulsarDepthMod = pulsarEnv_sawtoothValue * 1000.0f;  // Now adds up to 0.5 to AM depth
         finalAMDepth = fminf(fmaxf(finalAMDepth + pulsarDepthMod, 0.0f), 1.0f);
       } else {
         // FM mode: pulsar envelope modulates the FM depth
-        float pulsarDepthMod = pulsarEnv_sawtoothValue * 200.0f;  // This is fine for FM
+        float pulsarDepthMod = pulsarEnv_sawtoothValue * 1000.0f;  // This is fine for FM
         finalFMDepth += pulsarDepthMod;
       }
     }
