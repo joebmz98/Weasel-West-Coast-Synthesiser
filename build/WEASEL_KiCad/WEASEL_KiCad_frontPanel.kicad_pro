@@ -451,7 +451,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "WEASEL_KiCad.kicad_pro",
+    "filename": "WEASEL_KiCad_frontPanel.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -487,7 +487,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "gbrs/",
+      "plot": "gbrs/WEASEL_frontPanel_gbrs/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
