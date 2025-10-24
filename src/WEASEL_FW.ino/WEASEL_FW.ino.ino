@@ -112,7 +112,7 @@ float pulsarEnv_decayTime;      // PULSAR AD ENVELOPE DECAY TIME
 // PULSAR AD ENVELOPE VARIABLES
 bool pulsarEnv_gate = false;                // Whether the pulsar envelope gate is open
 unsigned long lastPulsarEnvTime = 0;        // Last time the pulsar envelope was triggered
-float pulsarEnv_attackTime = 0.02f;         // Fixed attack time of 0.02 seconds
+float pulsarEnv_attackTime = 0.005f;         // Fixed attack time of 0.02 seconds
 float pulsarEnv_sawtoothValue = 0.0f;       // Current sawtooth value for modulation
 float pulsarEnv_baseDecayTime = 0.1f;       // Base decay time (from pot)
 float pulsarEnv_modulatedDecayTime = 0.1f;  // Final decay time after modulation
@@ -139,6 +139,7 @@ bool pulsarModOscPitchEnabled = false;         // Whether pulsar envelope modula
 bool pulsarModAmountEnabled = false;           // Whether pulsar envelope modulates modOsc modAmount
 bool pulsarSelfModEnabled = false;             // Whether pulsar envelope modulates its own decay time (B2+A0)
 bool pulsarModComplexOscPitchEnabled = false;  // Whether pulsar envelope modulates complexOsc pitch (B2+A3)
+bool pulsarModWavefolderEnabled = false;       // Pulsar envelope modulation of wavefolder amount (B2+A4)
 
 // REVERB CONTROL
 float reverbMix = 0.0f;  // Reverb wet/dry mix (0.0 = dry, 1.0 = wet)
@@ -501,6 +502,9 @@ void readButtonMatrix() {
 
   // B2 + A3 enables pulsar envelope modulation of complexOsc pitch
   pulsarModComplexOscPitchEnabled = matrixStates[2][3];
+
+  // B2 + A4 enables pulsar envelope modulation of wavefolder amount
+  pulsarModWavefolderEnabled = matrixStates[2][4];
 }
 
 void printButtonStates() {
@@ -508,7 +512,7 @@ void printButtonStates() {
   bool anyChange = false;
 
   // Check only the buttons we're using for modulation
-  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1] || matrixStates[0][2] != lastMatrixStates[0][2] || matrixStates[0][3] != lastMatrixStates[0][3] || matrixStates[2][1] != lastMatrixStates[2][1] || matrixStates[2][2] != lastMatrixStates[2][2] || matrixStates[2][0] != lastMatrixStates[2][0] || matrixStates[2][3] != lastMatrixStates[2][3]) {
+  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1] || matrixStates[0][2] != lastMatrixStates[0][2] || matrixStates[0][3] != lastMatrixStates[0][3] || matrixStates[2][1] != lastMatrixStates[2][1] || matrixStates[2][2] != lastMatrixStates[2][2] || matrixStates[2][0] != lastMatrixStates[2][0] || matrixStates[2][3] != lastMatrixStates[2][3] || matrixStates[2][4] != lastMatrixStates[2][4]) {
     anyChange = true;
   }
 
@@ -532,6 +536,8 @@ void printButtonStates() {
     Serial.print(matrixStates[2][0] ? "HIGH" : "LOW");
     Serial.print(" | B2+A3: ");
     Serial.print(matrixStates[2][3] ? "HIGH" : "LOW");
+    Serial.print(" | B2+A4: ");
+    Serial.print(matrixStates[2][4] ? "HIGH" : "LOW");
 
     // Show modulation status changes
     if (matrixStates[0][4] != lastMatrixStates[0][4]) {
@@ -569,6 +575,10 @@ void printButtonStates() {
     if (matrixStates[2][3] != lastMatrixStates[2][3]) {
       Serial.print(" | Pulsar Env ComplexOsc Pitch: ");
       Serial.print(pulsarModComplexOscPitchEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[2][4] != lastMatrixStates[2][4]) {
+      Serial.print(" | Pulsar Env Wavefolder Mod: ");
+      Serial.print(pulsarModWavefolderEnabled ? "ENABLED" : "DISABLED");
     }
 
     Serial.println();
@@ -792,13 +802,12 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // Apply pulsar envelope modulation if B2+A2 is pressed
     if (pulsarModAmountEnabled) {
+        float pulsarDepthMod = pulsarEnv_sawtoothValue * 1000.0f;  // 
       if (useAmplitudeModulation) {
         // FIXED: Use appropriate pulsar modulation for AM (was 500.0f - way too high!)
-        float pulsarDepthMod = pulsarEnv_sawtoothValue * 1000.0f;  // Now adds up to 0.5 to AM depth
         finalAMDepth = fminf(fmaxf(finalAMDepth + pulsarDepthMod, 0.0f), 1.0f);
       } else {
         // FM mode: pulsar envelope modulates the FM depth
-        float pulsarDepthMod = pulsarEnv_sawtoothValue * 1000.0f;  // This is fine for FM
         finalFMDepth += pulsarDepthMod;
       }
     }
@@ -807,26 +816,61 @@ void AudioCallback(float** in, float** out, size_t size) {
     finalAMDepth = fminf(fmaxf(finalAMDepth, 0.0f), 1.0f);
     finalFMDepth = fminf(fmaxf(finalFMDepth, 0.0f), 1600.0f);
 
-    // Calculate modulated wavefolder amount with multiple modulation sources
+    // ================================
+    // MODIFIED WAVEFOLDER MODULATION 
+    // ================================
+
+    // Start with the base wavefolder amount from C4 pot (MUX1)
     float currentFoldAmount = complexOsc_foldAmount;
 
-    // Apply envelope modulation if enabled
+    // Apply envelope modulation if enabled (B1+A4)
     if (wavefolderEnvModEnabled) {
-      // Envelope modulates the wavefolder amount
-      currentFoldAmount += (wavefolderEnvModDepth * envValue);
+      // Envelope modulates the wavefolder amount - additive to base
+      currentFoldAmount += (wavefolderEnvModDepth * envValue * 0.5f);
     }
 
-    // Apply sequencer CV modulation if enabled
+    // Apply sequencer CV modulation if enabled (B0+A4)
     if (seqCVWavefolderModEnabled) {
       // Convert sequencer CV (in semitones) to a modulation amount
       // Normalize sequencer CV to 0-1 range (assuming 0-48 semitones range)
       float seqCVMod = sequencerPitchOffset / 48.0f;
-      // Apply modulation with depth control
-      currentFoldAmount += (seqCVWavefolderModDepth * seqCVMod);
+      // Apply modulation with depth control - additive to base
+      currentFoldAmount += (seqCVWavefolderModDepth * seqCVMod * 0.5f);
+    }
+
+    // Apply pulsar envelope modulation if B2+A4 is pressed - MODULATES FROM BASE
+    if (pulsarModWavefolderEnabled) {
+      // Use the C4 pot value as the CENTER point, pulsar modulates around it
+      // wavefolderEnvModDepth controls how much modulation is applied
+      float baseAmount = complexOsc_foldAmount;
+      float modulationDepth = wavefolderEnvModDepth * 0.8f; // Scale the modulation depth
+      
+      // Pulsar envelope sweeps from 0 to 1, creating modulation around the base value
+      // This creates: baseAmount + (pulsarEnv * modulationDepth)
+      // So when pulsarEnv=0: baseAmount, when pulsarEnv=1: baseAmount + modulationDepth
+      float pulsarModulation = baseAmount + (pulsarEnv_sawtoothValue * modulationDepth);
+      
+      // Blend between unmodulated and modulated based on pulsar envelope
+      currentFoldAmount = pulsarModulation;
+      
+      // DEBUG: Uncomment to see the modulation values
+      // static int debugCount = 0;
+      // if (debugCount++ % 1000 == 0) {
+      //   Serial.print("Pulsar Fold: base=");
+      //   Serial.print(baseAmount);
+      //   Serial.print(" modulated=");
+      //   Serial.print(currentFoldAmount);
+      //   Serial.print(" pulsarEnv=");
+      //   Serial.println(pulsarEnv_sawtoothValue);
+      // }
     }
 
     // Clamp to prevent excessive folding
     currentFoldAmount = fminf(fmaxf(currentFoldAmount, 0.0f), 1.0f);
+
+    // ===========================================================================
+    // END OF MODIFIED WAVEFOLDER SECTION
+    // ===========================================================================
 
     // Determine the appropriate parameters for each channel based on LPG mode
     float ch1_level, ch1_cutoffControl, ch2_level, ch2_cutoffControl;
@@ -879,7 +923,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       // Traditional AM formula: carrier * (1 + depth * modulator)
       // This gives us the classic AM sound where depth controls how much the modulator affects the amplitude
       float amSignal = complexOsc_foldedSignal * ch1_level * (1.0f + (finalAMDepth * modSignal));
-      
+
       // Clamp to prevent excessive amplitudes
       amSignal = fmaxf(amSignal, -1.0f);
       amSignal = fminf(amSignal, 1.0f);
@@ -952,6 +996,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     }
   }
 }
+
 
 void setup() {
   Serial.begin(115200);  // Increased baud rate for faster debugging
@@ -1098,6 +1143,7 @@ void setup() {
   pulsarModAmountEnabled = false;           // Pulsar envelope modulation of modAmount disabled by default
   pulsarSelfModEnabled = false;             // Pulsar self-modulation disabled by default
   pulsarModComplexOscPitchEnabled = false;  // Pulsar envelope modulation of complexOsc pitch disabled by default
+  pulsarModWavefolderEnabled = false;       // Pulsar envelope modulation of wavefolder amount disabled by default
 
   // REVERB INIT
   reverbMix = 0.0f;  // Start with dry signal
@@ -1136,13 +1182,14 @@ void setup() {
   Serial.println("Pulsar outputs sawtooth shape for modulation matrix");
   Serial.println("B2+A0: Pulsar self-modulation (envelope modulates its own decay time)");
   Serial.println("B2+A3: Pulsar envelope modulates complex oscillator pitch");
+  Serial.println("B2+A4: Pulsar envelope modulates wavefolder amount");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
   Serial.println("4x7 Button Matrix initialized:");
   Serial.println("  B0+A1: Seq CV ModOsc Pitch | B2+A1: Pulsar Env ModOsc Pitch");
   Serial.println("  B0+A2: Seq CV Mod Amount | B2+A2: Pulsar Env Mod Amount");
   Serial.println("  B0+A3: Seq CV ComplexOsc Pitch | B2+A3: Pulsar Env ComplexOsc Pitch");
   Serial.println("  B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
-  Serial.println("  B2+A0: Pulsar Self-Modulation");
+  Serial.println("  B2+A0: Pulsar Self-Modulation | B2+A4: Pulsar Env Wavefolder Mod");
 }
 
 void loop() {
@@ -1324,6 +1371,9 @@ void loop() {
     if (pulsarSelfModEnabled) {
       Serial.print(" (SELF-MOD)");
     }
+    if (pulsarModWavefolderEnabled) {
+      Serial.print(" (Modulating Wavefolder)");
+    }
 
     // Show modulation amount status - DIFFERENT FOR AM vs FM
     Serial.print(" | ");
@@ -1395,6 +1445,30 @@ void loop() {
       Serial.print(" | Note: ");
       Serial.print(lastMidiNote);
       midiNoteReceived = false;
+    }
+
+    // Show wavefolder modulation status
+    Serial.print(" | Wavefolder Env Mod: ");
+    Serial.print(wavefolderEnvModEnabled ? "ON" : "OFF");
+    if (wavefolderEnvModEnabled) {
+      Serial.print(" (Depth: ");
+      Serial.print(wavefolderEnvModDepth);
+      Serial.print(")");
+    }
+
+    Serial.print(" | Seq CV Wavefolder Mod: ");
+    Serial.print(seqCVWavefolderModEnabled ? "ON" : "OFF");
+    if (seqCVWavefolderModEnabled) {
+      Serial.print(" (Depth: ");
+      Serial.print(seqCVWavefolderModDepth);
+      Serial.print(")");
+    }
+
+    // ADD THIS BLOCK for pulsar wavefolder modulation
+    Serial.print(" | Pulsar Wavefolder Mod: ");
+    Serial.print(pulsarModWavefolderEnabled ? "ON" : "OFF");
+    if (pulsarModWavefolderEnabled) {
+      Serial.print(" (Active)");
     }
 
     Serial.println();
