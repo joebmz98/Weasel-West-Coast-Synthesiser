@@ -90,7 +90,7 @@ static Oscillator complexOscTri;            // SECONDARY COMPLEX OSC (triangle)
 static Oscillator modOsc;                   // MODULATION OSC
 static MoogLadder complexOsc_analogFilter;  // FILTER - HIGH CUT FOR "ANALOGUE" FEEL OF WAVEFORMS
 static MoogLadder modOsc_analogFilter;      // FILTER FOR MOD OSCILLATOR
-static Adsr pulsarADEnv;                    // PULSAR AD ENVELOPE (replaces pulsarOsc)
+static Adsr pulsarEnv;                      // PULSAR ADSR ENVELOPE (replaces pulsarOsc)
 
 // INIT LPG
 static MoogLadder lpgChannel1_filter;  // FILTER FOR BUCHLA LPG CH1
@@ -109,10 +109,11 @@ float complexOsc_level;         // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
 float modOsc_level;             // MODULATION OSC LEVEL CONTROL (0.0 to 1.0)
 float pulsarEnv_decayTime;      // PULSAR AD ENVELOPE DECAY TIME
 
-// PULSAR AD ENVELOPE VARIABLES
+// PULSAR ADSR ENVELOPE VARIABLES
 bool pulsarEnv_gate = false;                // Whether the pulsar envelope gate is open
 unsigned long lastPulsarEnvTime = 0;        // Last time the pulsar envelope was triggered
-float pulsarEnv_attackTime = 0.005f;        // Fixed attack time of 0.02 seconds
+float pulsarEnv_attackTime = 0.02f;         // Fixed attack time of 0.02 seconds
+float pulsarEnv_releaseTime = 0.02f;        // Fixed release time of 0.02 seconds
 float pulsarEnv_sawtoothValue = 0.0f;       // Current sawtooth value for modulation
 float pulsarEnv_baseDecayTime = 0.1f;       // Base decay time (from pot)
 float pulsarEnv_modulatedDecayTime = 0.1f;  // Final decay time after modulation
@@ -835,18 +836,35 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     float pitchRatio = semitonesToRatio(totalPitchOffset);
 
-    // PROCESS PULSAR AD ENVELOPE (for modulation use only)
-    // Trigger the envelope on each sequencer step
+    // PROCESS PULSAR ADSR ENVELOPE (for modulation use only)
+    // Trigger the envelope on each sequencer step with proper gate management
     unsigned long currentTime = millis();
+    static bool pulsarEnvTriggered = false;
+    
+    // Calculate when to close the gate (at 90% of step duration to allow for release)
+    float gateCloseTime = STEP_DURATION_MS * 0.9f;
+    
     if (currentTime - lastPulsarEnvTime > STEP_DURATION_MS) {
+      // Close gate first to ensure clean retrigger
+      pulsarEnv_gate = false;
+      // Small delay to allow release to complete (in samples)
+      for(int j = 0; j < 10; j++) {
+        pulsarEnv.Process(false);
+      }
+      // Then reopen gate
       pulsarEnv_gate = true;
       lastPulsarEnvTime = currentTime;
-      pulsarADEnv.Retrigger(false);
-      pulsarADEnv.Retrigger(true);
+      pulsarEnvTriggered = true;
+    }
+    
+    // Close gate before end of step to allow release
+    if (pulsarEnvTriggered && (currentTime - lastPulsarEnvTime > gateCloseTime)) {
+      pulsarEnv_gate = false;
+      pulsarEnvTriggered = false;
     }
 
     // Process the envelope and convert to sawtooth shape
-    float pulsarEnvValue = pulsarADEnv.Process(pulsarEnv_gate);
+    float pulsarEnvValue = pulsarEnv.Process(pulsarEnv_gate);
 
     // Convert envelope to REGULAR sawtooth shape (starts low, rises to high)
     pulsarEnv_sawtoothValue = pulsarEnvValue;
@@ -868,8 +886,9 @@ void AudioCallback(float** in, float** out, size_t size) {
     }
 
     // Update envelope parameters with current decay time
-    pulsarADEnv.SetTime(ADSR_SEG_ATTACK, pulsarEnv_attackTime);
-    pulsarADEnv.SetTime(ADSR_SEG_DECAY, pulsarEnv_modulatedDecayTime);
+    pulsarEnv.SetTime(ADSR_SEG_ATTACK, pulsarEnv_attackTime);
+    pulsarEnv.SetTime(ADSR_SEG_DECAY, pulsarEnv_modulatedDecayTime);
+    pulsarEnv.SetTime(ADSR_SEG_RELEASE, pulsarEnv_releaseTime);
 
     // PROCESS MODULATOR OSCILLATOR with pitch modulation
     float modulatedModPitch;
@@ -1245,8 +1264,8 @@ void setup() {
   complexOscTri.Init(sample_rate);
   modOsc.Init(sample_rate);
 
-  // INIT PULSAR AD ENVELOPE (replaces pulsarOsc)
-  pulsarADEnv.Init(sample_rate);
+  // INIT PULSAR ADSR ENVELOPE (replaces pulsarOsc)
+  pulsarEnv.Init(sample_rate);
 
   // INIT COMPLEX OSC FILTER
   complexOsc_analogFilter.Init(sample_rate);
@@ -1285,18 +1304,20 @@ void setup() {
   modOsc.SetWaveform(modOsc.WAVE_TRI);
   modOsc.SetAmp(0.5);
 
-  // PULSAR AD ENVELOPE INIT
+  // PULSAR ADSR ENVELOPE INIT
   // Set fixed attack time of 0.02 seconds
   pulsarEnv_attackTime = 0.02f;
+  // Set fixed release time of 0.02 seconds
+  pulsarEnv_releaseTime = 0.02f;
   // Initial decay time will be set from pot reading
   pulsarEnv_baseDecayTime = 0.1f;
   pulsarEnv_modulatedDecayTime = pulsarEnv_baseDecayTime;
 
-  // Configure AD envelope (Attack-Decay only, no sustain/release)
-  pulsarADEnv.SetTime(ADSR_SEG_ATTACK, pulsarEnv_attackTime);
-  pulsarADEnv.SetTime(ADSR_SEG_DECAY, pulsarEnv_modulatedDecayTime);
-  pulsarADEnv.SetTime(ADSR_SEG_RELEASE, 0.0f);  // No release
-  pulsarADEnv.SetSustainLevel(0.0f);            // Go to zero after decay
+  // Configure ADSR envelope with fixed sustain at 0 and release
+  pulsarEnv.SetTime(ADSR_SEG_ATTACK, pulsarEnv_attackTime);
+  pulsarEnv.SetTime(ADSR_SEG_DECAY, pulsarEnv_modulatedDecayTime);
+  pulsarEnv.SetTime(ADSR_SEG_RELEASE, pulsarEnv_releaseTime);
+  pulsarEnv.SetSustainLevel(0.0f);  // Go to zero after decay
 
   // OSC INIT
   complexOsc_basePitch = 440.0f;
@@ -1371,7 +1392,7 @@ void setup() {
   Serial.println("MUX2 C0: LPG Ch1 Base Level | MUX2 C1: LPG Ch2 Base Level");
   Serial.println("MUX2 C2: Wavefolder Env Mod Depth | MUX2 C3: Sequencer CV Wavefolder Mod Depth");
   Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet) | MUX2 C5: Pulsar Env Decay Time (0.02-10s)");
-  Serial.println("Pulsar AD Envelope: Fixed 0.02s attack, C5 MUX2 controls decay time");
+  Serial.println("Pulsar ADSR Envelope: Fixed 0.02s attack, C5 MUX2 controls decay time, 0 sustain, 0.02s release");
   Serial.println("Pulsar outputs sawtooth shape for modulation matrix");
   Serial.println("B1+A5: Env modulates LPG Ch1 | B1+A6: Env modulates LPG Ch2");
   Serial.println("B2+A0: Pulsar self-modulation (envelope modulates its own decay time)");
@@ -1447,7 +1468,7 @@ void loop() {
   // READ REVERB MIX FROM MUX2 C4
   reverbMix = readMux2Channel(REVERB_MIX, 0.0f, 1.0f);  // Reverb wet/dry mix
 
-  // READ PULSAR AD ENVELOPE BASE DECAY TIME FROM MUX2 C5 (replaces pulsar oscillator frequency)
+  // READ PULSAR ADSR ENVELOPE BASE DECAY TIME FROM MUX2 C5 (replaces pulsar oscillator frequency)
   pulsarEnv_baseDecayTime = readMux2Channel(PULSAR_ENV_DECAY_CHANNEL, 0.02f, 10.0f, true);  // 0.02s to 10s logarithmic
 
   // READ REMAINING SECOND MUX CHANNELS (for future use)
@@ -1510,10 +1531,13 @@ void loop() {
   env.SetTime(ADSR_SEG_RELEASE, eg_releaseTime);
   env.SetSustainLevel(eg_sustainLevel);
 
-  // PULSAR AD ENVELOPE PARAMETERS
+  // PULSAR ADSR ENVELOPE PARAMETERS
   // Attack time is fixed at 0.02s, base decay time is controlled by MUX2 C5
   // The modulated decay time is calculated in the audio callback
-  pulsarADEnv.SetTime(ADSR_SEG_ATTACK, pulsarEnv_attackTime);
+  // Release time is fixed at 0.02s, sustain is fixed at 0
+  pulsarEnv.SetTime(ADSR_SEG_ATTACK, pulsarEnv_attackTime);
+  pulsarEnv.SetTime(ADSR_SEG_RELEASE, pulsarEnv_releaseTime);
+  pulsarEnv.SetSustainLevel(0.0f);
 
   readSequencerValues();
   updateSequencer();
@@ -1565,6 +1589,8 @@ void loop() {
     Serial.print(pulsarEnv_attackTime, 3);
     Serial.print("s Base D=");
     Serial.print(pulsarEnv_baseDecayTime, 3);
+    Serial.print("s R=");
+    Serial.print(pulsarEnv_releaseTime, 3);
     Serial.print("s");
     if (pulsarSelfModEnabled) {
       Serial.print(" Mod D=");
