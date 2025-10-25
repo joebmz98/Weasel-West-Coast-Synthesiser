@@ -54,8 +54,8 @@
 #define CLOCK_CHANNEL 15              // C15 - CLOCK
 
 // MUX CHANNEL ASSIGNMENTS (SECOND MUX - modulation depth controls)
-#define ENV_MOD_DEPTH_CH1 0            // C0 - Envelope modulation depth for Channel 1 (complex osc)
-#define ENV_MOD_DEPTH_CH2 1            // C1 - Envelope modulation depth for Channel 2 (mod osc)
+#define LPG_CH1_LEVEL 0                // C0 - Base LPG level for Channel 1 (complex osc) - RENAMED
+#define LPG_CH2_LEVEL 1                // C1 - Base LPG level for Channel 2 (mod osc) - RENAMED
 #define WAVEFOLDER_ENV_MOD_DEPTH 2     // C2 - Wavefolder envelope modulation depth
 #define SEQ_CV_WAVEFOLDER_MOD_DEPTH 3  // C3 - Sequencer CV to wavefolder modulation depth
 #define REVERB_MIX 4                   // C4 - Reverb wet/dry mix
@@ -121,9 +121,9 @@ float pulsarEnv_modulatedDecayTime = 0.1f;  // Final decay time after modulation
 float lpgCh1_baseCutoff = 0.5f;  // Base cutoff for Channel 1 in LP mode (0.0 to 1.0)
 float lpgCh2_baseCutoff = 0.5f;  // Base cutoff for Channel 2 in LP mode (0.0 to 1.0)
 
-// ENVELOPE MODULATION DEPTH CONTROLS
-float envModDepth_ch1 = 1.0f;  // Envelope modulation depth for channel 1 (complex osc)
-float envModDepth_ch2 = 1.0f;  // Envelope modulation depth for channel 2 (mod osc)
+// LPG BASE LEVEL CONTROLS (from MUX2 C0 and C1)
+float lpgCh1Level = 1.0f;  // Base LPG level for channel 1 (complex osc)
+float lpgCh2Level = 1.0f;  // Base LPG level for channel 2 (mod osc)
 
 // WAVEFOLDER MODULATION
 float wavefolderEnvModDepth = 0.0f;    // Depth of envelope modulation on wavefolder (0.0 to 1.0)
@@ -131,6 +131,8 @@ bool wavefolderEnvModEnabled = false;  // Whether envelope modulation of wavefol
 
 // SEQUENCER CV MODULATION
 float seqCVWavefolderModDepth = 0.0f;          // Depth of sequencer CV modulation on wavefolder (0.0 to 1.0)
+float seqCVModDepth_ch1 = 0.0f;                // Sequencer modulation depth for channel 1
+float seqCVModDepth_ch2 = 0.0f;                // Sequencer modulation depth for channel 2
 bool seqCVModOscPitchEnabled = false;          // Whether sequencer CV controls modOsc pitch
 bool seqCVWavefolderModEnabled = false;        // Whether sequencer CV modulation of wavefolder is active
 bool seqCVModAmountEnabled = false;            // Whether sequencer CV controls modOsc_modAmount
@@ -142,6 +144,12 @@ bool pulsarModOscPitchEnabled = false;         // Whether pulsar envelope modula
 bool pulsarModAmountEnabled = false;           // Whether pulsar envelope modulates modOsc modAmount (B2+A2)
 bool pulsarModComplexOscPitchEnabled = false;  // Whether pulsar envelope modulates complexOsc pitch (B2+A3)
 bool pulsarModWavefolderEnabled = false;       // Pulsar envelope modulation of wavefolder amount (B2+A4)
+
+// ENVELOPE MODULATION CONTROL
+float envModDepth_ch1 = 1.0f;   // Envelope modulation depth for channel 1
+float envModDepth_ch2 = 1.0f;   // Envelope modulation depth for channel 2
+bool envModCh1Enabled = false;  // Whether envelope modulates LPG Channel 1 (B1+A5)
+bool envModCh2Enabled = false;  // Whether envelope modulates LPG Channel 2 (B1+A6)
 
 // REVERB CONTROL
 float reverbMix = 0.0f;  // Reverb wet/dry mix (0.0 = dry, 1.0 = wet)
@@ -259,35 +267,57 @@ float wavefolder(float input, float amount) {
 }
 
 // Function to apply LPG processing based on mode with envelope modulation depth - Buchla style
-void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLevel, float baseCutoffControl, float envValue, float modDepth) {
+void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLevel, float baseCutoffControl, float envValue, float baseLevel, bool envModEnabled, float envModDepth = 1.0f, float seqCVValue = 0.0f, float seqCVModDepth = 0.0f) {
   float outputGain = 1.0f;
 
-  // Apply modulation depth to envelope value
-  // modDepth = 0.0: no envelope effect, modDepth = 1.0: full envelope effect
-  float modulatedEnv = envValue * modDepth;
+  // Use baseLevel (from MUX2 C0/C1) as the starting point
+  // If envelope modulation is enabled, modulate FROM that base level
+  float finalLevel = baseLevel;
 
-  // For Buchla-style behavior: modDepth controls how much the envelope affects the signal
-  // When modDepth = 0, the envelope has no effect but the base signal still passes
-  // When modDepth = 1, full envelope control
+  // Apply sequencer CV modulation to level if enabled
+  if (seqCVModDepth > 0.0f) {
+    // Sequencer CV modulates the level - additive to base level
+    finalLevel += (seqCVValue * seqCVModDepth);
+    finalLevel = fminf(fmaxf(finalLevel, 0.0f), 1.0f);
+  }
+
+  if (envModEnabled) {
+    // Apply modulation depth to the envelope value
+    float modulatedEnv = envValue * envModDepth;
+
+    // When envelope modulation is enabled, interpolate between baseLevel and full level
+    // envModDepth controls how much of the envelope affects the level
+    finalLevel = baseLevel + ((1.0f - baseLevel) * modulatedEnv);
+
+    // Clamp to prevent values outside 0-1 range
+    finalLevel = fminf(fmaxf(finalLevel, 0.0f), 1.0f);
+  }
+  // If no envelope modulation, just use the baseLevel (potentially modified by sequencer CV)
 
   switch (mode) {
     case LPG_MODE_COMBI:
       {
-        // COMBI mode: MUX1 C5/C6 control base level AND base cutoff
-        // MUX2 C0/C1 control envelope modulation for BOTH level AND cutoff
+        // COMBI mode: MUX2 C0/C1 control base level, envelope modulates FROM that level
 
-        // Calculate final level: interpolate between base level and envelope-controlled level
-        float baseLevel = channelLevel;  // From MUX1 C5/C6
-        float modulatedLevel = baseLevel + ((1.0f - baseLevel) * modulatedEnv);
-
-        // Apply the interpolated level to the signal
-        signal *= modulatedLevel;
+        // Apply the final level to the signal
+        signal *= finalLevel;
 
         // Base cutoff determined by channel level (20Hz to 20kHz)
         float baseCutoff = 20.0f + (channelLevel * 17980.0f);
 
-        // Envelope opens the filter from base cutoff up to 20kHz
-        float combiCutoff = baseCutoff + ((18000.0f - baseCutoff) * modulatedEnv);
+        // Apply sequencer CV modulation to cutoff if enabled
+        float combiCutoff = baseCutoff;
+        if (seqCVModDepth > 0.0f) {
+          // Sequencer CV modulates cutoff frequency - additive to base cutoff
+          combiCutoff += (seqCVValue * seqCVModDepth * 5000.0f);  // Scale appropriately for cutoff
+          combiCutoff = fminf(fmaxf(combiCutoff, 20.0f), 18000.0f);
+        }
+
+        // Envelope opens the filter from base cutoff up to 20kHz (only if modulation enabled)
+        if (envModEnabled) {
+          float modulatedEnv = envValue * envModDepth;
+          combiCutoff = baseCutoff + ((18000.0f - baseCutoff) * modulatedEnv);
+        }
         filter.SetFreq(fminf(combiCutoff, 18000.0f));
         filter.SetRes(0.0f);
 
@@ -298,20 +328,26 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
 
     case LPG_MODE_VCA:
       {
-        // VCA mode: MUX1 C5/C6 control base level, MUX2 C0/C1 control envelope modulation amount
+        // VCA mode: MUX2 C0/C1 control base level, envelope modulates FROM that level
 
-        // Calculate final level: interpolate between base level and envelope-controlled level
-        float baseLevel = channelLevel;  // From MUX1 C5/C6
-        float modulatedLevel = baseLevel + ((1.0f - baseLevel) * modulatedEnv);
-
-        // Apply the interpolated level to the signal
-        signal *= modulatedLevel;
+        // Apply the final level to the signal
+        signal *= finalLevel;
 
         // Filter cutoff increases with oscillator level (Buchla characteristic)
         float baseCutoff = 1200.0f + (channelLevel * 17800.0f);
 
-        // Envelope also opens the filter slightly for timbral variation
-        float vcaCutoff = baseCutoff + ((19000.0f - baseCutoff) * modulatedEnv * 0.5f);
+        // Apply sequencer CV modulation to cutoff if enabled (subtle effect in VCA mode)
+        float vcaCutoff = baseCutoff;
+        if (seqCVModDepth > 0.0f) {
+          vcaCutoff += (seqCVValue * seqCVModDepth * 2000.0f);  // Smaller effect in VCA mode
+          vcaCutoff = fminf(fmaxf(vcaCutoff, 1200.0f), 19000.0f);
+        }
+
+        // Envelope also opens the filter slightly for timbral variation (only if modulation enabled)
+        if (envModEnabled) {
+          float modulatedEnv = envValue * envModDepth;
+          vcaCutoff = baseCutoff + ((19000.0f - baseCutoff) * modulatedEnv * 0.5f);
+        }
         filter.SetFreq(fminf(vcaCutoff, 19000.0f));
         filter.SetRes(0.0f);
 
@@ -326,8 +362,19 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
         // Base cutoff determined by baseCutoffControl parameter (20Hz to 18kHz)
         float baseCutoff = 20.0f + (baseCutoffControl * 17980.0f);
 
-        // Envelope opens the filter from base cutoff up to 18kHz
-        float lpCutoff = baseCutoff + ((18000.0f - baseCutoff) * modulatedEnv);
+        // Apply sequencer CV modulation to cutoff if enabled (main effect in LP mode)
+        float lpCutoff = baseCutoff;
+        if (seqCVModDepth > 0.0f) {
+          // Sequencer CV has strong effect on cutoff in LP mode
+          lpCutoff += (seqCVValue * seqCVModDepth * 10000.0f);
+          lpCutoff = fminf(fmaxf(lpCutoff, 20.0f), 18000.0f);
+        }
+
+        // Envelope opens the filter from base cutoff up to 18kHz (only if modulation enabled)
+        if (envModEnabled) {
+          float modulatedEnv = envValue * envModDepth;
+          lpCutoff = baseCutoff + ((18000.0f - baseCutoff) * modulatedEnv);
+        }
         filter.SetFreq(fminf(lpCutoff, 18000.0f));
 
         // Safe resonance curve based on baseCutoffControl only (not envelope)
@@ -512,7 +559,40 @@ void readButtonMatrix() {
   seqCVLPGCh1LevelEnabled = matrixStates[0][5];
 
   // B0 + A6 enables sequencer CV modulation of LPG Channel 2 level
-  seqCVLPGCh1LevelEnabled = matrixStates[0][6];
+  seqCVLPGCh2LevelEnabled = matrixStates[0][6];
+
+  // NEW: B1 + A5 enables envelope modulation of LPG Channel 1
+  envModCh1Enabled = matrixStates[1][5];
+
+  // NEW: B1 + A6 enables envelope modulation of LPG Channel 2
+  envModCh2Enabled = matrixStates[1][6];
+
+  // Set envelope modulation depth based on B0+A5/6 combinations
+  if (matrixStates[0][5]) {
+    envModDepth_ch1 = 2.0f;  // Double the envelope modulation depth for channel 1
+  } else {
+    envModDepth_ch1 = 1.0f;  // Normal envelope modulation depth for channel 1
+  }
+
+  if (matrixStates[0][6]) {
+    envModDepth_ch2 = 2.0f;  // Double the envelope modulation depth for channel 2
+  } else {
+    envModDepth_ch2 = 1.0f;  // Normal envelope modulation depth for channel 2
+  }
+
+  // FIX: Control sequencer CV modulation depth based on B0+A5/6 buttons
+  // Sequencer CV should ONLY modulate LPG when B0+A5 or B0+A6 are pressed
+  if (matrixStates[0][5]) {
+    seqCVModDepth_ch1 = 1.0f;  // Enable sequencer CV modulation for channel 1
+  } else {
+    seqCVModDepth_ch1 = 0.0f;  // Disable sequencer CV modulation for channel 1
+  }
+
+  if (matrixStates[0][6]) {
+    seqCVModDepth_ch2 = 1.0f;  // Enable sequencer CV modulation for channel 2
+  } else {
+    seqCVModDepth_ch2 = 0.0f;  // Disable sequencer CV modulation for channel 2
+  }
 }
 
 void printButtonStates() {
@@ -520,7 +600,7 @@ void printButtonStates() {
   bool anyChange = false;
 
   // Check only the buttons we're using for modulation
-  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1] || matrixStates[0][2] != lastMatrixStates[0][2] || matrixStates[0][3] != lastMatrixStates[0][3] || matrixStates[2][1] != lastMatrixStates[2][1] || matrixStates[2][2] != lastMatrixStates[2][2] || matrixStates[2][0] != lastMatrixStates[2][0] || matrixStates[2][3] != lastMatrixStates[2][3] || matrixStates[2][4] != lastMatrixStates[2][4] || matrixStates[0][5] != lastMatrixStates[0][5]) {
+  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1] || matrixStates[0][2] != lastMatrixStates[0][2] || matrixStates[0][3] != lastMatrixStates[0][3] || matrixStates[2][1] != lastMatrixStates[2][1] || matrixStates[2][2] != lastMatrixStates[2][2] || matrixStates[2][0] != lastMatrixStates[2][0] || matrixStates[2][3] != lastMatrixStates[2][3] || matrixStates[2][4] != lastMatrixStates[2][4] || matrixStates[0][5] != lastMatrixStates[0][5] || matrixStates[0][6] != lastMatrixStates[0][6] || matrixStates[1][5] != lastMatrixStates[1][5] || matrixStates[1][6] != lastMatrixStates[1][6]) {
     anyChange = true;
   }
 
@@ -548,6 +628,12 @@ void printButtonStates() {
     Serial.print(matrixStates[2][4] ? "HIGH" : "LOW");
     Serial.print(" | B0+A5: ");
     Serial.print(matrixStates[0][5] ? "HIGH" : "LOW");
+    Serial.print(" | B0+A6: ");
+    Serial.print(matrixStates[0][6] ? "HIGH" : "LOW");
+    Serial.print(" | B1+A5: ");
+    Serial.print(matrixStates[1][5] ? "HIGH" : "LOW");
+    Serial.print(" | B1+A6: ");
+    Serial.print(matrixStates[1][6] ? "HIGH" : "LOW");
 
     // Show modulation status changes
     if (matrixStates[0][4] != lastMatrixStates[0][4]) {
@@ -593,6 +679,18 @@ void printButtonStates() {
     if (matrixStates[0][5] != lastMatrixStates[0][5]) {
       Serial.print(" | Seq CV LPG Ch1 Level: ");
       Serial.print(seqCVLPGCh1LevelEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[0][6] != lastMatrixStates[0][6]) {
+      Serial.print(" | Seq CV LPG Ch2 Level: ");
+      Serial.print(seqCVLPGCh2LevelEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[1][5] != lastMatrixStates[1][5]) {
+      Serial.print(" | Env Mod Ch1: ");
+      Serial.print(envModCh1Enabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[1][6] != lastMatrixStates[1][6]) {
+      Serial.print(" | Env Mod Ch2: ");
+      Serial.print(envModCh2Enabled ? "ENABLED" : "DISABLED");
     }
 
     Serial.println();
@@ -816,7 +914,7 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // Apply pulsar envelope modulation if B2+A2 is pressed
     if (pulsarModAmountEnabled) {
-        float pulsarDepthMod = pulsarEnv_sawtoothValue * 1000.0f;  // 
+      float pulsarDepthMod = pulsarEnv_sawtoothValue * 1000.0f;  //
       if (useAmplitudeModulation) {
         // FIXED: Use appropriate pulsar modulation for AM (was 500.0f - way too high!)
         finalAMDepth = fminf(fmaxf(finalAMDepth + pulsarDepthMod, 0.0f), 1.0f);
@@ -831,7 +929,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     finalFMDepth = fminf(fmaxf(finalFMDepth, 0.0f), 1600.0f);
 
     // ================================
-    // MODIFIED WAVEFOLDER MODULATION 
+    // MODIFIED WAVEFOLDER MODULATION
     // ================================
 
     // Start with the base wavefolder amount from C4 pot (MUX1)
@@ -857,16 +955,15 @@ void AudioCallback(float** in, float** out, size_t size) {
       // Use the C4 pot value as the CENTER point, pulsar modulates around it
       // wavefolderEnvModDepth controls how much modulation is applied
       float baseAmount = complexOsc_foldAmount;
-      float modulationDepth = wavefolderEnvModDepth * 0.8f; // Scale the modulation depth
-      
+      float modulationDepth = wavefolderEnvModDepth * 0.8f;  // Scale the modulation depth
+
       // Pulsar envelope sweeps from 0 to 1, creating modulation around the base value
       // This creates: baseAmount + (pulsarEnv * modulationDepth)
       // So when pulsarEnv=0: baseAmount, when pulsarEnv=1: baseAmount + modulationDepth
       float pulsarModulation = baseAmount + (pulsarEnv_sawtoothValue * modulationDepth);
-      
+
       // Blend between unmodulated and modulated based on pulsar envelope
       currentFoldAmount = pulsarModulation;
-      
     }
 
     // Clamp to prevent excessive folding
@@ -878,44 +975,54 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // Determine the appropriate parameters for each channel based on LPG mode
     float ch1_level, ch1_cutoffControl, ch2_level, ch2_cutoffControl;
+    float ch1_baseLevel, ch2_baseLevel;  // Base levels from MUX2 C0/C1
 
     // For Channel 1 (complex oscillator)
     if (lpgChannel1_mode == LPG_MODE_LP) {
       ch1_level = 0.3f;                       // Reduced static level in LP mode to match other modes
       ch1_cutoffControl = lpgCh1_baseCutoff;  // Use cutoff control pot
+      ch1_baseLevel = 1.0f;                   // Full level in LP mode (envelope controls cutoff only)
     } else if (lpgChannel1_mode == LPG_MODE_VCA || lpgChannel1_mode == LPG_MODE_COMBI) {
       // Apply sequencer CV modulation to LPG Channel 1 level if B0+A5 is pressed
       if (seqCVLPGCh1LevelEnabled) {
-        // Use C0 MUX2 pot (envModDepth_ch1) as base, sequencer CV modulates from that point
+        // Use C0 MUX2 pot (lpgCh1Level) as base, sequencer CV modulates from that point
         // Convert sequencer CV (0-48 semitones) to modulation amount (0.0-1.0 range)
         float seqCVMod = sequencerPitchOffset / 48.0f;
-        
+
         // Start from C0 MUX2 pot value and add sequencer modulation
-        // Even if envModDepth_ch1 is 0, sequencer will still modulate from that 0 point
-        ch1_level = envModDepth_ch1 + (seqCVMod * 0.5f); // 0.5f limits max modulation to prevent excessive levels
-        
+        ch1_level = lpgCh1Level + (seqCVMod * 0.5f);  // 0.5f limits max modulation to prevent excessive levels
+
         // Clamp to safe range
         ch1_level = fminf(fmaxf(ch1_level, 0.0f), 1.0f);
       } else {
         ch1_level = 1.0f;  // Use full level in VCA/COMBI mode - level controlled by LPG
       }
       ch1_cutoffControl = complexOsc_level;  // Use level pot for cutoff control
+      ch1_baseLevel = lpgCh1Level;           // Base level from MUX2 C0
     } else {
       ch1_level = complexOsc_level;          // Use level pot (for any other modes)
       ch1_cutoffControl = complexOsc_level;  // Use level for cutoff
+      ch1_baseLevel = 1.0f;                  // Full level
     }
 
     // For Channel 2 (modulator oscillator)
     if (lpgChannel2_mode == LPG_MODE_LP) {
       ch2_level = 0.3f;                       // Reduced static level in LP mode to match other modes
       ch2_cutoffControl = lpgCh2_baseCutoff;  // Use cutoff control pot
+      ch2_baseLevel = 1.0f;                   // Full level in LP mode (envelope controls cutoff only)
     } else if (lpgChannel2_mode == LPG_MODE_VCA || lpgChannel2_mode == LPG_MODE_COMBI) {
       ch2_level = 1.0f;                  // Use full level in VCA/COMBI mode - level controlled by LPG
       ch2_cutoffControl = modOsc_level;  // Use level pot for cutoff control
+      ch2_baseLevel = lpgCh2Level;       // Base level from MUX2 C1
     } else {
       ch2_level = modOsc_level;          // Use level pot (for any other modes)
       ch2_cutoffControl = modOsc_level;  // Use level for cutoff
+      ch2_baseLevel = 1.0f;              // Full level
     }
+
+    // Calculate sequencer CV modulation values (normalized 0-1 range)
+    float seqCVMod_ch1 = sequencerPitchOffset / 48.0f;
+    float seqCVMod_ch2 = sequencerPitchOffset / 48.0f;
 
     // APPLY MODULATION BASED ON SELECTED TYPE
     if (useAmplitudeModulation) {
@@ -955,10 +1062,12 @@ void AudioCallback(float** in, float** out, size_t size) {
 
       // Process modulator through LPG (for monitoring/feedback purposes)
       float modulated_modOsc = modOsc_filteredSignal * ch2_level;
-      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
 
-      // APPLY LPG FILTER TO AM SIGNAL with envelope modulation depth
-      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, envModDepth_ch1);
+      // APPLY LPG FILTER TO MODULATOR OSC with envelope modulation depth and sequencer CV
+      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, ch2_baseLevel, envModCh2Enabled, envModDepth_ch2, seqCVMod_ch2, seqCVModDepth_ch2);
+
+      // APPLY LPG FILTER TO AM SIGNAL with envelope modulation depth and sequencer CV
+      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, ch1_baseLevel, envModCh1Enabled, envModDepth_ch1, seqCVMod_ch1, seqCVModDepth_ch1);
 
       // Mix: mostly AM signal with a tiny bit of modulator for character
       float oscillatorSum_signal = modulated_complexOsc + (modulated_modOsc * 0.05f);
@@ -995,9 +1104,9 @@ void AudioCallback(float** in, float** out, size_t size) {
 
       float modulated_complexOsc = complexOsc_foldedSignal * ch1_level;
 
-      // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth
-      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, envModDepth_ch1);
-      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, envModDepth_ch2);
+      // APPLY LPG FILTERS BASED ON CURRENT MODE with envelope modulation depth and sequencer CV
+      processLPG(lpgChannel1_filter, lpgChannel1_mode, modulated_complexOsc, complexOsc_level, ch1_cutoffControl, envValue, ch1_baseLevel, envModCh1Enabled, envModDepth_ch1, seqCVMod_ch1, seqCVModDepth_ch1);
+      processLPG(lpgChannel2_filter, lpgChannel2_mode, modulated_modOsc, modOsc_level, ch2_cutoffControl, envValue, ch2_baseLevel, envModCh2Enabled, envModDepth_ch2, seqCVMod_ch2, seqCVModDepth_ch2);
 
       float oscillatorSum_signal = modulated_complexOsc + modulated_modOsc;
 
@@ -1146,15 +1255,17 @@ void setup() {
   lpgCh1_baseCutoff = 0.5f;
   lpgCh2_baseCutoff = 0.5f;
 
-  // ENVELOPE MODULATION DEPTH INIT
-  envModDepth_ch1 = 1.0f;
-  envModDepth_ch2 = 1.0f;
+  // LPG BASE LEVEL INIT
+  lpgCh1Level = 1.0f;
+  lpgCh2Level = 1.0f;
 
   // WAVEFOLDER MODULATION INIT
   wavefolderEnvModDepth = 1.0f;  // Default modulation depth
   wavefolderEnvModEnabled = false;
   seqCVWavefolderModDepth = 1.0f;  // Default modulation depth
   seqCVWavefolderModEnabled = false;
+  seqCVModDepth_ch1 = 0.0f;                 // Disabled by default - sequencer CV only when B0+A5 pressed
+  seqCVModDepth_ch2 = 0.0f;                 // Disabled by default - sequencer CV only when B0+A6 pressed
   seqCVModAmountEnabled = false;            // Sequencer CV control of mod amount disabled by default
   seqCVComplexOscPitchEnabled = false;      // Sequencer CV control of complexOsc pitch disabled by default
   pulsarModOscPitchEnabled = false;         // Pulsar envelope modulation of modOsc pitch disabled by default
@@ -1162,6 +1273,10 @@ void setup() {
   pulsarSelfModEnabled = false;             // Pulsar self-modulation disabled by default
   pulsarModComplexOscPitchEnabled = false;  // Pulsar envelope modulation of complexOsc pitch disabled by default
   pulsarModWavefolderEnabled = false;       // Pulsar envelope modulation of wavefolder amount disabled by default
+
+  // ENVELOPE MODULATION INIT
+  envModCh1Enabled = false;
+  envModCh2Enabled = false;
 
   // REVERB INIT
   reverbMix = 0.0f;  // Start with dry signal
@@ -1193,11 +1308,12 @@ void setup() {
   Serial.println("Use button D9 to toggle between FM and AM modulation");
   Serial.println("Current modulation: FM");
   Serial.println("LPG Channel 1: COMBI mode | LPG Channel 2: COMBI mode");
-  Serial.println("MUX2 C0: Env modulation depth for Ch1 | MUX2 C1: Env modulation depth for Ch2");
+  Serial.println("MUX2 C0: LPG Ch1 Base Level | MUX2 C1: LPG Ch2 Base Level");
   Serial.println("MUX2 C2: Wavefolder Env Mod Depth | MUX2 C3: Sequencer CV Wavefolder Mod Depth");
   Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet) | MUX2 C5: Pulsar Env Decay Time (0.02-10s)");
   Serial.println("Pulsar AD Envelope: Fixed 0.02s attack, C5 MUX2 controls decay time");
   Serial.println("Pulsar outputs sawtooth shape for modulation matrix");
+  Serial.println("B1+A5: Env modulates LPG Ch1 | B1+A6: Env modulates LPG Ch2");
   Serial.println("B2+A0: Pulsar self-modulation (envelope modulates its own decay time)");
   Serial.println("B2+A3: Pulsar envelope modulates complex oscillator pitch");
   Serial.println("B2+A4: Pulsar envelope modulates wavefolder amount");
@@ -1208,6 +1324,8 @@ void setup() {
   Serial.println("  B0+A3: Seq CV ComplexOsc Pitch | B2+A3: Pulsar Env ComplexOsc Pitch");
   Serial.println("  B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
   Serial.println("  B2+A0: Pulsar Self-Modulation | B2+A4: Pulsar Env Wavefolder Mod");
+  Serial.println("  B0+A5: Seq CV LPG Ch1 Level | B0+A6: Seq CV LPG Ch2 Level");
+  Serial.println("  B1+A5: Env Mod LPG Ch1 | B1+A6: Env Mod LPG Ch2");
 }
 
 void loop() {
@@ -1256,9 +1374,9 @@ void loop() {
 
   BPM = readMux1Channel(CLOCK_CHANNEL, 1.0f, 1000.0f, true);
 
-  // READ ENVELOPE MODULATION DEPTH CONTROLS FROM SECOND MUX
-  envModDepth_ch1 = readMux2Channel(ENV_MOD_DEPTH_CH1, 0.0f, 1.0f);  // Channel 1 modulation depth
-  envModDepth_ch2 = readMux2Channel(ENV_MOD_DEPTH_CH2, 0.0f, 1.0f);  // Channel 2 modulation depth
+  // READ LPG BASE LEVEL CONTROLS FROM SECOND MUX (RENAMED)
+  lpgCh1Level = readMux2Channel(LPG_CH1_LEVEL, 0.0f, 1.0f);  // Channel 1 base level
+  lpgCh2Level = readMux2Channel(LPG_CH2_LEVEL, 0.0f, 1.0f);  // Channel 2 base level
 
   // READ WAVEFOLDER MODULATION DEPTH CONTROLS
   wavefolderEnvModDepth = readMux2Channel(WAVEFOLDER_ENV_MOD_DEPTH, 0.0f, 0.5f);       // Wavefolder envelope mod depth
@@ -1361,10 +1479,24 @@ void loop() {
     Serial.print(BPM);
     Serial.print(" | MIDI CV: ");
     Serial.print(midiPitchCV);
-    Serial.print(" | EnvMod Ch1: ");
-    Serial.print(envModDepth_ch1);
-    Serial.print(" | EnvMod Ch2: ");
-    Serial.print(envModDepth_ch2);
+    Serial.print(" | LPG Ch1 Level: ");
+    Serial.print(lpgCh1Level);
+    Serial.print(" | LPG Ch2 Level: ");
+    Serial.print(lpgCh2Level);
+    Serial.print(" | Env Mod Ch1: ");
+    Serial.print(envModCh1Enabled ? "ON" : "OFF");
+    if (envModCh1Enabled) {
+      Serial.print("(Depth:");
+      Serial.print(envModDepth_ch1);
+      Serial.print("x)");
+    }
+    Serial.print(" | Env Mod Ch2: ");
+    Serial.print(envModCh2Enabled ? "ON" : "OFF");
+    if (envModCh2Enabled) {
+      Serial.print("(Depth:");
+      Serial.print(envModDepth_ch2);
+      Serial.print("x)");
+    }
 
     // Show pulsar envelope status
     Serial.print(" | Pulsar Env: A=");
@@ -1449,7 +1581,16 @@ void loop() {
     Serial.print(seqCVLPGCh1LevelEnabled ? "ON" : "OFF");
     if (seqCVLPGCh1LevelEnabled) {
       Serial.print(" (Base Level: ");
-      Serial.print(envModDepth_ch1);
+      Serial.print(lpgCh1Level);
+      Serial.print(")");
+    }
+
+    // Show sequencer CV LPG Ch2 level modulation status
+    Serial.print(" | Seq CV LPG Ch2 Level: ");
+    Serial.print(seqCVLPGCh2LevelEnabled ? "ON" : "OFF");
+    if (seqCVLPGCh2LevelEnabled) {
+      Serial.print(" (Base Level: ");
+      Serial.print(lpgCh2Level);
       Serial.print(")");
     }
 
