@@ -112,7 +112,7 @@ float pulsarEnv_decayTime;      // PULSAR AD ENVELOPE DECAY TIME
 // PULSAR AD ENVELOPE VARIABLES
 bool pulsarEnv_gate = false;                // Whether the pulsar envelope gate is open
 unsigned long lastPulsarEnvTime = 0;        // Last time the pulsar envelope was triggered
-float pulsarEnv_attackTime = 0.005f;         // Fixed attack time of 0.02 seconds
+float pulsarEnv_attackTime = 0.005f;        // Fixed attack time of 0.02 seconds
 float pulsarEnv_sawtoothValue = 0.0f;       // Current sawtooth value for modulation
 float pulsarEnv_baseDecayTime = 0.1f;       // Base decay time (from pot)
 float pulsarEnv_modulatedDecayTime = 0.1f;  // Final decay time after modulation
@@ -135,9 +135,11 @@ bool seqCVModOscPitchEnabled = false;          // Whether sequencer CV controls 
 bool seqCVWavefolderModEnabled = false;        // Whether sequencer CV modulation of wavefolder is active
 bool seqCVModAmountEnabled = false;            // Whether sequencer CV controls modOsc_modAmount
 bool seqCVComplexOscPitchEnabled = false;      // Whether sequencer CV controls complexOsc pitch
-bool pulsarModOscPitchEnabled = false;         // Whether pulsar envelope modulates modOsc pitch
-bool pulsarModAmountEnabled = false;           // Whether pulsar envelope modulates modOsc modAmount
+bool seqCVLPGCh1LevelEnabled = false;          // Whether sequencer CV modulates LPG Channel 1 level (B0+A5)
+bool seqCVLPGCh2LevelEnabled = false;          // Whether sequencer CV modulates LPG Channel 2 level (B0+A6)
 bool pulsarSelfModEnabled = false;             // Whether pulsar envelope modulates its own decay time (B2+A0)
+bool pulsarModOscPitchEnabled = false;         // Whether pulsar envelope modulates modOsc pitch (B2+A1)
+bool pulsarModAmountEnabled = false;           // Whether pulsar envelope modulates modOsc modAmount (B2+A2)
 bool pulsarModComplexOscPitchEnabled = false;  // Whether pulsar envelope modulates complexOsc pitch (B2+A3)
 bool pulsarModWavefolderEnabled = false;       // Pulsar envelope modulation of wavefolder amount (B2+A4)
 
@@ -505,6 +507,12 @@ void readButtonMatrix() {
 
   // B2 + A4 enables pulsar envelope modulation of wavefolder amount
   pulsarModWavefolderEnabled = matrixStates[2][4];
+
+  // B0 + A5 enables sequencer CV modulation of LPG Channel 1 level
+  seqCVLPGCh1LevelEnabled = matrixStates[0][5];
+
+  // B0 + A6 enables sequencer CV modulation of LPG Channel 2 level
+  seqCVLPGCh1LevelEnabled = matrixStates[0][6];
 }
 
 void printButtonStates() {
@@ -512,7 +520,7 @@ void printButtonStates() {
   bool anyChange = false;
 
   // Check only the buttons we're using for modulation
-  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1] || matrixStates[0][2] != lastMatrixStates[0][2] || matrixStates[0][3] != lastMatrixStates[0][3] || matrixStates[2][1] != lastMatrixStates[2][1] || matrixStates[2][2] != lastMatrixStates[2][2] || matrixStates[2][0] != lastMatrixStates[2][0] || matrixStates[2][3] != lastMatrixStates[2][3] || matrixStates[2][4] != lastMatrixStates[2][4]) {
+  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1] || matrixStates[0][2] != lastMatrixStates[0][2] || matrixStates[0][3] != lastMatrixStates[0][3] || matrixStates[2][1] != lastMatrixStates[2][1] || matrixStates[2][2] != lastMatrixStates[2][2] || matrixStates[2][0] != lastMatrixStates[2][0] || matrixStates[2][3] != lastMatrixStates[2][3] || matrixStates[2][4] != lastMatrixStates[2][4] || matrixStates[0][5] != lastMatrixStates[0][5]) {
     anyChange = true;
   }
 
@@ -538,6 +546,8 @@ void printButtonStates() {
     Serial.print(matrixStates[2][3] ? "HIGH" : "LOW");
     Serial.print(" | B2+A4: ");
     Serial.print(matrixStates[2][4] ? "HIGH" : "LOW");
+    Serial.print(" | B0+A5: ");
+    Serial.print(matrixStates[0][5] ? "HIGH" : "LOW");
 
     // Show modulation status changes
     if (matrixStates[0][4] != lastMatrixStates[0][4]) {
@@ -579,6 +589,10 @@ void printButtonStates() {
     if (matrixStates[2][4] != lastMatrixStates[2][4]) {
       Serial.print(" | Pulsar Env Wavefolder Mod: ");
       Serial.print(pulsarModWavefolderEnabled ? "ENABLED" : "DISABLED");
+    }
+    if (matrixStates[0][5] != lastMatrixStates[0][5]) {
+      Serial.print(" | Seq CV LPG Ch1 Level: ");
+      Serial.print(seqCVLPGCh1LevelEnabled ? "ENABLED" : "DISABLED");
     }
 
     Serial.println();
@@ -853,16 +867,6 @@ void AudioCallback(float** in, float** out, size_t size) {
       // Blend between unmodulated and modulated based on pulsar envelope
       currentFoldAmount = pulsarModulation;
       
-      // DEBUG: Uncomment to see the modulation values
-      // static int debugCount = 0;
-      // if (debugCount++ % 1000 == 0) {
-      //   Serial.print("Pulsar Fold: base=");
-      //   Serial.print(baseAmount);
-      //   Serial.print(" modulated=");
-      //   Serial.print(currentFoldAmount);
-      //   Serial.print(" pulsarEnv=");
-      //   Serial.println(pulsarEnv_sawtoothValue);
-      // }
     }
 
     // Clamp to prevent excessive folding
@@ -880,7 +884,21 @@ void AudioCallback(float** in, float** out, size_t size) {
       ch1_level = 0.3f;                       // Reduced static level in LP mode to match other modes
       ch1_cutoffControl = lpgCh1_baseCutoff;  // Use cutoff control pot
     } else if (lpgChannel1_mode == LPG_MODE_VCA || lpgChannel1_mode == LPG_MODE_COMBI) {
-      ch1_level = 1.0f;                      // Use full level in VCA/COMBI mode - level controlled by LPG
+      // Apply sequencer CV modulation to LPG Channel 1 level if B0+A5 is pressed
+      if (seqCVLPGCh1LevelEnabled) {
+        // Use C0 MUX2 pot (envModDepth_ch1) as base, sequencer CV modulates from that point
+        // Convert sequencer CV (0-48 semitones) to modulation amount (0.0-1.0 range)
+        float seqCVMod = sequencerPitchOffset / 48.0f;
+        
+        // Start from C0 MUX2 pot value and add sequencer modulation
+        // Even if envModDepth_ch1 is 0, sequencer will still modulate from that 0 point
+        ch1_level = envModDepth_ch1 + (seqCVMod * 0.5f); // 0.5f limits max modulation to prevent excessive levels
+        
+        // Clamp to safe range
+        ch1_level = fminf(fmaxf(ch1_level, 0.0f), 1.0f);
+      } else {
+        ch1_level = 1.0f;  // Use full level in VCA/COMBI mode - level controlled by LPG
+      }
       ch1_cutoffControl = complexOsc_level;  // Use level pot for cutoff control
     } else {
       ch1_level = complexOsc_level;          // Use level pot (for any other modes)
@@ -1426,6 +1444,15 @@ void loop() {
       Serial.print(")");
     }
 
+    // Show sequencer CV LPG Ch1 level modulation status
+    Serial.print(" | Seq CV LPG Ch1 Level: ");
+    Serial.print(seqCVLPGCh1LevelEnabled ? "ON" : "OFF");
+    if (seqCVLPGCh1LevelEnabled) {
+      Serial.print(" (Base Level: ");
+      Serial.print(envModDepth_ch1);
+      Serial.print(")");
+    }
+
     // Show reverb status
     Serial.print(" | Reverb Mix: ");
     Serial.print(reverbMix);
@@ -1445,30 +1472,6 @@ void loop() {
       Serial.print(" | Note: ");
       Serial.print(lastMidiNote);
       midiNoteReceived = false;
-    }
-
-    // Show wavefolder modulation status
-    Serial.print(" | Wavefolder Env Mod: ");
-    Serial.print(wavefolderEnvModEnabled ? "ON" : "OFF");
-    if (wavefolderEnvModEnabled) {
-      Serial.print(" (Depth: ");
-      Serial.print(wavefolderEnvModDepth);
-      Serial.print(")");
-    }
-
-    Serial.print(" | Seq CV Wavefolder Mod: ");
-    Serial.print(seqCVWavefolderModEnabled ? "ON" : "OFF");
-    if (seqCVWavefolderModEnabled) {
-      Serial.print(" (Depth: ");
-      Serial.print(seqCVWavefolderModDepth);
-      Serial.print(")");
-    }
-
-    // ADD THIS BLOCK for pulsar wavefolder modulation
-    Serial.print(" | Pulsar Wavefolder Mod: ");
-    Serial.print(pulsarModWavefolderEnabled ? "ON" : "OFF");
-    if (pulsarModWavefolderEnabled) {
-      Serial.print(" (Active)");
     }
 
     Serial.println();
