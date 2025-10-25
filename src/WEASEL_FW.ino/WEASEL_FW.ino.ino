@@ -140,6 +140,7 @@ bool seqCVModAmountEnabled = false;            // Whether sequencer CV controls 
 bool seqCVComplexOscPitchEnabled = false;      // Whether sequencer CV controls complexOsc pitch
 bool seqCVLPGCh1LevelEnabled = false;          // Whether sequencer CV modulates LPG Channel 1 level (B0+A5)
 bool seqCVLPGCh2LevelEnabled = false;          // Whether sequencer CV modulates LPG Channel 2 level (B0+A6)
+bool seqCVPulsarEnvDecayEnabled = false;       // NEW: Whether sequencer CV modulates pulsar envelope decay time (B0+A0)
 bool pulsarSelfModEnabled = false;             // Whether pulsar envelope modulates its own decay time (B2+A0)
 bool pulsarModOscPitchEnabled = false;         // Whether pulsar envelope modulates modOsc pitch (B2+A1)
 bool pulsarModAmountEnabled = false;           // Whether pulsar envelope modulates modOsc modAmount (B2+A2)
@@ -562,6 +563,9 @@ void readButtonMatrix() {
 
   // Update modulation enable flags based on new matrix positions
 
+  // NEW: B0 + A0 enables sequencer CV modulation of pulsar envelope decay time
+  seqCVPulsarEnvDecayEnabled = matrixStates[0][0];
+
   // B0 + A1 enables sequencer CV control of modOsc pitch
   seqCVModOscPitchEnabled = matrixStates[0][1];
 
@@ -643,13 +647,15 @@ void printButtonStates() {
   bool anyChange = false;
 
   // Check only the buttons we're using for modulation
-  if (matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1] || matrixStates[0][2] != lastMatrixStates[0][2] || matrixStates[0][3] != lastMatrixStates[0][3] || matrixStates[2][1] != lastMatrixStates[2][1] || matrixStates[2][2] != lastMatrixStates[2][2] || matrixStates[2][0] != lastMatrixStates[2][0] || matrixStates[2][3] != lastMatrixStates[2][3] || matrixStates[2][4] != lastMatrixStates[2][4] || matrixStates[0][5] != lastMatrixStates[0][5] || matrixStates[0][6] != lastMatrixStates[0][6] || matrixStates[1][5] != lastMatrixStates[1][5] || matrixStates[1][6] != lastMatrixStates[1][6] || matrixStates[2][5] != lastMatrixStates[2][5] || matrixStates[2][6] != lastMatrixStates[2][6]) {
+  if (matrixStates[0][0] != lastMatrixStates[0][0] || matrixStates[0][4] != lastMatrixStates[0][4] || matrixStates[1][4] != lastMatrixStates[1][4] || matrixStates[0][1] != lastMatrixStates[0][1] || matrixStates[0][2] != lastMatrixStates[0][2] || matrixStates[0][3] != lastMatrixStates[0][3] || matrixStates[2][1] != lastMatrixStates[2][1] || matrixStates[2][2] != lastMatrixStates[2][2] || matrixStates[2][0] != lastMatrixStates[2][0] || matrixStates[2][3] != lastMatrixStates[2][3] || matrixStates[2][4] != lastMatrixStates[2][4] || matrixStates[0][5] != lastMatrixStates[0][5] || matrixStates[0][6] != lastMatrixStates[0][6] || matrixStates[1][5] != lastMatrixStates[1][5] || matrixStates[1][6] != lastMatrixStates[1][6] || matrixStates[2][5] != lastMatrixStates[2][5] || matrixStates[2][6] != lastMatrixStates[2][6]) {
     anyChange = true;
   }
 
   if (anyChange) {
     Serial.print("Button Matrix - ");
-    Serial.print("B0+A4: ");
+    Serial.print("B0+A0: ");
+    Serial.print(matrixStates[0][0] ? "HIGH" : "LOW");
+    Serial.print(" | B0+A4: ");
     Serial.print(matrixStates[0][4] ? "HIGH" : "LOW");
     Serial.print(" | B1+A4: ");
     Serial.print(matrixStates[1][4] ? "HIGH" : "LOW");
@@ -683,6 +689,10 @@ void printButtonStates() {
     Serial.print(matrixStates[2][6] ? "HIGH" : "LOW");
 
     // Show modulation status changes
+    if (matrixStates[0][0] != lastMatrixStates[0][0]) {
+      Serial.print(" | Seq CV Pulsar Env Decay: ");
+      Serial.print(seqCVPulsarEnvDecayEnabled ? "ENABLED" : "DISABLED");
+    }
     if (matrixStates[0][4] != lastMatrixStates[0][4]) {
       Serial.print(" | Seq CV Wavefolder Mod: ");
       Serial.print(seqCVWavefolderModEnabled ? "ENABLED" : "DISABLED");
@@ -869,20 +879,40 @@ void AudioCallback(float** in, float** out, size_t size) {
     // Convert envelope to REGULAR sawtooth shape (starts low, rises to high)
     pulsarEnv_sawtoothValue = pulsarEnvValue;
 
-    // APPLY SELF-MODULATION IF B2+A0 IS PRESSED
+    // Calculate base decay time from C5 MUX2 pot
+    float baseDecayFromPot = pulsarEnv_baseDecayTime;
+
+    // NEW: Apply sequencer CV modulation to pulsar envelope decay time if B0+A0 is pressed
+    if (seqCVPulsarEnvDecayEnabled) {
+      // Convert sequencer CV (0-48 semitones) to modulation amount (0.0-1.0 range)
+      float seqCVMod = sequencerPitchOffset / 48.0f;
+      
+      // Sequencer CV modulates decay time from the base value
+      // At seqCVMod = 0.0: decay time = baseDecayFromPot * 0.1 (10% of base)
+      // At seqCVMod = 1.0: decay time = baseDecayFromPot * 2.0 (200% of base)
+      float decayModRange = 10.0f;  // From 0.1x to 2.0x of base decay time
+      float decayModFactor = 0.1f + (seqCVMod * (decayModRange - 0.1f));
+      baseDecayFromPot = pulsarEnv_baseDecayTime * decayModFactor;
+      
+      // Clamp to reasonable values
+      baseDecayFromPot = fmaxf(baseDecayFromPot, 0.001f);
+      baseDecayFromPot = fminf(baseDecayFromPot, 20.0f);
+    }
+
+    // APPLY SELF-MODULATION IF B2+A0 IS PRESSED (uses the potentially sequencer-modulated base decay)
     if (pulsarSelfModEnabled) {
       // Use the sawtooth value to modulate the decay time
       // Scale the modulation appropriately (0.1x to 2x of base decay time)
       float modAmount = 0.5f;  // Modulation depth (can be made into a parameter)
       float modFactor = 1.0f + (pulsarEnv_sawtoothValue * modAmount);
-      pulsarEnv_modulatedDecayTime = pulsarEnv_baseDecayTime * modFactor;
+      pulsarEnv_modulatedDecayTime = baseDecayFromPot * modFactor;
 
       // Clamp to reasonable values
       pulsarEnv_modulatedDecayTime = fmaxf(pulsarEnv_modulatedDecayTime, 0.001f);
       pulsarEnv_modulatedDecayTime = fminf(pulsarEnv_modulatedDecayTime, 20.0f);
     } else {
-      // No self-modulation, use base decay time
-      pulsarEnv_modulatedDecayTime = pulsarEnv_baseDecayTime;
+      // No self-modulation, use base decay time (which may be sequencer-modulated)
+      pulsarEnv_modulatedDecayTime = baseDecayFromPot;
     }
 
     // Update envelope parameters with current decay time
@@ -1343,6 +1373,7 @@ void setup() {
   seqCVWavefolderModEnabled = false;
   seqCVModDepth_ch1 = 0.0f;                 // Disabled by default - sequencer CV only when B0+A5 pressed
   seqCVModDepth_ch2 = 0.0f;                 // Disabled by default - sequencer CV only when B0+A6 pressed
+  seqCVPulsarEnvDecayEnabled = false;       // NEW: Sequencer CV modulation of pulsar envelope decay disabled by default
   seqCVModAmountEnabled = false;            // Sequencer CV control of mod amount disabled by default
   seqCVComplexOscPitchEnabled = false;      // Sequencer CV control of complexOsc pitch disabled by default
   pulsarModOscPitchEnabled = false;         // Pulsar envelope modulation of modOsc pitch disabled by default
@@ -1394,14 +1425,14 @@ void setup() {
   Serial.println("MUX2 C4: Reverb Mix (0=dry, 1=wet) | MUX2 C5: Pulsar Env Decay Time (0.02-10s)");
   Serial.println("Pulsar ADSR Envelope: Fixed 0.02s attack, C5 MUX2 controls decay time, 0 sustain, 0.02s release");
   Serial.println("Pulsar outputs sawtooth shape for modulation matrix");
-  Serial.println("B1+A5: Env modulates LPG Ch1 | B1+A6: Env modulates LPG Ch2");
+  Serial.println("B0+A0: Seq CV modulates Pulsar Env Decay Time | B1+A5: Env modulates LPG Ch1 | B1+A6: Env modulates LPG Ch2");
   Serial.println("B2+A0: Pulsar self-modulation (envelope modulates its own decay time)");
   Serial.println("B2+A3: Pulsar envelope modulates complex oscillator pitch");
   Serial.println("B2+A4: Pulsar envelope modulates wavefolder amount");
   Serial.println("B2+A5: Pulsar Env modulates LPG Ch1 | B2+A6: Pulsar Env modulates LPG Ch2");
   Serial.println("In LP mode: MUX1 C5/C6 control filter cutoff, oscillator level is static");
   Serial.println("4x7 Button Matrix initialized:");
-  Serial.println("  B0+A1: Seq CV ModOsc Pitch | B2+A1: Pulsar Env ModOsc Pitch");
+  Serial.println("  B0+A0: Seq CV Pulsar Env Decay | B0+A1: Seq CV ModOsc Pitch | B2+A1: Pulsar Env ModOsc Pitch");
   Serial.println("  B0+A2: Seq CV Mod Amount | B2+A2: Pulsar Env Mod Amount");
   Serial.println("  B0+A3: Seq CV ComplexOsc Pitch | B2+A3: Pulsar Env ComplexOsc Pitch");
   Serial.println("  B0+A4: Seq CV Wavefolder Mod | B1+A4: Wavefolder Env Mod");
@@ -1552,6 +1583,8 @@ void loop() {
     gateOpen = false;
   }
 
+
+  /*
   // DEBUG OUTPUT
   static unsigned long lastPrint = 0;
   if (millis() - lastPrint > 500) {
@@ -1592,7 +1625,11 @@ void loop() {
     Serial.print("s R=");
     Serial.print(pulsarEnv_releaseTime, 3);
     Serial.print("s");
-    if (pulsarSelfModEnabled) {
+    if (seqCVPulsarEnvDecayEnabled) {
+      Serial.print(" SeqCV D=");
+      Serial.print(pulsarEnv_modulatedDecayTime, 3);
+      Serial.print("s");
+    } else if (pulsarSelfModEnabled) {
       Serial.print(" Mod D=");
       Serial.print(pulsarEnv_modulatedDecayTime, 3);
       Serial.print("s");
@@ -1611,6 +1648,9 @@ void loop() {
     }
     if (pulsarModWavefolderEnabled) {
       Serial.print(" (Modulating Wavefolder)");
+    }
+    if (seqCVPulsarEnvDecayEnabled) {
+      Serial.print(" (SeqCV→Decay)");
     }
 
     // Show pulser LPG modulation status
@@ -1690,6 +1730,10 @@ void loop() {
       Serial.print(")");
     }
 
+    // NEW: Show sequencer CV pulsar envelope decay modulation status
+    Serial.print(" | Seq CV Pulsar Env Decay: ");
+    Serial.print(seqCVPulsarEnvDecayEnabled ? "ON" : "OFF");
+
     // Show reverb status
     Serial.print(" | Reverb Mix: ");
     Serial.print(reverbMix);
@@ -1715,4 +1759,5 @@ void loop() {
 
     lastPrint = millis();
   }
+  */
 }
