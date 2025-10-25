@@ -297,19 +297,19 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
   switch (mode) {
     case LPG_MODE_COMBI:
       {
-        // COMBI mode: MUX2 C0/C1 control base level, envelope modulates FROM that level
+        // COMBI mode: MUX2 C0/C1 control base level AND base cutoff, envelope modulates FROM those levels
 
         // Apply the final level to the signal
         signal *= finalLevel;
 
-        // Base cutoff determined by channel level (20Hz to 20kHz)
-        float baseCutoff = 20.0f + (channelLevel * 17980.0f);
+        // Base cutoff determined by baseLevel (from MUX2 C0/C1) - 20Hz to 20kHz
+        float baseCutoff = 20.0f + (baseLevel * 17980.0f);
 
         // Apply sequencer CV modulation to cutoff if enabled
         float combiCutoff = baseCutoff;
         if (seqCVModDepth > 0.0f) {
-          // Sequencer CV modulates cutoff frequency - additive to base cutoff
-          combiCutoff += (seqCVValue * seqCVModDepth * 5000.0f);  // Scale appropriately for cutoff
+          // Sequencer CV modulates cutoff frequency FROM the base cutoff
+          combiCutoff = baseCutoff + (seqCVValue * seqCVModDepth * 5000.0f);
           combiCutoff = fminf(fmaxf(combiCutoff, 20.0f), 18000.0f);
         }
 
@@ -329,6 +329,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
     case LPG_MODE_VCA:
       {
         // VCA mode: MUX2 C0/C1 control base level, envelope modulates FROM that level
+        // (VCA mode unchanged as requested)
 
         // Apply the final level to the signal
         signal *= finalLevel;
@@ -339,7 +340,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
         // Apply sequencer CV modulation to cutoff if enabled (subtle effect in VCA mode)
         float vcaCutoff = baseCutoff;
         if (seqCVModDepth > 0.0f) {
-          vcaCutoff += (seqCVValue * seqCVModDepth * 2000.0f);  // Smaller effect in VCA mode
+          vcaCutoff += (seqCVValue * seqCVModDepth * 2000.0f); // Smaller effect in VCA mode
           vcaCutoff = fminf(fmaxf(vcaCutoff, 1200.0f), 19000.0f);
         }
 
@@ -358,15 +359,15 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
 
     case LPG_MODE_LP:
       {
-        // LP mode: envelope controls ONLY the filter cutoff with modulation depth
-        // Base cutoff determined by baseCutoffControl parameter (20Hz to 18kHz)
-        float baseCutoff = 20.0f + (baseCutoffControl * 17980.0f);
+        // LP mode: MUX2 C0/C1 control base cutoff frequency, envelope modulates FROM that cutoff
+        // Base cutoff determined by baseLevel parameter (from MUX2 C0/C1 pots) - 20Hz to 18kHz
+        float baseCutoff = 20.0f + (baseLevel * 17980.0f);
 
         // Apply sequencer CV modulation to cutoff if enabled (main effect in LP mode)
         float lpCutoff = baseCutoff;
         if (seqCVModDepth > 0.0f) {
-          // Sequencer CV has strong effect on cutoff in LP mode
-          lpCutoff += (seqCVValue * seqCVModDepth * 10000.0f);
+          // Sequencer CV modulates cutoff frequency FROM the base cutoff
+          lpCutoff = baseCutoff + (seqCVValue * seqCVModDepth * 10000.0f);
           lpCutoff = fminf(fmaxf(lpCutoff, 20.0f), 18000.0f);
         }
 
@@ -377,8 +378,8 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
         }
         filter.SetFreq(fminf(lpCutoff, 18000.0f));
 
-        // Safe resonance curve based on baseCutoffControl only (not envelope)
-        float resonance = pow(baseCutoffControl, 1.8f) * 0.9f;
+        // Safe resonance curve based on baseLevel only (not envelope)
+        float resonance = pow(baseLevel, 1.8f) * 0.9f;
         resonance = fminf(resonance, 0.92f);
 
         if (resonance > 0.85f) {
@@ -980,8 +981,8 @@ void AudioCallback(float** in, float** out, size_t size) {
     // For Channel 1 (complex oscillator)
     if (lpgChannel1_mode == LPG_MODE_LP) {
       ch1_level = 0.3f;                       // Reduced static level in LP mode to match other modes
-      ch1_cutoffControl = lpgCh1_baseCutoff;  // Use cutoff control pot
-      ch1_baseLevel = 1.0f;                   // Full level in LP mode (envelope controls cutoff only)
+      ch1_cutoffControl = lpgCh1_baseCutoff;  // Use MUX1 C5 pot for cutoff control (backup)
+      ch1_baseLevel = lpgCh1Level;            // Use MUX2 C0 pot as base cutoff frequency in LP mode
     } else if (lpgChannel1_mode == LPG_MODE_VCA || lpgChannel1_mode == LPG_MODE_COMBI) {
       // Apply sequencer CV modulation to LPG Channel 1 level if B0+A5 is pressed
       if (seqCVLPGCh1LevelEnabled) {
@@ -1008,8 +1009,8 @@ void AudioCallback(float** in, float** out, size_t size) {
     // For Channel 2 (modulator oscillator)
     if (lpgChannel2_mode == LPG_MODE_LP) {
       ch2_level = 0.3f;                       // Reduced static level in LP mode to match other modes
-      ch2_cutoffControl = lpgCh2_baseCutoff;  // Use cutoff control pot
-      ch2_baseLevel = 1.0f;                   // Full level in LP mode (envelope controls cutoff only)
+      ch2_cutoffControl = lpgCh2_baseCutoff;  // Use MUX1 C6 pot for cutoff control (backup)
+      ch2_baseLevel = lpgCh2Level;            // Use MUX2 C1 pot as base cutoff frequency in LP mode
     } else if (lpgChannel2_mode == LPG_MODE_VCA || lpgChannel2_mode == LPG_MODE_COMBI) {
       ch2_level = 1.0f;                  // Use full level in VCA/COMBI mode - level controlled by LPG
       ch2_cutoffControl = modOsc_level;  // Use level pot for cutoff control
