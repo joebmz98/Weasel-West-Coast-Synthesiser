@@ -47,22 +47,22 @@
 #define LPG_CH2_TOGGLE_BUTTON 11    // LPG CHANNEL 2 TOGGLE (moved from 22) - NOW PART OF SECOND MATRIX
 
 // MUX CHANNEL ASSIGNMENTS (FIRST MUX - updated assignments)
-#define SEQ_STEP_1_CHANNEL 0          // C0 - Sequencer step 1
-#define SEQ_STEP_2_CHANNEL 1          // C1 - Sequencer step 2
-#define SEQ_STEP_3_CHANNEL 2          // C2 - Sequencer step 3
-#define SEQ_STEP_4_CHANNEL 3          // C3 - Sequencer step 4
-#define SEQ_STEP_5_CHANNEL 4          // C4 - Sequencer step 5
-#define ASD_ATTACK_CHANNEL 5          // C5 - BUCHLA ATTACK // ATTACK
-#define ASD_SUSTAIN_CHANNEL 6         // C6 - BUCHLA SUSTAIN // DECAY
-#define ASD_DECAY_CHANNEL 7           // C7 - BUCHLA DECAY // RELEASE
-#define PULSAR_ENV_DECAYCONTROL_CHANNEL 8  // C8 - Pulsar envelope decay control (new)
-#define PULSAR_ENV_DECAY_CHANNEL 9    // C9 - Pulsar envelope decay time
-#define MOD_OSC_PITCHCONTROL_CHANNEL 10    // C10 - Mod oscillator pitch control (new)
-#define MOD_OSC_PITCH_CHANNEL 11      // C11 - Mod oscillator pitch
-#define MOD_OSC_FINETUNE_CHANNEL 12   // C12 - Mod oscillator finetune (new)
-#define MOD_AMOUNTCONTROL_CHANNEL 13  // C13 - Mod amount control (new)
-#define MOD_AMOUNT_CHANNEL 14         // C14 - Mod amount
-#define COMPLEX_OSC_PITCHCONTROL_CHANNEL 15 // C15 - Complex oscillator pitch control (new)
+#define SEQ_STEP_1_CHANNEL 0                 // C0 - Sequencer step 1
+#define SEQ_STEP_2_CHANNEL 1                 // C1 - Sequencer step 2
+#define SEQ_STEP_3_CHANNEL 2                 // C2 - Sequencer step 3
+#define SEQ_STEP_4_CHANNEL 3                 // C3 - Sequencer step 4
+#define SEQ_STEP_5_CHANNEL 4                 // C4 - Sequencer step 5
+#define ASD_ATTACK_CHANNEL 5                 // C5 - BUCHLA ATTACK // ATTACK
+#define ASD_SUSTAIN_CHANNEL 6                // C6 - BUCHLA SUSTAIN // DECAY
+#define ASD_DECAY_CHANNEL 7                  // C7 - BUCHLA DECAY // RELEASE
+#define PULSAR_ENV_DECAYCONTROL_CHANNEL 8    // C8 - Pulsar envelope decay control (new)
+#define PULSAR_ENV_DECAY_CHANNEL 9           // C9 - Pulsar envelope decay time
+#define MOD_OSC_PITCHCONTROL_CHANNEL 10      // C10 - Mod oscillator pitch control (new)
+#define MOD_OSC_PITCH_CHANNEL 11             // C11 - Mod oscillator pitch
+#define MOD_OSC_FINETUNE_CHANNEL 12          // C12 - Mod oscillator finetune (new)
+#define MOD_AMOUNTCONTROL_CHANNEL 13         // C13 - Mod amount control (new)
+#define MOD_AMOUNT_CHANNEL 14                // C14 - Mod amount
+#define COMPLEX_OSC_PITCHCONTROL_CHANNEL 15  // C15 - Complex oscillator pitch control (new)
 
 // MUX CHANNEL ASSIGNMENTS (SECOND MUX - updated assignments)
 #define COMPLEX_OSC_PITCHCONTROL_CHANNEL 0  // C0 - Complex oscillator pitch control
@@ -106,14 +106,19 @@ static MoogLadder lpgChannel2_filter;  // FILTER FOR BUCHLA LPG CH2
 ReverbSc verb;
 
 // OSCILLATOR PARAMETER VARIABLES
-float complexOsc_basePitch;     // COMPLEX OSC BASE PITCH
-float modOsc_pitch;             // MOD OSC BASE PITCH
-float modOsc_modAmount;         // MOD AMOUNT AFFECTING COMPLEX OSC
-float complexOsc_timbreAmount;  // COMPLEX OSC TIMBRE WAVEMORPHING AMOUNT (0.0 = sine, 1.0 = triangle)
-float complexOsc_foldAmount;    // COMPLEX OSC WAVEFOLDING AMOUNT (0.0 = no fold, 1.0 = max fold)
-float complexOsc_level;         // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
-float modOsc_level;             // MODULATION OSC LEVEL CONTROL (0.0 to 1.0)
-float pulsarEnv_decayTime;      // PULSAR AD ENVELOPE DECAY TIME
+float modOsc_pitch;               // MOD OSC BASE PITCH
+float modOscPitchControl = 0.0f;  // MOD_OSC_PITCHCONTROL_CHANNEL value (0.0-1.0)
+float modOsc_modAmount;           // MOD AMOUNT AFFECTING COMPLEX OSC
+float modAmountControl = 0.0f;    // MOD_AMOUNTCONTROL_CHANNEL value (0.0-1.0)
+float complexOsc_basePitch;       // COMPLEX OSC BASE PITCH
+float complexOsc_timbreAmount;    // COMPLEX OSC TIMBRE WAVEMORPHING AMOUNT (0.0 = sine, 1.0 = triangle)
+float complexOsc_foldAmount;      // COMPLEX OSC WAVEFOLDING AMOUNT (0.0 = no fold, 1.0 = max fold)
+float complexOsc_level;           // COMPLEX OSC LEVEL CONTROL (0.0 to 1.0)
+float modOsc_level;               // MODULATION OSC LEVEL CONTROL (0.0 to 1.0)
+float pulsarEnv_decayTime;        // PULSAR AD ENVELOPE DECAY TIME
+
+// NEW: Complex oscillator pitch modulation amount
+float complexOscPitchModAmount = 0.0f;  // COMPLEX_OSC_PITCHCONTROL_CHANNEL value (0.0-1.0)
 
 // PULSAR ADSR ENVELOPE VARIABLES
 bool pulsarEnv_gate = false;                // Whether the pulsar envelope gate is open
@@ -294,7 +299,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
   // PULSER MODULATION DEPTH CONTROLS
   float pulsarLevelModDepth = 0.8f;        // Level modulation depth (0.0-1.0)
   float pulsarCutoffModDepthCombi = 0.8f;  // Combi mode cutoff depth as percentage
-  float pulsarCutoffModDepthVCA = 0.5f;    // VCA mode cutoff depth as percentage  
+  float pulsarCutoffModDepthVCA = 0.5f;    // VCA mode cutoff depth as percentage
   float pulsarCutoffModDepthLP = 0.9f;     // LP mode cutoff depth as percentage
 
   // Use baseLevel (from MUX2 C6/C8) as the starting point
@@ -325,7 +330,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
     case LPG_MODE_COMBI:
       {
         // COMBI mode: MUX2 C6/C8 control base level AND base cutoff
-        
+
         // Apply the final level to the signal
         signal *= finalLevel;
 
@@ -353,7 +358,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
           float modulatedEnv = envValue * envModDepth;
           combiCutoff = baseCutoff + ((maxCutoff - baseCutoff) * modulatedEnv);
         }
-        
+
         filter.SetFreq(fminf(combiCutoff, maxCutoff));
         filter.SetRes(0.0f);
 
@@ -365,7 +370,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
     case LPG_MODE_VCA:
       {
         // VCA mode: MUX2 C6/C8 control base level
-        
+
         // Apply the final level to the signal (already includes pulser modulation)
         signal *= finalLevel;
 
@@ -393,7 +398,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
           float modulatedEnv = envValue * envModDepth;
           vcaCutoff = baseCutoff + ((maxCutoff - baseCutoff) * modulatedEnv * 0.5f);
         }
-        
+
         filter.SetFreq(fminf(vcaCutoff, maxCutoff));
         filter.SetRes(0.0f);
 
@@ -405,7 +410,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
     case LPG_MODE_LP:
       {
         // LP mode: MUX2 C6/C8 control base cutoff frequency
-        
+
         // Base cutoff determined by baseLevel parameter (from MUX2 C6/C8 pots)
         float baseCutoff = 20.0f + (baseLevel * 17980.0f);
         float maxCutoff = 18000.0f;
@@ -430,7 +435,7 @@ void processLPG(MoogLadder& filter, LPGMode mode, float& signal, float channelLe
           float modulatedEnv = envValue * envModDepth;
           lpCutoff = baseCutoff + ((maxCutoff - baseCutoff) * modulatedEnv);
         }
-        
+
         filter.SetFreq(fminf(lpCutoff, maxCutoff));
 
         // Safe resonance curve based on baseLevel only
@@ -648,11 +653,14 @@ void readButtonMatrix() {
   // NEW: B1 + A6 enables envelope modulation of LPG Channel 2
   envModCh2Enabled = matrixStates[1][6];
 
-  // NEW: B2 + A5 enables pulsar envelope modulation of LPG Channel 1
-  pulsarModLPGCh1Enabled = matrixStates[2][5];
+  // NEW: B1 + A3 enables envelope modulation of complexOsc pitch
+  // This is handled in the AudioCallback based on matrixStates[1][3]
 
-  // NEW: B2 + A6 enables pulsar envelope modulation of LPG Channel 2
-  pulsarModLPGCh2Enabled = matrixStates[2][6];
+  // NEW: B1 + A2 enables envelope modulation of mod amount
+  // This is handled in the AudioCallback based on matrixStates[1][2]
+
+  // NEW: B1 + A1 enables envelope modulation of modOsc pitch
+  // This is handled in the AudioCallback based on matrixStates[1][1]
 
   // Set envelope modulation depth based on B0+A5/6 combinations
   if (matrixStates[0][5]) {
@@ -684,7 +692,7 @@ void readButtonMatrix() {
 
 void readButtonMatrix2() {
   unsigned long currentTime = millis();
-  
+
   // Scan each column one at a time
   for (int col = 0; col < 4; col++) {
     // Activate current column
@@ -720,7 +728,7 @@ void readButtonMatrix2() {
     // Read all 5 rows for this column
     for (int row = 0; row < 5; row++) {
       bool currentState = false;
-      
+
       // Read the appropriate row pin
       switch (row) {
         case 0: currentState = (digitalRead(MATRIX2_ROW0) == HIGH); break;
@@ -729,13 +737,13 @@ void readButtonMatrix2() {
         case 3: currentState = (digitalRead(MATRIX2_ROW3) == HIGH); break;
         case 4: currentState = (digitalRead(MATRIX2_ROW4) == HIGH); break;
       }
-      
+
       // Check for state change
       if (currentState != lastMatrix2States[col][row]) {
         // Update debounce timer
         lastMatrix2DebounceTime[col][row] = currentTime;
       }
-      
+
       // Check if debounce time has passed
       if ((currentTime - lastMatrix2DebounceTime[col][row]) > MATRIX2_DEBOUNCE_DELAY) {
         // State is stable, check for rising edge (button press)
@@ -743,11 +751,11 @@ void readButtonMatrix2() {
           // Button pressed - handle the function
           handleMatrix2ButtonPress(col, row);
         }
-        
+
         // Update the stable state
         matrix2States[col][row] = currentState;
       }
-      
+
       // Update last state for edge detection
       lastMatrix2States[col][row] = currentState;
     }
@@ -1084,25 +1092,34 @@ void AudioCallback(float** in, float** out, size_t size) {
     pulsarEnv.SetTime(ADSR_SEG_DECAY, pulsarEnv_modulatedDecayTime);
     pulsarEnv.SetTime(ADSR_SEG_RELEASE, pulsarEnv_releaseTime);
 
+    // Get envelope value once per sample
+    float envValue = env.Process(gateOpen);
+
     // PROCESS MODULATOR OSCILLATOR with pitch modulation
     float modulatedModPitch;
 
     // Calculate base pitch from C11 pot
     float baseModPitch = modOsc_pitch;
 
-    // Apply sequencer CV modulation if B0+A1 is pressed
+    // Apply sequencer CV modulation if B0+A1 is pressed, with amount controlled by MOD_OSC_PITCHCONTROL_CHANNEL
     if (seqCVModOscPitchEnabled) {
-      baseModPitch *= pitchRatio;
+      float seqCVModAmount = modOscPitchControl;  // Use C10 pot to control modulation amount
+      baseModPitch = baseModPitch * (1.0f + (pitchRatio - 1.0f) * seqCVModAmount);
     }
 
-    // Apply pulsar envelope modulation if B2+A1 is pressed
-    if (pulsarModOscPitchEnabled) {
-      // Scale the pulsar envelope to create meaningful pitch modulation
-      // The envelope ranges from 0 to 1 (sawtooth shape)
-      float pulsarModAmount = 0.5f;  // You can make this a pot-controlled parameter if desired
+    // Apply envelope modulation if B1+A1 is pressed, with amount controlled by MOD_OSC_PITCHCONTROL_CHANNEL
+    if (matrixStates[1][1]) {  // B1 + A1 - Envelope modulation of modOsc pitch
+      float envModAmount = modOscPitchControl;  // Use C10 pot to control modulation amount
+      // Envelope modulates pitch - scale appropriately for meaningful pitch variation
+      float envPitchMod = 1.0f + (envValue * envModAmount * 2.0f);  // Up to 2x frequency
+      baseModPitch = baseModPitch * envPitchMod;
+    }
 
+    // Apply pulsar envelope modulation if B2+A1 is pressed, with amount controlled by MOD_OSC_PITCHCONTROL_CHANNEL
+    if (pulsarModOscPitchEnabled) {
+      float pulsarModAmount = modOscPitchControl;  // Use C10 pot to control modulation amount
       // Use multiplicative scaling for frequency modulation
-      float pulsarPitchMod = 1.0f + (pulsarEnv_sawtoothValue * pulsarModAmount);
+      float pulsarPitchMod = 1.0f + (pulsarEnv_sawtoothValue * pulsarModAmount * 2.0f);  // Up to 2x frequency
       modulatedModPitch = baseModPitch * pulsarPitchMod;
 
       // Clamp to prevent excessive frequencies
@@ -1124,19 +1141,27 @@ void AudioCallback(float** in, float** out, size_t size) {
     // Calculate base pitch from C15 pot
     float baseComplexPitch = complexOsc_basePitch;
 
-    // Apply sequencer CV modulation if B0+A3 is pressed
+    // Apply sequencer CV modulation if B0+A3 is pressed, with amount controlled by COMPLEX_OSC_PITCHCONTROL_CHANNEL
     if (seqCVComplexOscPitchEnabled) {
-      baseComplexPitch *= pitchRatio;
+      float seqCVModAmount = complexOscPitchModAmount;  // Use C15 pot to control modulation amount
+      // Apply modulation based on the pot amount
+      float modulatedPitchRatio = 1.0f + (pitchRatio - 1.0f) * seqCVModAmount;
+      baseComplexPitch = baseComplexPitch * modulatedPitchRatio;
     }
 
-    // Apply pulsar envelope modulation if B2+A3 is pressed
-    if (pulsarModComplexOscPitchEnabled) {
-      // Scale the pulsar envelope to create meaningful pitch modulation
-      // The envelope ranges from 0 to 1 (sawtooth shape)
-      float pulsarModAmount = 0.5f;  // You can make this a pot-controlled parameter if desired
+    // Apply envelope modulation if B1+A3 is pressed, with amount controlled by COMPLEX_OSC_PITCHCONTROL_CHANNEL
+    if (matrixStates[1][3]) {  // B1 + A3 - Envelope modulation of complexOsc pitch
+      float envModAmount = complexOscPitchModAmount;  // Use C15 pot to control modulation amount
+      // Envelope modulates pitch - scale appropriately for meaningful pitch variation
+      float envPitchMod = 1.0f + (envValue * envModAmount * 2.0f);  // Up to 2x frequency
+      baseComplexPitch = baseComplexPitch * envPitchMod;
+    }
 
-      // Use multiplicative scaling for frequency modulation (same as modOsc)
-      float pulsarPitchMod = 1.0f + (pulsarEnv_sawtoothValue * pulsarModAmount);
+    // Apply pulsar envelope modulation if B2+A3 is pressed, with amount controlled by COMPLEX_OSC_PITCHCONTROL_CHANNEL
+    if (pulsarModComplexOscPitchEnabled) {
+      float pulsarModAmount = complexOscPitchModAmount;  // Use C15 pot to control modulation amount
+      // Use multiplicative scaling for frequency modulation
+      float pulsarPitchMod = 1.0f + (pulsarEnv_sawtoothValue * pulsarModAmount * 2.0f);  // Up to 2x frequency
       modulatedComplexBasePitch = baseComplexPitch * pulsarPitchMod;
 
       // Clamp to prevent excessive frequencies
@@ -1148,46 +1173,60 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     float complexOsc_freq = modulatedComplexBasePitch;
 
-    // Get envelope value once per sample
-    float envValue = env.Process(gateOpen);
-
     // Calculate base modulation parameters from C14 pot
     float baseModAmount = modOsc_modAmount;
 
     // MODULATION ROUTING:
     // When B0+A2 is pressed: Sequencer CV modulates AM depth (AM mode) or FM depth (FM mode)
+    // When B1+A2 is pressed: Envelope modulates AM depth (AM mode) or FM depth (FM mode)  
     // When B2+A2 is pressed: Pulsar envelope modulates AM depth (AM mode) or FM depth (FM mode)
-    // Both can be active simultaneously
+    // Multiple sources can be active simultaneously
 
     // FIXED: Better scaling for AM depth - map 0-800 range to 0.0-1.0 more intuitively
     float finalAMDepth = baseModAmount / 800.0f;  // Base AM depth from C14 pot (0.0-1.0)
     float finalFMDepth = baseModAmount * 3.0f;    // Base FM depth from C14 pot
 
-    // Apply sequencer CV modulation if B0+A2 is pressed
+    // Apply sequencer CV modulation if B0+A2 is pressed, with amount controlled by MOD_AMOUNTCONTROL_CHANNEL
     if (seqCVModAmountEnabled) {
       // Convert sequencer CV (in semitones) to a modulation amount
       // Normalize sequencer CV to 0-1 range (assuming 0-48 semitones range)
       float seqCVMod = sequencerPitchOffset / 48.0f;
+      float seqCVModAmount = modAmountControl;  // Use C13 pot to control modulation amount
 
       if (useAmplitudeModulation) {
         // In AM mode: sequencer CV modulates the AM depth
         // Add up to 0.5 to the depth (so sequencer can double the depth)
-        finalAMDepth = fminf(fmaxf(finalAMDepth + (seqCVMod * 0.5f), 0.0f), 1.0f);
+        finalAMDepth = fminf(fmaxf(finalAMDepth + (seqCVMod * 0.5f * seqCVModAmount), 0.0f), 1.0f);
       } else {
         // In FM mode: sequencer CV modulates the FM depth
-        finalFMDepth += (seqCVMod * 400.0f);  // Scale appropriately for FM
+        finalFMDepth += (seqCVMod * 400.0f * seqCVModAmount);
       }
     }
 
-    // Apply pulsar envelope modulation if B2+A2 is pressed
-    if (pulsarModAmountEnabled) {
-      float pulsarDepthMod = pulsarEnv_sawtoothValue * 1000.0f;  //
+    // Apply envelope modulation if B1+A2 is pressed, with amount controlled by MOD_AMOUNTCONTROL_CHANNEL
+    if (matrixStates[1][2]) {  // B1 + A2 - Envelope modulation of mod amount
+      float envModAmount = modAmountControl;  // Use C13 pot to control modulation amount
+      
       if (useAmplitudeModulation) {
-        // FIXED: Use appropriate pulsar modulation for AM (was 500.0f - way too high!)
-        finalAMDepth = fminf(fmaxf(finalAMDepth + pulsarDepthMod, 0.0f), 1.0f);
+        // In AM mode: envelope modulates the AM depth
+        // Envelope adds modulation to the depth (0.0 to 1.0 range)
+        finalAMDepth = fminf(fmaxf(finalAMDepth + (envValue * envModAmount), 0.0f), 1.0f);
+      } else {
+        // In FM mode: envelope modulates the FM depth
+        finalFMDepth += (envValue * 800.0f * envModAmount);
+      }
+    }
+
+    // Apply pulsar envelope modulation if B2+A2 is pressed, with amount controlled by MOD_AMOUNTCONTROL_CHANNEL
+    if (pulsarModAmountEnabled) {
+      float pulsarModAmount = modAmountControl;  // Use C13 pot to control modulation amount
+      
+      if (useAmplitudeModulation) {
+        // In AM mode: pulsar envelope modulates the AM depth
+        finalAMDepth = fminf(fmaxf(finalAMDepth + (pulsarEnv_sawtoothValue * pulsarModAmount), 0.0f), 1.0f);
       } else {
         // FM mode: pulsar envelope modulates the FM depth
-        finalFMDepth += pulsarDepthMod;
+        finalFMDepth += (pulsarEnv_sawtoothValue * 1000.0f * pulsarModAmount);
       }
     }
 
@@ -1401,7 +1440,7 @@ void setup() {
 
   // INIT NEW 4x7 BUTTON MATRIX
   initButtonMatrix();
-  
+
   // INIT SECOND BUTTON MATRIX
   initButtonMatrix2();
 
@@ -1524,6 +1563,9 @@ void setup() {
   complexOsc_level = 1.0f;
   modOsc_level = 1.0f;
 
+  // NEW: Complex oscillator pitch modulation amount
+  complexOscPitchModAmount = 0.0f;
+
   // LP MODE CUTOFF INIT
   lpgCh1_baseCutoff = 0.5f;
   lpgCh2_baseCutoff = 0.5f;
@@ -1632,12 +1674,14 @@ void loop() {
   // Read new MUX1 channels (placeholders for now)
   float pulsarEnvDecayControl = readMux1Channel(PULSAR_ENV_DECAYCONTROL_CHANNEL, 0.0f, 1.0f);
   pulsarEnv_baseDecayTime = readMux1Channel(PULSAR_ENV_DECAY_CHANNEL, 0.02f, 10.0f, true);
-  float modOscPitchControl = readMux1Channel(MOD_OSC_PITCHCONTROL_CHANNEL, 0.0f, 1.0f);
+  modOscPitchControl = readMux1Channel(MOD_OSC_PITCHCONTROL_CHANNEL, 0.0f, 1.0f);
   modOsc_pitch = readMux1Channel(MOD_OSC_PITCH_CHANNEL, 16.0f, 1760.0f, true);
   float modOscFinetune = readMux1Channel(MOD_OSC_FINETUNE_CHANNEL, 0.0f, 1.0f);
-  float modAmountControl = readMux1Channel(MOD_AMOUNTCONTROL_CHANNEL, 0.0f, 1.0f);
+  modAmountControl = readMux1Channel(MOD_AMOUNTCONTROL_CHANNEL, 0.0f, 1.0f);
   modOsc_modAmount = readMux1Channel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
-  float complexOscPitchControl = readMux1Channel(COMPLEX_OSC_PITCHCONTROL_CHANNEL, 0.0f, 1.0f);
+  
+  // NEW: Read the complex oscillator pitch control amount from MUX1 C15
+  complexOscPitchModAmount = readMux1Channel(COMPLEX_OSC_PITCHCONTROL_CHANNEL, 0.0f, 1.0f);
 
   // POTENTIOMETER HANDLING - UPDATED MUX2 CHANNELS
   float complexOscPitchControl2 = readMux2Channel(COMPLEX_OSC_PITCHCONTROL_CHANNEL, 0.0f, 1.0f);
@@ -1667,7 +1711,7 @@ void loop() {
   }
 
   // WAVEFOLDER MODULATION DEPTH CONTROLS - placeholder reads
-  wavefolderEnvModDepth = 1.0f;  // Default modulation depth
+  wavefolderEnvModDepth = 1.0f;    // Default modulation depth
   seqCVWavefolderModDepth = 1.0f;  // Default modulation depth
 
   // REMOVED individual button handling since we're using matrix now
