@@ -30,33 +30,33 @@
 #define MATRIX_ROW6 29  // Row 6 (A6) // LPG CH2 LEVEL MODULATION
 
 // SECOND BUTTON MATRIX PINS
-#define MATRIX2_X0 12  // Column X0
-#define MATRIX2_X1 13  // Column X1
-#define MATRIX2_X2 17  // Column X2
-#define MATRIX2_X3 18  // Column X3
-#define MATRIX2_Y0 8   // Row Y0
-#define MATRIX2_Y1 9   // Row Y1
-#define MATRIX2_Y2 10  // Row Y2
-#define MATRIX2_Y3 11  // Row Y3
-#define MATRIX2_Y4 14  // Row Y4
+#define MATRIX2_COL0 12  // X0
+#define MATRIX2_COL1 13  // X1
+#define MATRIX2_COL2 17  // X2
+#define MATRIX2_COL3 18  // X3
+#define MATRIX2_ROW0 8   // Y0
+#define MATRIX2_ROW1 9   // Y1
+#define MATRIX2_ROW2 10  // Y2
+#define MATRIX2_ROW3 11  // Y3
+#define MATRIX2_ROW4 14  // Y4
 
-// MOVED BUTTON PINS (now handled by second matrix)
-#define SEQUENCER_TOGGLE_BUTTON 8   // Now handled by matrix X2 Y1
-#define MODULATION_TOGGLE_BUTTON 9  // Now handled by matrix X3 Y1
-#define LPG_CH1_TOGGLE_BUTTON 10    // Now handled by matrix X3 Y2
-#define LPG_CH2_TOGGLE_BUTTON 11    // Now handled by matrix X0 Y3
+// MOVED BUTTON PINS (keeping for compatibility, but functionality moved to second matrix)
+#define SEQUENCER_TOGGLE_BUTTON 8   // SEQ TOGGLE (moved from 19) - NOW PART OF SECOND MATRIX
+#define MODULATION_TOGGLE_BUTTON 9  // MODULATION TOGGLE (moved from 20) - NOW PART OF SECOND MATRIX
+#define LPG_CH1_TOGGLE_BUTTON 10    // LPG CHANNEL 1 TOGGLE (moved from 21) - NOW PART OF SECOND MATRIX
+#define LPG_CH2_TOGGLE_BUTTON 11    // LPG CHANNEL 2 TOGGLE (moved from 22) - NOW PART OF SECOND MATRIX
 
-// MUX CHANNEL ASSIGNMENTS (FIRST MUX - updated)
+// MUX CHANNEL ASSIGNMENTS (FIRST MUX - updated assignments)
 #define SEQ_STEP_1_CHANNEL 0          // C0 - Sequencer step 1
 #define SEQ_STEP_2_CHANNEL 1          // C1 - Sequencer step 2
 #define SEQ_STEP_3_CHANNEL 2          // C2 - Sequencer step 3
 #define SEQ_STEP_4_CHANNEL 3          // C3 - Sequencer step 4
 #define SEQ_STEP_5_CHANNEL 4          // C4 - Sequencer step 5
-#define ASD_ATTACK_CHANNEL 5          // C5 - Attack
-#define ASD_SUSTAIN_CHANNEL 6         // C6 - Sustain
-#define ASD_DECAY_CHANNEL 7           // C7 - Decay
+#define ASD_ATTACK_CHANNEL 5          // C5 - BUCHLA ATTACK // ATTACK
+#define ASD_SUSTAIN_CHANNEL 6         // C6 - BUCHLA SUSTAIN // DECAY
+#define ASD_DECAY_CHANNEL 7           // C7 - BUCHLA DECAY // RELEASE
 #define PULSAR_ENV_DECAYCONTROL_CHANNEL 8  // C8 - Pulsar envelope decay control (new)
-#define PULSAR_ENV_DECAY_CHANNEL 9    // C9 - Pulsar envelope decay
+#define PULSAR_ENV_DECAY_CHANNEL 9    // C9 - Pulsar envelope decay time
 #define MOD_OSC_PITCHCONTROL_CHANNEL 10    // C10 - Mod oscillator pitch control (new)
 #define MOD_OSC_PITCH_CHANNEL 11      // C11 - Mod oscillator pitch
 #define MOD_OSC_FINETUNE_CHANNEL 12   // C12 - Mod oscillator finetune (new)
@@ -64,11 +64,11 @@
 #define MOD_AMOUNT_CHANNEL 14         // C14 - Mod amount
 #define COMPLEX_OSC_PITCHCONTROL_CHANNEL 15 // C15 - Complex oscillator pitch control (new)
 
-// MUX CHANNEL ASSIGNMENTS (SECOND MUX - updated)
+// MUX CHANNEL ASSIGNMENTS (SECOND MUX - updated assignments)
 #define COMPLEX_OSC_PITCHCONTROL_CHANNEL 0  // C0 - Complex oscillator pitch control
 #define COMPLEX_OSC_FINETUNE_CHANNEL 1      // C1 - Complex oscillator finetune (new)
 #define COMPLEX_OSC_FOLDCONTROL_CHANNEL 2   // C2 - Complex oscillator fold control (new)
-#define COMPLEX_OSC_FOLD_CHANNEL 3          // C3 - Complex oscillator fold
+#define COMPLEX_OSC_FOLD_CHANNEL 3          // C3 - Complex oscillator fold amount
 #define COMPLEX_OSC_TIMBRE_CHANNEL 4        // C4 - Complex oscillator timbre
 #define LPG_CH1_LEVELCONTROL 5              // C5 - LPG channel 1 level control (new)
 #define LPG_CH1_LEVEL 6                     // C6 - LPG channel 1 level (renamed from COMPLEX_OSC_LEVEL_CHANNEL)
@@ -193,11 +193,14 @@ bool useAmplitudeModulation = false;  // false = FM, true = AM
 LPGMode lpgChannel1_mode = LPG_MODE_COMBI;  // Default to COMBI mode
 LPGMode lpgChannel2_mode = LPG_MODE_COMBI;  // Default to COMBI mode
 
-// BUTTONS
-Switch sequencerToggle;     // SEQUENCER CLOCK TOGGLE
-Switch modulationToggle;    // MODULATION TYPE TOGGLE
-Switch lpgToggle_channel1;  // LPG CH1 MODE TOGGLE
-Switch lpgToggle_channel2;  // LPG CH2 MODE TOGGLE
+// MIDI PITCH CONTROL
+bool midiPitchEnabled = true;  // Whether oscillators' pitches are impacted by MIDI input
+
+// BUTTONS - REMOVED since we're using matrix now
+// Switch sequencerToggle;     // SEQUENCER CLOCK TOGGLE
+// Switch modulationToggle;    // MODULATION TYPE TOGGLE
+// Switch lpgToggle_channel1;  // LPG CH1 MODE TOGGLE
+// Switch lpgToggle_channel2;  // LPG CH2 MODE TOGGLE
 
 // NEW 4x7 BUTTON MATRIX VARIABLES
 bool matrixStates[4][7] = { { false } };  // Store states for [col][row] - 4 columns x 7 rows
@@ -206,10 +209,13 @@ unsigned long lastMatrixRead = 0;
 const unsigned long MATRIX_READ_INTERVAL = 50;  // Read matrix every 50ms
 
 // SECOND BUTTON MATRIX VARIABLES
-bool matrix2States[4][5] = { { false } };  // Store states for [x][y] - 4 columns x 5 rows
+bool matrix2States[4][5] = { { false } };  // Store states for [col][row] - 4 columns x 5 rows
 bool lastMatrix2States[4][5] = { { false } };
 unsigned long lastMatrix2Read = 0;
-const unsigned long MATRIX2_READ_INTERVAL = 50;  // Read second matrix every 50ms
+
+// Button debouncing variables for second matrix
+unsigned long lastMatrix2DebounceTime[4][5] = { { 0 } };
+const unsigned long MATRIX2_DEBOUNCE_DELAY = 50;  // 50ms debounce delay
 
 // MIDI Object
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
@@ -517,6 +523,28 @@ void initButtonMatrix() {
   digitalWrite(MATRIX_COL3, LOW);
 }
 
+// SECOND BUTTON MATRIX FUNCTIONS
+void initButtonMatrix2() {
+  // Initialize column pins as outputs
+  pinMode(MATRIX2_COL0, OUTPUT);
+  pinMode(MATRIX2_COL1, OUTPUT);
+  pinMode(MATRIX2_COL2, OUTPUT);
+  pinMode(MATRIX2_COL3, OUTPUT);
+
+  // Initialize row pins as inputs with pulldown
+  pinMode(MATRIX2_ROW0, INPUT_PULLDOWN);
+  pinMode(MATRIX2_ROW1, INPUT_PULLDOWN);
+  pinMode(MATRIX2_ROW2, INPUT_PULLDOWN);
+  pinMode(MATRIX2_ROW3, INPUT_PULLDOWN);
+  pinMode(MATRIX2_ROW4, INPUT_PULLDOWN);
+
+  // Start with all columns LOW
+  digitalWrite(MATRIX2_COL0, LOW);
+  digitalWrite(MATRIX2_COL1, LOW);
+  digitalWrite(MATRIX2_COL2, LOW);
+  digitalWrite(MATRIX2_COL3, LOW);
+}
+
 void readButtonMatrix() {
   // Scan each column one at a time
   for (int col = 0; col < 4; col++) {
@@ -654,92 +682,99 @@ void readButtonMatrix() {
   }
 }
 
-// SECOND BUTTON MATRIX FUNCTIONS
-void initButtonMatrix2() {
-  // Initialize X pins as outputs
-  pinMode(MATRIX2_X0, OUTPUT);
-  pinMode(MATRIX2_X1, OUTPUT);
-  pinMode(MATRIX2_X2, OUTPUT);
-  pinMode(MATRIX2_X3, OUTPUT);
-
-  // Initialize Y pins as inputs with pulldown
-  pinMode(MATRIX2_Y0, INPUT_PULLDOWN);
-  pinMode(MATRIX2_Y1, INPUT_PULLDOWN);
-  pinMode(MATRIX2_Y2, INPUT_PULLDOWN);
-  pinMode(MATRIX2_Y3, INPUT_PULLDOWN);
-  pinMode(MATRIX2_Y4, INPUT_PULLDOWN);
-
-  // Start with all X pins LOW
-  digitalWrite(MATRIX2_X0, LOW);
-  digitalWrite(MATRIX2_X1, LOW);
-  digitalWrite(MATRIX2_X2, LOW);
-  digitalWrite(MATRIX2_X3, LOW);
-}
-
 void readButtonMatrix2() {
-  // Scan each X pin one at a time
-  for (int x = 0; x < 4; x++) {
-    // Activate current X pin
-    switch (x) {
+  unsigned long currentTime = millis();
+  
+  // Scan each column one at a time
+  for (int col = 0; col < 4; col++) {
+    // Activate current column
+    switch (col) {
       case 0:
-        digitalWrite(MATRIX2_X0, HIGH);
-        digitalWrite(MATRIX2_X1, LOW);
-        digitalWrite(MATRIX2_X2, LOW);
-        digitalWrite(MATRIX2_X3, LOW);
+        digitalWrite(MATRIX2_COL0, HIGH);
+        digitalWrite(MATRIX2_COL1, LOW);
+        digitalWrite(MATRIX2_COL2, LOW);
+        digitalWrite(MATRIX2_COL3, LOW);
         break;
       case 1:
-        digitalWrite(MATRIX2_X0, LOW);
-        digitalWrite(MATRIX2_X1, HIGH);
-        digitalWrite(MATRIX2_X2, LOW);
-        digitalWrite(MATRIX2_X3, LOW);
+        digitalWrite(MATRIX2_COL0, LOW);
+        digitalWrite(MATRIX2_COL1, HIGH);
+        digitalWrite(MATRIX2_COL2, LOW);
+        digitalWrite(MATRIX2_COL3, LOW);
         break;
       case 2:
-        digitalWrite(MATRIX2_X0, LOW);
-        digitalWrite(MATRIX2_X1, LOW);
-        digitalWrite(MATRIX2_X2, HIGH);
-        digitalWrite(MATRIX2_X3, LOW);
+        digitalWrite(MATRIX2_COL0, LOW);
+        digitalWrite(MATRIX2_COL1, LOW);
+        digitalWrite(MATRIX2_COL2, HIGH);
+        digitalWrite(MATRIX2_COL3, LOW);
         break;
       case 3:
-        digitalWrite(MATRIX2_X0, LOW);
-        digitalWrite(MATRIX2_X1, LOW);
-        digitalWrite(MATRIX2_X2, LOW);
-        digitalWrite(MATRIX2_X3, HIGH);
+        digitalWrite(MATRIX2_COL0, LOW);
+        digitalWrite(MATRIX2_COL1, LOW);
+        digitalWrite(MATRIX2_COL2, LOW);
+        digitalWrite(MATRIX2_COL3, HIGH);
         break;
     }
 
-    delayMicroseconds(10);  // Small delay for stabilization
+    delayMicroseconds(50);  // Increased delay for better stabilization
 
-    // Read all 5 Y pins for this X pin
-    for (int y = 0; y < 5; y++) {
-      lastMatrix2States[x][y] = matrix2States[x][y];
-
-      // Read the appropriate Y pin
-      switch (y) {
-        case 0: matrix2States[x][y] = (digitalRead(MATRIX2_Y0) == HIGH); break;
-        case 1: matrix2States[x][y] = (digitalRead(MATRIX2_Y1) == HIGH); break;
-        case 2: matrix2States[x][y] = (digitalRead(MATRIX2_Y2) == HIGH); break;
-        case 3: matrix2States[x][y] = (digitalRead(MATRIX2_Y3) == HIGH); break;
-        case 4: matrix2States[x][y] = (digitalRead(MATRIX2_Y4) == HIGH); break;
+    // Read all 5 rows for this column
+    for (int row = 0; row < 5; row++) {
+      bool currentState = false;
+      
+      // Read the appropriate row pin
+      switch (row) {
+        case 0: currentState = (digitalRead(MATRIX2_ROW0) == HIGH); break;
+        case 1: currentState = (digitalRead(MATRIX2_ROW1) == HIGH); break;
+        case 2: currentState = (digitalRead(MATRIX2_ROW2) == HIGH); break;
+        case 3: currentState = (digitalRead(MATRIX2_ROW3) == HIGH); break;
+        case 4: currentState = (digitalRead(MATRIX2_ROW4) == HIGH); break;
       }
+      
+      // Check for state change
+      if (currentState != lastMatrix2States[col][row]) {
+        // Update debounce timer
+        lastMatrix2DebounceTime[col][row] = currentTime;
+      }
+      
+      // Check if debounce time has passed
+      if ((currentTime - lastMatrix2DebounceTime[col][row]) > MATRIX2_DEBOUNCE_DELAY) {
+        // State is stable, check for rising edge (button press)
+        if (currentState && !matrix2States[col][row]) {
+          // Button pressed - handle the function
+          handleMatrix2ButtonPress(col, row);
+        }
+        
+        // Update the stable state
+        matrix2States[col][row] = currentState;
+      }
+      
+      // Update last state for edge detection
+      lastMatrix2States[col][row] = currentState;
     }
   }
 
-  // Deactivate all X pins
-  digitalWrite(MATRIX2_X0, LOW);
-  digitalWrite(MATRIX2_X1, LOW);
-  digitalWrite(MATRIX2_X2, LOW);
-  digitalWrite(MATRIX2_X3, LOW);
+  // Deactivate all columns
+  digitalWrite(MATRIX2_COL0, LOW);
+  digitalWrite(MATRIX2_COL1, LOW);
+  digitalWrite(MATRIX2_COL2, LOW);
+  digitalWrite(MATRIX2_COL3, LOW);
+}
 
-  // Handle button functions from second matrix
+void handleMatrix2ButtonPress(int col, int row) {
+  Serial.print("Matrix2 Button Press: X");
+  Serial.print(col);
+  Serial.print(" Y");
+  Serial.println(row);
+
   // X3 Y1: Toggle modulation type (FM/AM)
-  if (matrix2States[3][1] && !lastMatrix2States[3][1]) {
+  if (col == 3 && row == 1) {
     useAmplitudeModulation = !useAmplitudeModulation;
     Serial.print("Modulation type: ");
     Serial.println(useAmplitudeModulation ? "AM (Amplitude Modulation)" : "FM (Frequency Modulation)");
   }
 
   // X3 Y2: Toggle LPG mode on channel 1
-  if (matrix2States[3][2] && !lastMatrix2States[3][2]) {
+  else if (col == 3 && row == 2) {
     lpgChannel1_mode = static_cast<LPGMode>((lpgChannel1_mode + 1) % 3);
     Serial.print("LPG Channel 1 mode: ");
     switch (lpgChannel1_mode) {
@@ -750,7 +785,7 @@ void readButtonMatrix2() {
   }
 
   // X0 Y3: Toggle LPG mode on channel 2
-  if (matrix2States[0][3] && !lastMatrix2States[0][3]) {
+  else if (col == 0 && row == 3) {
     lpgChannel2_mode = static_cast<LPGMode>((lpgChannel2_mode + 1) % 3);
     Serial.print("LPG Channel 2 mode: ");
     switch (lpgChannel2_mode) {
@@ -760,11 +795,11 @@ void readButtonMatrix2() {
     }
   }
 
-  // X2 Y1: Toggle sequencer mode (MIDI/internal clock)
-  if (matrix2States[2][1] && !lastMatrix2States[2][1]) {
-    useMidiClock = !useMidiClock;
-    Serial.print("Sequencer mode: ");
-    Serial.println(useMidiClock ? "MIDI Note Triggers" : "Internal Clock");
+  // X2 Y1: Toggle whether oscillators' pitches are impacted by MIDI input
+  else if (col == 2 && row == 1) {
+    midiPitchEnabled = !midiPitchEnabled;
+    Serial.print("MIDI pitch control: ");
+    Serial.println(midiPitchEnabled ? "ENABLED" : "DISABLED");
   }
 }
 
@@ -967,8 +1002,11 @@ void AudioCallback(float** in, float** out, size_t size) {
     // Get current sequencer pitch offset
     float sequencerPitchOffset = sequencerValues[currentStep];
 
-    // Combine all pitch sources: pots + sequencer + MIDI
-    float totalPitchOffset = sequencerPitchOffset + midiPitchCV;
+    // Combine all pitch sources: pots + sequencer + MIDI (if enabled)
+    float totalPitchOffset = sequencerPitchOffset;
+    if (midiPitchEnabled) {
+      totalPitchOffset += midiPitchCV;
+    }
 
     float pitchRatio = semitonesToRatio(totalPitchOffset);
 
@@ -1083,7 +1121,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     // PROCESS COMPLEX OSCILLATOR with pitch modulation
     float modulatedComplexBasePitch;
 
-    // Calculate base pitch from C0 MUX2 pot
+    // Calculate base pitch from C15 pot
     float baseComplexPitch = complexOsc_basePitch;
 
     // Apply sequencer CV modulation if B0+A3 is pressed
@@ -1161,7 +1199,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     // MODIFIED WAVEFOLDER MODULATION
     // ================================
 
-    // Start with the base wavefolder amount from C3 MUX2 pot
+    // Start with the base wavefolder amount from C3 pot (MUX2)
     float currentFoldAmount = complexOsc_foldAmount;
 
     // Apply envelope modulation if enabled (B1+A4)
@@ -1181,7 +1219,7 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // Apply pulsar envelope modulation if B2+A4 is pressed - MODULATES FROM BASE
     if (pulsarModWavefolderEnabled) {
-      // Use the C3 MUX2 pot value as the CENTER point, pulsar modulates around it
+      // Use the C3 pot value as the CENTER point, pulsar modulates around it
       // wavefolderEnvModDepth controls how much modulation is applied
       float baseAmount = complexOsc_foldAmount;
       float modulationDepth = wavefolderEnvModDepth * 0.8f;  // Scale the modulation depth
@@ -1209,7 +1247,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     // For Channel 1 (complex oscillator)
     if (lpgChannel1_mode == LPG_MODE_LP) {
       ch1_level = 0.3f;                       // Reduced static level in LP mode to match other modes
-      ch1_cutoffControl = lpgCh1_baseCutoff;  // Use MUX1 C5 pot for cutoff control (backup)
+      ch1_cutoffControl = lpgCh1_baseCutoff;  // Use MUX2 C6 pot for cutoff control (backup)
       ch1_baseLevel = lpgCh1Level;            // Use MUX2 C6 pot as base cutoff frequency in LP mode
     } else if (lpgChannel1_mode == LPG_MODE_VCA || lpgChannel1_mode == LPG_MODE_COMBI) {
       // Apply sequencer CV modulation to LPG Channel 1 level if B0+A5 is pressed
@@ -1237,7 +1275,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     // For Channel 2 (modulator oscillator)
     if (lpgChannel2_mode == LPG_MODE_LP) {
       ch2_level = 0.3f;                       // Reduced static level in LP mode to match other modes
-      ch2_cutoffControl = lpgCh2_baseCutoff;  // Use MUX1 C6 pot for cutoff control (backup)
+      ch2_cutoffControl = lpgCh2_baseCutoff;  // Use MUX2 C8 pot for cutoff control (backup)
       ch2_baseLevel = lpgCh2Level;            // Use MUX2 C8 pot as base cutoff frequency in LP mode
     } else if (lpgChannel2_mode == LPG_MODE_VCA || lpgChannel2_mode == LPG_MODE_COMBI) {
       ch2_level = 1.0f;                  // Use full level in VCA/COMBI mode - level controlled by LPG
@@ -1367,11 +1405,7 @@ void setup() {
   // INIT SECOND BUTTON MATRIX
   initButtonMatrix2();
 
-  // BUTTON INIT - Now handled by second matrix
-  sequencerToggle.Init(1000, true, SEQUENCER_TOGGLE_BUTTON, INPUT_PULLUP);
-  modulationToggle.Init(1000, true, MODULATION_TOGGLE_BUTTON, INPUT_PULLUP);
-  lpgToggle_channel1.Init(1000, true, LPG_CH1_TOGGLE_BUTTON, INPUT_PULLUP);
-  lpgToggle_channel2.Init(1000, true, LPG_CH2_TOGGLE_BUTTON, INPUT_PULLUP);
+  // REMOVED individual button initialization since we're using matrix now
 
   // INIT MUX_1 PINS
   pinMode(MUX1_S0, OUTPUT);
@@ -1419,6 +1453,7 @@ void setup() {
   float sample_rate;
   hw = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
   sample_rate = DAISY.get_samplerate();
+  DAISY.SetAudioBlockSize(128);
 
   // INIT OSCILLATORS
   complexOsc.Init(sample_rate);
@@ -1547,35 +1582,13 @@ void setup() {
   DAISY.begin(AudioCallback);
 
   Serial.println("Weasel Initialised with 4x7 Button Matrix and updated pin assignments");
-  Serial.println("Second button matrix initialized with pins: X0=12, X1=13, X2=17, X3=18, Y0=8, Y1=9, Y2=10, Y3=11, Y4=14");
-  Serial.println("Button functions moved to second matrix:");
+  Serial.println("Second button matrix added with pins: X0-3: 12,13,17,18 | Y0-4: 8,9,10,11,14");
+  Serial.println("Button functions moved to second matrix with debouncing:");
   Serial.println("  X3 Y1: Toggle FM/AM modulation");
   Serial.println("  X3 Y2: Toggle LPG mode on channel 1");
   Serial.println("  X0 Y3: Toggle LPG mode on channel 2");
-  Serial.println("  X2 Y1: Toggle sequencer mode (MIDI/internal clock)");
-  Serial.println("MUX1 channel assignments updated:");
-  Serial.println("  C0-C4: Sequencer steps 1-5");
-  Serial.println("  C5-C7: ASD envelope controls");
-  Serial.println("  C8: Pulsar envelope decay control");
-  Serial.println("  C9: Pulsar envelope decay");
-  Serial.println("  C10: Mod oscillator pitch control");
-  Serial.println("  C11: Mod oscillator pitch");
-  Serial.println("  C12: Mod oscillator finetune");
-  Serial.println("  C13: Mod amount control");
-  Serial.println("  C14: Mod amount");
-  Serial.println("  C15: Complex oscillator pitch control");
-  Serial.println("MUX2 channel assignments updated:");
-  Serial.println("  C0: Complex oscillator pitch control");
-  Serial.println("  C1: Complex oscillator finetune");
-  Serial.println("  C2: Complex oscillator fold control");
-  Serial.println("  C3: Complex oscillator fold");
-  Serial.println("  C4: Complex oscillator timbre");
-  Serial.println("  C5: LPG channel 1 level control");
-  Serial.println("  C6: LPG channel 1 level");
-  Serial.println("  C7: LPG channel 2 level control");
-  Serial.println("  C8: LPG channel 2 level");
-  Serial.println("  C9: Clock");
-  Serial.println("  C10: Reverb mix");
+  Serial.println("  X2 Y1: Toggle MIDI pitch control (enable/disable MIDI impact on oscillator pitches)");
+  Serial.println("MUX pot assignments updated as requested");
 }
 
 void loop() {
@@ -1599,116 +1612,65 @@ void loop() {
   }
 
   // READ SECOND BUTTON MATRIX
-  if (millis() - lastMatrix2Read > MATRIX2_READ_INTERVAL) {
+  if (millis() - lastMatrix2Read > MATRIX_READ_INTERVAL) {
     readButtonMatrix2();
     lastMatrix2Read = millis();
   }
 
-  // POTENTIOMETER HANDLING - UPDATED MUX CHANNELS
-  // Read sequencer steps from MUX1 C0-C4
+  // POTENTIOMETER HANDLING - UPDATED MUX1 CHANNELS
   sequencerValues[0] = readMux1Channel(SEQ_STEP_1_CHANNEL, 0.0f, 48.0f);
   sequencerValues[1] = readMux1Channel(SEQ_STEP_2_CHANNEL, 0.0f, 48.0f);
   sequencerValues[2] = readMux1Channel(SEQ_STEP_3_CHANNEL, 0.0f, 48.0f);
   sequencerValues[3] = readMux1Channel(SEQ_STEP_4_CHANNEL, 0.0f, 48.0f);
   sequencerValues[4] = readMux1Channel(SEQ_STEP_5_CHANNEL, 0.0f, 48.0f);
 
-  // Read envelope controls from MUX1 C5-C7
   eg_attackTime = readMux1Channel(ASD_ATTACK_CHANNEL, 0.02f, 10.0f, true);
   eg_decayTime = readMux1Channel(ASD_SUSTAIN_CHANNEL, 0.02f, 10.0f, true);
   eg_sustainLevel = 1.0f;
   eg_releaseTime = readMux1Channel(ASD_DECAY_CHANNEL, 0.02f, 10.0f, true);
 
-  // Read pulsar envelope controls from MUX1 C8-C9
+  // Read new MUX1 channels (placeholders for now)
   float pulsarEnvDecayControl = readMux1Channel(PULSAR_ENV_DECAYCONTROL_CHANNEL, 0.0f, 1.0f);
   pulsarEnv_baseDecayTime = readMux1Channel(PULSAR_ENV_DECAY_CHANNEL, 0.02f, 10.0f, true);
-
-  // Read mod oscillator controls from MUX1 C10-C14
   float modOscPitchControl = readMux1Channel(MOD_OSC_PITCHCONTROL_CHANNEL, 0.0f, 1.0f);
   modOsc_pitch = readMux1Channel(MOD_OSC_PITCH_CHANNEL, 16.0f, 1760.0f, true);
   float modOscFinetune = readMux1Channel(MOD_OSC_FINETUNE_CHANNEL, 0.0f, 1.0f);
   float modAmountControl = readMux1Channel(MOD_AMOUNTCONTROL_CHANNEL, 0.0f, 1.0f);
   modOsc_modAmount = readMux1Channel(MOD_AMOUNT_CHANNEL, 0.0f, 800.0f);
-
-  // Read complex oscillator pitch control from MUX1 C15
   float complexOscPitchControl = readMux1Channel(COMPLEX_OSC_PITCHCONTROL_CHANNEL, 0.0f, 1.0f);
 
-  // Read complex oscillator controls from MUX2 C0-C4
+  // POTENTIOMETER HANDLING - UPDATED MUX2 CHANNELS
   float complexOscPitchControl2 = readMux2Channel(COMPLEX_OSC_PITCHCONTROL_CHANNEL, 0.0f, 1.0f);
+  complexOsc_basePitch = readMux2Channel(COMPLEX_OSC_PITCHCONTROL_CHANNEL, 55.0f, 1760.0f, true);
   float complexOscFinetune = readMux2Channel(COMPLEX_OSC_FINETUNE_CHANNEL, 0.0f, 1.0f);
   float complexOscFoldControl = readMux2Channel(COMPLEX_OSC_FOLDCONTROL_CHANNEL, 0.0f, 1.0f);
   complexOsc_foldAmount = readMux2Channel(COMPLEX_OSC_FOLD_CHANNEL, 0.0f, 0.5f);
   complexOsc_timbreAmount = readMux2Channel(COMPLEX_OSC_TIMBRE_CHANNEL, 0.0f, 1.0f);
-
-  // Read LPG controls from MUX2 C5-C8
   float lpgCh1LevelControl = readMux2Channel(LPG_CH1_LEVELCONTROL, 0.0f, 1.0f);
   lpgCh1Level = readMux2Channel(LPG_CH1_LEVEL, 0.0f, 1.0f);
   float lpgCh2LevelControl = readMux2Channel(LPG_CH2_LEVELCONTROL, 0.0f, 1.0f);
   lpgCh2Level = readMux2Channel(LPG_CH2_LEVEL, 0.0f, 1.0f);
-
-  // Read clock and reverb from MUX2 C9-C10
   BPM = readMux2Channel(CLOCK_CHANNEL, 1.0f, 1000.0f, true);
   reverbMix = readMux2Channel(REVERB_MIX, 0.0f, 1.0f);
 
-  // Calculate complex oscillator base pitch using both controls
-  complexOsc_basePitch = 55.0f + (complexOscPitchControl * 1705.0f);  // 55Hz to 1760Hz
-  if (complexOscPitchControl2 > 0.0f) {
-    // Apply additional pitch control from MUX2 C0
-    complexOsc_basePitch *= (1.0f + complexOscPitchControl2 * 0.5f);
-  }
-
-  // Apply finetune if needed
-  if (complexOscFinetune > 0.0f) {
-    complexOsc_basePitch *= (1.0f + (complexOscFinetune - 0.5f) * 0.1f);
-  }
-
-  // Apply mod oscillator finetune if needed
-  float finalModPitch = modOsc_pitch;
-  if (modOscFinetune > 0.0f) {
-    finalModPitch *= (1.0f + (modOscFinetune - 0.5f) * 0.1f);
-  }
-  modOsc_pitch = finalModPitch;
-
-  // Apply fold control if needed
-  if (complexOscFoldControl > 0.0f) {
-    complexOsc_foldAmount *= (1.0f + complexOscFoldControl * 0.5f);
-  }
-
-  // Apply LPG level controls if needed
-  if (lpgCh1LevelControl > 0.0f) {
-    lpgCh1Level *= (1.0f + lpgCh1LevelControl * 0.5f);
-  }
-  if (lpgCh2LevelControl > 0.0f) {
-    lpgCh2Level *= (1.0f + lpgCh2LevelControl * 0.5f);
-  }
-
-  // Apply mod amount control if needed
-  if (modAmountControl > 0.0f) {
-    modOsc_modAmount *= (1.0f + modAmountControl * 0.5f);
-  }
-
-  // Apply pulsar envelope decay control if needed
-  if (pulsarEnvDecayControl > 0.0f) {
-    pulsarEnv_baseDecayTime *= (1.0f + pulsarEnvDecayControl * 0.5f);
-  }
-
   // Always read the level pots, but they'll be used differently based on LPG mode
-  // Note: These are now controlled by the LPG level pots from MUX2
-  complexOsc_level = 1.0f;  // Default to full level, controlled by LPG
-  modOsc_level = 1.0f;      // Default to full level, controlled by LPG
+  // Note: complexOsc_level and modOsc_level are now controlled by MUX2 C6 and C8
+  complexOsc_level = lpgCh1Level;  // Use LPG level for complex oscillator
+  modOsc_level = lpgCh2Level;      // Use LPG level for modulator oscillator
 
-  // In LP mode, use the level controls as cutoff controls
+  // In LP mode, use the level pots as cutoff controls
   if (lpgChannel1_mode == LPG_MODE_LP) {
-    lpgCh1_baseCutoff = lpgCh1Level;
+    lpgCh1_baseCutoff = complexOsc_level;
   }
   if (lpgChannel2_mode == LPG_MODE_LP) {
-    lpgCh2_baseCutoff = lpgCh2Level;
+    lpgCh2_baseCutoff = modOsc_level;
   }
 
-  // BUTTON HANDLING - Now handled by second matrix in readButtonMatrix2()
-  sequencerToggle.Debounce();
-  modulationToggle.Debounce();
-  lpgToggle_channel1.Debounce();
-  lpgToggle_channel2.Debounce();
+  // WAVEFOLDER MODULATION DEPTH CONTROLS - placeholder reads
+  wavefolderEnvModDepth = 1.0f;  // Default modulation depth
+  seqCVWavefolderModDepth = 1.0f;  // Default modulation depth
+
+  // REMOVED individual button handling since we're using matrix now
 
   // ADR PARAMETERS
   env.SetTime(ADSR_SEG_ATTACK, eg_attackTime);
