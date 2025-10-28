@@ -3781,6 +3781,12 @@
 		(uuid "07080d87-5d95-4ba2-8e36-3fbd6a8bea1b")
 	)
 	(junction
+		(at 34.29 105.41)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "07eef0f8-df82-4335-88de-5a75db59f091")
+	)
+	(junction
 		(at 205.74 181.61)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3905,12 +3911,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "54a74007-83f4-4f6c-bd26-746f663c2984")
-	)
-	(junction
-		(at 34.29 105.41)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "57475a6f-9811-421d-9eda-9a4308fea3b7")
 	)
 	(junction
 		(at 143.51 219.71)
@@ -4121,12 +4121,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ad9e9678-89a7-41be-ba3d-a1bec3cdd0f0")
-	)
-	(junction
-		(at 76.2 143.51)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "aeba3a7e-0eef-4110-bdb8-241d3b9002e4")
 	)
 	(junction
 		(at 238.76 179.07)
@@ -5262,16 +5256,6 @@
 	)
 	(wire
 		(pts
-			(xy 34.29 105.41) (xy 38.1 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2f4378e0-9e46-4b21-9c30-52c94413d3d9")
-	)
-	(wire
-		(pts
 			(xy 420.37 54.61) (xy 422.91 54.61)
 		)
 		(stroke
@@ -5379,6 +5363,16 @@
 			(type default)
 		)
 		(uuid "3374e85b-fc20-4673-8ce3-2c2d297968a5")
+	)
+	(wire
+		(pts
+			(xy 34.29 105.41) (xy 38.1 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "33894dc8-1692-41ad-b6f8-11ab7df38647")
 	)
 	(wire
 		(pts
@@ -5619,16 +5613,6 @@
 			(type default)
 		)
 		(uuid "404ef0eb-8c4a-4249-a75e-eafa638834b4")
-	)
-	(wire
-		(pts
-			(xy 598.17 54.61) (xy 600.71 54.61)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "408ec9e9-bc83-45d8-8302-70159906ac95")
 	)
 	(wire
 		(pts
@@ -6119,16 +6103,6 @@
 			(type default)
 		)
 		(uuid "5d45161a-451a-450d-afc4-fb9f27065d7d")
-	)
-	(wire
-		(pts
-			(xy 34.29 105.41) (xy 34.29 106.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5d6e792d-21a9-40c5-9935-f894dcdba32e")
 	)
 	(wire
 		(pts
@@ -6922,16 +6896,6 @@
 	)
 	(wire
 		(pts
-			(xy 76.2 144.78) (xy 76.2 143.51)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8a66788f-573f-4c42-9a74-0bfd48e29191")
-	)
-	(wire
-		(pts
 			(xy 306.07 95.25) (xy 306.07 86.36)
 		)
 		(stroke
@@ -7569,16 +7533,6 @@
 			(type default)
 		)
 		(uuid "a5a8f433-2f7f-4a7e-98a1-331a3f34b6cc")
-	)
-	(wire
-		(pts
-			(xy 81.28 143.51) (xy 76.2 143.51)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a622b07c-0994-4065-bbd4-4ce57f7f815e")
 	)
 	(wire
 		(pts
@@ -8412,6 +8366,16 @@
 	)
 	(wire
 		(pts
+			(xy 598.17 54.61) (xy 600.71 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cd5c6f6b-e739-43f9-9e85-c88b9aa64f0f")
+	)
+	(wire
+		(pts
 			(xy 502.92 58.42) (xy 502.92 81.28)
 		)
 		(stroke
@@ -8422,7 +8386,7 @@
 	)
 	(wire
 		(pts
-			(xy 76.2 143.51) (xy 76.2 142.24)
+			(xy 76.2 142.24) (xy 76.2 143.51)
 		)
 		(stroke
 			(width 0)
@@ -8459,16 +8423,6 @@
 			(type default)
 		)
 		(uuid "d18917bc-239a-4081-a106-ce570b7945b4")
-	)
-	(wire
-		(pts
-			(xy 34.29 105.41) (xy 34.29 104.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d1a269f4-0e2d-423d-93a0-c62af3785f48")
 	)
 	(wire
 		(pts
@@ -8762,6 +8716,16 @@
 	)
 	(wire
 		(pts
+			(xy 34.29 105.41) (xy 34.29 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e15cb265-8eb0-4a41-a37c-ba44f394e6c5")
+	)
+	(wire
+		(pts
 			(xy 102.87 223.52) (xy 128.27 223.52)
 		)
 		(stroke
@@ -8899,6 +8863,16 @@
 			(type default)
 		)
 		(uuid "e68d9865-9d30-4cb5-bb8b-0b7e18ba8ecf")
+	)
+	(wire
+		(pts
+			(xy 608.33 54.61) (xy 614.68 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e7dd6c80-766f-4b06-ab4b-6a7a033e1dfe")
 	)
 	(wire
 		(pts
@@ -9059,16 +9033,6 @@
 			(type default)
 		)
 		(uuid "f3af186a-e367-4722-8c37-dadb28fbd2fc")
-	)
-	(wire
-		(pts
-			(xy 614.68 54.61) (xy 608.33 54.61)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f3d16bac-babb-47f0-8323-1f98a17b521b")
 	)
 	(wire
 		(pts
@@ -11571,7 +11535,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "00bfb3a3-1140-48c2-bc6b-bc95d9923b04")
-		(property "Reference" "D38"
+		(property "Reference" "D12"
 			(at 83.82 223.52 0)
 			(effects
 				(font
@@ -11623,7 +11587,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D38")
+					(reference "D12")
 					(unit 1)
 				)
 			)
@@ -11705,7 +11669,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0472d26c-a346-4e5f-8dd8-34829f5e32e3")
-		(property "Reference" "SW39"
+		(property "Reference" "SW11"
 			(at 112.522 234.696 90)
 			(effects
 				(font
@@ -11759,7 +11723,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW39")
+					(reference "SW11")
 					(unit 1)
 				)
 			)
@@ -11775,7 +11739,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "04d2ba50-194a-4349-be3f-a8b22e1dfaa2")
-		(property "Reference" "J19"
+		(property "Reference" "J9"
 			(at 200.025 172.72 0)
 			(effects
 				(font
@@ -11830,7 +11794,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J19")
+					(reference "J9")
 					(unit 1)
 				)
 			)
@@ -11862,7 +11826,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 528.32 54.61 0)
 			(effects
 				(font
@@ -11987,7 +11951,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0781a248-f0b1-4deb-86e1-0c776f2651e4")
-		(property "Reference" "R9"
+		(property "Reference" "R2"
 			(at 210.82 76.1999 0)
 			(effects
 				(font
@@ -12041,7 +12005,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "R9")
+					(reference "R2")
 					(unit 1)
 				)
 			)
@@ -12115,6 +12079,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 81.28 143.51 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0941d6b5-5626-42c9-8726-78c07750b76d")
+		(property "Reference" "#PWR035"
+			(at 81.28 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "AGND"
+			(at 81.28 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 81.28 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 81.28 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 81.28 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6d67597b-2398-46ea-ae88-d1c1269d8939")
+		)
+		(instances
+			(project "WEASEL_KiCad"
+				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
+					(reference "#PWR035")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 168.91 198.12 0)
 		(unit 1)
@@ -12124,7 +12154,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "09f2d22d-77c9-4e5a-aabb-568723a9dad5")
-		(property "Reference" "J14"
+		(property "Reference" "J4"
 			(at 168.275 189.23 0)
 			(effects
 				(font
@@ -12179,7 +12209,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J14")
+					(reference "J4")
 					(unit 1)
 				)
 			)
@@ -12195,7 +12225,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0a060e4f-a585-4a07-badc-9ec882b19582")
-		(property "Reference" "J21"
+		(property "Reference" "J11"
 			(at 200.025 205.74 0)
 			(effects
 				(font
@@ -12250,7 +12280,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J21")
+					(reference "J11")
 					(unit 1)
 				)
 			)
@@ -12282,7 +12312,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 375.92 54.61 0)
 			(effects
 				(font
@@ -12353,7 +12383,7 @@
 				)
 			)
 		)
-		(property "Footprint" "CD74HC4067 MUX:CD74HC4067"
+		(property "Footprint" "CD74HC4067 MUX:CD74HC4067_matchesSymbol"
 			(at 278.13 104.14 0)
 			(effects
 				(font
@@ -12470,7 +12500,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0da9e27b-f9df-4150-889f-04f431568c21")
-		(property "Reference" "SW34"
+		(property "Reference" "SW6"
 			(at 87.122 209.296 90)
 			(effects
 				(font
@@ -12524,7 +12554,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW34")
+					(reference "SW6")
 					(unit 1)
 				)
 			)
@@ -12556,7 +12586,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 543.56 168.91 0)
 			(effects
 				(font
@@ -12677,7 +12707,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0e6d04d6-10d7-42dd-92de-0a59c2052703")
-		(property "Reference" "SW7"
+		(property "Reference" "SW20"
 			(at 138.684 299.212 90)
 			(effects
 				(font
@@ -12734,7 +12764,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW7")
+					(reference "SW20")
 					(unit 1)
 				)
 			)
@@ -12766,7 +12796,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 518.16 168.91 0)
 			(effects
 				(font
@@ -12888,7 +12918,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "122a7d1d-9313-42a5-ad07-d1d1c4f51814")
-		(property "Reference" "J17"
+		(property "Reference" "J7"
 			(at 168.275 247.65 0)
 			(effects
 				(font
@@ -12943,7 +12973,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J17")
+					(reference "J7")
 					(unit 1)
 				)
 			)
@@ -13093,7 +13123,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "17ae7a2f-a86d-428c-a26d-90a246b8031a")
-		(property "Reference" "J18"
+		(property "Reference" "J8"
 			(at 168.275 264.16 0)
 			(effects
 				(font
@@ -13148,7 +13178,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J18")
+					(reference "J8")
 					(unit 1)
 				)
 			)
@@ -13235,7 +13265,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "189588ba-4553-4d8b-8ceb-5e6a99574e23")
-		(property "Reference" "D41"
+		(property "Reference" "D15"
 			(at 58.42 248.92 0)
 			(effects
 				(font
@@ -13287,7 +13317,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D41")
+					(reference "D15")
 					(unit 1)
 				)
 			)
@@ -13386,7 +13416,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 568.96 168.91 0)
 			(effects
 				(font
@@ -13441,7 +13471,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1fcd4e43-d791-4fd8-b85e-ba134bfb03e0")
-		(property "Reference" "D39"
+		(property "Reference" "D13"
 			(at 109.22 223.52 0)
 			(effects
 				(font
@@ -13493,7 +13523,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D39")
+					(reference "D13")
 					(unit 1)
 				)
 			)
@@ -13508,7 +13538,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "24bdc7c2-e5ef-4efc-933b-4eeec1b4c51a")
-		(property "Reference" "SW2"
+		(property "Reference" "SW1"
 			(at 60.96 184.15 90)
 			(effects
 				(font
@@ -13562,7 +13592,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW2")
+					(reference "SW1")
 					(unit 1)
 				)
 			)
@@ -13663,7 +13693,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "26e812c9-d9b3-43e8-9b7a-8fd463f51b56")
-		(property "Reference" "SW5"
+		(property "Reference" "SW19"
 			(at 113.284 299.212 90)
 			(effects
 				(font
@@ -13720,74 +13750,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 160.02 113.03 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "27d5df5b-3e4e-4772-92a4-26474ec9eb6b")
-		(property "Reference" "#PWR039"
-			(at 160.02 119.38 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 162.56 114.2999 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 160.02 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 160.02 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 160.02 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "bcdeb0f9-9027-495f-8405-061b2b101b5f")
-		)
-		(instances
-			(project "WEASEL_KiCad"
-				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "#PWR039")
+					(reference "SW19")
 					(unit 1)
 				)
 			)
@@ -13870,7 +13833,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "29b5ff92-c083-471b-b6f6-ea74c34f8d81")
-		(property "Reference" "D30"
+		(property "Reference" "D4"
 			(at 83.82 172.72 0)
 			(effects
 				(font
@@ -13922,7 +13885,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D30")
+					(reference "D4")
 					(unit 1)
 				)
 			)
@@ -14005,7 +13968,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2b668399-b586-46a0-83c7-abc70a52341a")
-		(property "Reference" "D37"
+		(property "Reference" "D11"
 			(at 58.42 223.52 0)
 			(effects
 				(font
@@ -14057,7 +14020,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D37")
+					(reference "D11")
 					(unit 1)
 				)
 			)
@@ -14089,7 +14052,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 579.12 54.61 0)
 			(effects
 				(font
@@ -14144,7 +14107,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2c1af554-57e8-4cfa-a743-29090fec162e")
-		(property "Reference" "J23"
+		(property "Reference" "J13"
 			(at 200.025 247.65 0)
 			(effects
 				(font
@@ -14199,7 +14162,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J23")
+					(reference "J13")
 					(unit 1)
 				)
 			)
@@ -14349,7 +14312,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "323d0373-eb49-464d-b246-c06abf414c32")
-		(property "Reference" "J16"
+		(property "Reference" "J6"
 			(at 168.275 231.14 0)
 			(effects
 				(font
@@ -14404,7 +14367,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J16")
+					(reference "J6")
 					(unit 1)
 				)
 			)
@@ -14486,7 +14449,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "343c582d-1a87-4ad3-a2e1-55fe378b7356")
-		(property "Reference" "SW42"
+		(property "Reference" "SW14"
 			(at 87.122 260.096 90)
 			(effects
 				(font
@@ -14540,7 +14503,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW42")
+					(reference "SW14")
 					(unit 1)
 				)
 			)
@@ -14555,7 +14518,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "35761f28-c877-4042-8dd8-5b73bcc43c99")
-		(property "Reference" "SW35"
+		(property "Reference" "SW7"
 			(at 112.522 209.296 90)
 			(effects
 				(font
@@ -14609,7 +14572,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW35")
+					(reference "SW7")
 					(unit 1)
 				)
 			)
@@ -14624,7 +14587,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "35830900-09b7-4fdb-aef3-6bcdaa60fd02")
-		(property "Reference" "R10"
+		(property "Reference" "R1"
 			(at 178.308 71.882 90)
 			(effects
 				(font
@@ -14678,7 +14641,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "R10")
+					(reference "R1")
 					(unit 1)
 				)
 			)
@@ -14828,7 +14791,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "36c8b824-9c0a-49d5-a259-699ac53451a4")
-		(property "Reference" "D40"
+		(property "Reference" "D14"
 			(at 134.62 223.52 0)
 			(effects
 				(font
@@ -14880,7 +14843,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D40")
+					(reference "D14")
 					(unit 1)
 				)
 			)
@@ -14896,7 +14859,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3a00729f-86ff-4931-9367-804ca8b2d653")
-		(property "Reference" "D2"
+		(property "Reference" "D24"
 			(at 250.19 198.12 0)
 			(effects
 				(font
@@ -14948,7 +14911,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D2")
+					(reference "D24")
 					(unit 1)
 				)
 			)
@@ -14964,7 +14927,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3a48ad80-a682-451c-a18b-2cff973b900a")
-		(property "Reference" "J7"
+		(property "Reference" "J18"
 			(at 233.045 248.92 0)
 			(effects
 				(font
@@ -15019,7 +14982,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J7")
+					(reference "J18")
 					(unit 1)
 				)
 			)
@@ -15051,7 +15014,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 679.45 54.61 0)
 			(effects
 				(font
@@ -15258,7 +15221,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 452.12 54.61 0)
 			(effects
 				(font
@@ -15514,7 +15477,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4792ba7a-f0be-4776-af31-2125ec009cc8")
-		(property "Reference" "D6"
+		(property "Reference" "D27"
 			(at 250.19 274.32 0)
 			(effects
 				(font
@@ -15566,7 +15529,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D6")
+					(reference "D27")
 					(unit 1)
 				)
 			)
@@ -15582,7 +15545,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "488bebe2-11d3-4648-9c96-ba8f31b124d5")
-		(property "Reference" "D35"
+		(property "Reference" "D9"
 			(at 109.22 198.12 0)
 			(effects
 				(font
@@ -15634,7 +15597,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D35")
+					(reference "D9")
 					(unit 1)
 				)
 			)
@@ -15649,7 +15612,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "4bfa37e4-943b-4844-ae15-584f4fc3a7d3")
-		(property "Reference" "SW1"
+		(property "Reference" "SW16"
 			(at 138.176 261.366 90)
 			(effects
 				(font
@@ -15706,7 +15669,7 @@
 		(instances
 			(project ""
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW1")
+					(reference "SW16")
 					(unit 1)
 				)
 			)
@@ -15714,8 +15677,7 @@
 	)
 	(symbol
 		(lib_id "Device:R_Potentiometer")
-		(at 604.52 54.61 90)
-		(mirror x)
+		(at 604.52 54.61 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -15738,7 +15700,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 604.52 54.61 0)
 			(effects
 				(font
@@ -15785,16 +15747,15 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 76.2 144.78 0)
+		(at 76.2 143.51 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "53e829c5-7da5-4b67-88b5-5f2aa517462c")
 		(property "Reference" "#PWR02"
-			(at 76.2 151.13 0)
+			(at 76.2 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15803,7 +15764,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 78.74 146.0499 0)
+			(at 73.66 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15812,7 +15773,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 76.2 144.78 0)
+			(at 76.2 143.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15821,7 +15782,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 76.2 144.78 0)
+			(at 76.2 143.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15830,7 +15791,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 76.2 144.78 0)
+			(at 76.2 143.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15876,7 +15837,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Audio:Jack_3.5mm_CUI_SJ1-3523N_Horizontal"
+		(property "Footprint" "trsSocket:Jack_3.5mm_CUI_SJ1-3523N_Horizontal_edited_noEdgeCuts"
 			(at 152.4 107.95 0)
 			(effects
 				(font
@@ -15931,7 +15892,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "603b9743-4f13-4285-9d79-3a12b5d179f6")
-		(property "Reference" "D34"
+		(property "Reference" "D8"
 			(at 83.82 198.12 0)
 			(effects
 				(font
@@ -15983,7 +15944,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D34")
+					(reference "D8")
 					(unit 1)
 				)
 			)
@@ -15999,7 +15960,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "603f5e71-893c-46ce-a5af-0d1a6203c92b")
-		(property "Reference" "J10"
+		(property "Reference" "J21"
 			(at 233.045 325.12 0)
 			(effects
 				(font
@@ -16054,7 +16015,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J10")
+					(reference "J21")
 					(unit 1)
 				)
 			)
@@ -16137,7 +16098,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "66808972-3a24-4041-b81b-7c5557698b10")
-		(property "Reference" "D36"
+		(property "Reference" "D10"
 			(at 134.62 198.12 0)
 			(effects
 				(font
@@ -16189,7 +16150,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D36")
+					(reference "D10")
 					(unit 1)
 				)
 			)
@@ -16205,7 +16166,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "66ebfef1-0564-45a6-9287-6c65a0c059d7")
-		(property "Reference" "D4"
+		(property "Reference" "D26"
 			(at 250.19 248.92 0)
 			(effects
 				(font
@@ -16257,7 +16218,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D4")
+					(reference "D26")
 					(unit 1)
 				)
 			)
@@ -16273,7 +16234,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6760f772-eeb7-4110-87c7-6a17e67a65cd")
-		(property "Reference" "J9"
+		(property "Reference" "J20"
 			(at 233.045 299.72 0)
 			(effects
 				(font
@@ -16328,7 +16289,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J9")
+					(reference "J20")
 					(unit 1)
 				)
 			)
@@ -16343,7 +16304,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "67a3bf86-7b61-4069-a1af-73691a628dc0")
-		(property "Reference" "SW41"
+		(property "Reference" "SW13"
 			(at 60.96 260.35 90)
 			(effects
 				(font
@@ -16397,7 +16358,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW41")
+					(reference "SW13")
 					(unit 1)
 				)
 			)
@@ -16428,7 +16389,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 441.96 168.91 0)
 			(effects
 				(font
@@ -16482,7 +16443,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "69b55bd3-022c-4b2c-9061-918eec8d5ad3")
-		(property "Reference" "SW38"
+		(property "Reference" "SW10"
 			(at 87.122 234.696 90)
 			(effects
 				(font
@@ -16536,7 +16497,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW38")
+					(reference "SW10")
 					(unit 1)
 				)
 			)
@@ -16552,7 +16513,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6bc5b249-1876-46fa-92c6-00ac323b90b2")
-		(property "Reference" "J20"
+		(property "Reference" "J10"
 			(at 200.025 189.23 0)
 			(effects
 				(font
@@ -16607,7 +16568,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J20")
+					(reference "J10")
 					(unit 1)
 				)
 			)
@@ -16623,7 +16584,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "70fd6735-0b03-485e-98f7-ba7b0ec5e636")
-		(property "Reference" "D3"
+		(property "Reference" "D25"
 			(at 250.19 223.52 0)
 			(effects
 				(font
@@ -16675,7 +16636,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D3")
+					(reference "D25")
 					(unit 1)
 				)
 			)
@@ -16774,7 +16735,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 325.12 54.61 0)
 			(effects
 				(font
@@ -16820,6 +16781,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 160.02 113.03 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "72b315ad-001d-4a75-97f9-924476d6f3ce")
+		(property "Reference" "#PWR036"
+			(at 160.02 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "AGND"
+			(at 165.354 114.554 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 160.02 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 160.02 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 160.02 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "aac69abe-469a-4cda-a69a-4e47f2089fe1")
+		)
+		(instances
+			(project "WEASEL_KiCad"
+				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
+					(reference "#PWR036")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 134.62 179.07 0)
 		(unit 1)
@@ -16829,7 +16855,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "75a71d30-8689-4302-b50a-fb1b0ba535e2")
-		(property "Reference" "D32"
+		(property "Reference" "D6"
 			(at 134.62 172.72 0)
 			(effects
 				(font
@@ -16881,7 +16907,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D32")
+					(reference "D6")
 					(unit 1)
 				)
 			)
@@ -16913,7 +16939,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 350.52 54.61 0)
 			(effects
 				(font
@@ -16968,7 +16994,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7abba4ba-2f00-41c1-9567-28d10086196f")
-		(property "Reference" "J4"
+		(property "Reference" "J15"
 			(at 233.045 172.72 0)
 			(effects
 				(font
@@ -17023,7 +17049,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J4")
+					(reference "J15")
 					(unit 1)
 				)
 			)
@@ -17055,7 +17081,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 416.56 168.91 0)
 			(effects
 				(font
@@ -17309,7 +17335,7 @@
 				)
 			)
 		)
-		(property "Footprint" "CD74HC4067 MUX:CD74HC4067"
+		(property "Footprint" "CD74HC4067 MUX:CD74HC4067_matchesSymbol"
 			(at 341.63 234.95 0)
 			(effects
 				(font
@@ -17494,7 +17520,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8293ae22-f90d-4c8f-b542-4f49162b8556")
-		(property "Reference" "D48"
+		(property "Reference" "D21"
 			(at 109.22 287.02 0)
 			(effects
 				(font
@@ -17546,7 +17572,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D48")
+					(reference "D21")
 					(unit 1)
 				)
 			)
@@ -17578,7 +17604,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 426.72 54.61 0)
 			(effects
 				(font
@@ -17649,7 +17675,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 502.92 54.61 0)
 			(effects
 				(font
@@ -17704,7 +17730,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "848f8cde-35fc-49d2-980a-b1705e766def")
-		(property "Reference" "J22"
+		(property "Reference" "J12"
 			(at 200.025 231.14 0)
 			(effects
 				(font
@@ -17759,7 +17785,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J22")
+					(reference "J12")
 					(unit 1)
 				)
 			)
@@ -17912,7 +17938,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "8af7079d-bfa0-427d-b9b7-9fb3fd606273")
-		(property "Reference" "SW3"
+		(property "Reference" "SW17"
 			(at 62.484 299.212 90)
 			(effects
 				(font
@@ -17969,7 +17995,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW3")
+					(reference "SW17")
 					(unit 1)
 				)
 			)
@@ -17985,7 +18011,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8b5539f1-aaa9-4861-a2d0-1e46595cd092")
-		(property "Reference" "J8"
+		(property "Reference" "J19"
 			(at 233.045 274.32 0)
 			(effects
 				(font
@@ -18040,7 +18066,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J8")
+					(reference "J19")
 					(unit 1)
 				)
 			)
@@ -18056,7 +18082,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8b73a741-2597-4e67-b38f-87f8858e9b3a")
-		(property "Reference" "D33"
+		(property "Reference" "D7"
 			(at 58.42 198.12 0)
 			(effects
 				(font
@@ -18108,7 +18134,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D33")
+					(reference "D7")
 					(unit 1)
 				)
 			)
@@ -18209,7 +18235,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 401.32 54.61 0)
 			(effects
 				(font
@@ -18264,7 +18290,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "9b5a8d2b-ad51-4e11-98e3-88a54522f55c")
-		(property "Reference" "D1"
+		(property "Reference" "D23"
 			(at 250.19 172.72 0)
 			(effects
 				(font
@@ -18316,7 +18342,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D1")
+					(reference "D23")
 					(unit 1)
 				)
 			)
@@ -18331,7 +18357,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "9cf468d8-3da7-499f-8661-c26d5ef222ee")
-		(property "Reference" "SW37"
+		(property "Reference" "SW9"
 			(at 60.96 234.95 90)
 			(effects
 				(font
@@ -18385,7 +18411,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW37")
+					(reference "SW9")
 					(unit 1)
 				)
 			)
@@ -18400,7 +18426,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "9dc92c59-258d-4c99-b92a-3445a301eaa4")
-		(property "Reference" "SW4"
+		(property "Reference" "SW18"
 			(at 87.884 299.212 90)
 			(effects
 				(font
@@ -18457,7 +18483,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW4")
+					(reference "SW18")
 					(unit 1)
 				)
 			)
@@ -18473,7 +18499,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a2b7a067-eec5-4bfb-b953-8600cf104588")
-		(property "Reference" "D5"
+		(property "Reference" "D3"
 			(at 58.42 172.72 0)
 			(effects
 				(font
@@ -18525,7 +18551,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D5")
+					(reference "D3")
 					(unit 1)
 				)
 			)
@@ -18741,7 +18767,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "aa15f39a-b50b-4304-8bb2-aa35311b42cd")
-		(property "Reference" "J24"
+		(property "Reference" "J14"
 			(at 200.025 264.16 0)
 			(effects
 				(font
@@ -18796,7 +18822,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J24")
+					(reference "J14")
 					(unit 1)
 				)
 			)
@@ -18949,7 +18975,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ae15abc1-7b6c-49f2-bdc0-6c66dc7f88dc")
-		(property "Reference" "SW32"
+		(property "Reference" "SW4"
 			(at 137.922 183.896 90)
 			(effects
 				(font
@@ -19003,7 +19029,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW32")
+					(reference "SW4")
 					(unit 1)
 				)
 			)
@@ -19018,7 +19044,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b0a2fcd6-d012-4c3f-b5c7-1a5ce8263327")
-		(property "Reference" "SW6"
+		(property "Reference" "SW2"
 			(at 87.122 183.896 90)
 			(effects
 				(font
@@ -19072,7 +19098,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW6")
+					(reference "SW2")
 					(unit 1)
 				)
 			)
@@ -19155,7 +19181,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b1f27f82-45c6-40de-bba9-c1291820deb0")
-		(property "Reference" "D46"
+		(property "Reference" "D19"
 			(at 58.42 287.02 0)
 			(effects
 				(font
@@ -19207,7 +19233,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D46")
+					(reference "D19")
 					(unit 1)
 				)
 			)
@@ -19222,7 +19248,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b28308c8-21f8-43e9-9e88-b54996e6ffac")
-		(property "Reference" "SW36"
+		(property "Reference" "SW8"
 			(at 137.922 209.296 90)
 			(effects
 				(font
@@ -19276,7 +19302,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW36")
+					(reference "SW8")
 					(unit 1)
 				)
 			)
@@ -19358,7 +19384,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b5305dd4-dc5c-4b8c-ba17-8c595b759d96")
-		(property "Reference" "SW40"
+		(property "Reference" "SW12"
 			(at 137.922 234.696 90)
 			(effects
 				(font
@@ -19412,7 +19438,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW40")
+					(reference "SW12")
 					(unit 1)
 				)
 			)
@@ -19428,7 +19454,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b880944a-a0a2-4cda-b6b7-c17289c577fd")
-		(property "Reference" "D47"
+		(property "Reference" "D20"
 			(at 83.82 287.02 0)
 			(effects
 				(font
@@ -19480,7 +19506,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D47")
+					(reference "D20")
 					(unit 1)
 				)
 			)
@@ -19496,7 +19522,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "bcb45b6e-6d0c-4adc-b029-97b0bca23db8")
-		(property "Reference" "J5"
+		(property "Reference" "J16"
 			(at 233.045 198.12 0)
 			(effects
 				(font
@@ -19551,7 +19577,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J5")
+					(reference "J16")
 					(unit 1)
 				)
 			)
@@ -19634,7 +19660,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c6e33453-d56c-4b01-a14b-44a0add3e718")
-		(property "Reference" "J6"
+		(property "Reference" "J17"
 			(at 233.045 223.52 0)
 			(effects
 				(font
@@ -19689,7 +19715,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J6")
+					(reference "J17")
 					(unit 1)
 				)
 			)
@@ -19705,7 +19731,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c6facedd-b443-48dc-9ffa-a1b1603e34d0")
-		(property "Reference" "D7"
+		(property "Reference" "D28"
 			(at 250.19 299.72 0)
 			(effects
 				(font
@@ -19757,7 +19783,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D7")
+					(reference "D28")
 					(unit 1)
 				)
 			)
@@ -19773,7 +19799,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c8313472-0d61-4dea-aa81-9a8ea14c760a")
-		(property "Reference" "D43"
+		(property "Reference" "D17"
 			(at 109.22 248.92 0)
 			(effects
 				(font
@@ -19825,7 +19851,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D43")
+					(reference "D17")
 					(unit 1)
 				)
 			)
@@ -19841,7 +19867,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c9ef7db4-1082-41f8-a837-60bcaf64b69d")
-		(property "Reference" "D49"
+		(property "Reference" "D22"
 			(at 134.62 287.02 0)
 			(effects
 				(font
@@ -19893,7 +19919,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D49")
+					(reference "D22")
 					(unit 1)
 				)
 			)
@@ -19979,7 +20005,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "cf8ba8a5-2029-4b42-b71c-eb2de61050b0")
-		(property "Reference" "SW33"
+		(property "Reference" "SW5"
 			(at 60.96 209.55 90)
 			(effects
 				(font
@@ -20033,7 +20059,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW33")
+					(reference "SW5")
 					(unit 1)
 				)
 			)
@@ -20119,7 +20145,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "d2f57fda-f20e-43d3-9334-59991ac658d5")
-		(property "Reference" "SW31"
+		(property "Reference" "SW3"
 			(at 112.522 183.896 90)
 			(effects
 				(font
@@ -20173,7 +20199,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW31")
+					(reference "SW3")
 					(unit 1)
 				)
 			)
@@ -20189,7 +20215,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d35810c4-4318-4a11-b639-84e140174856")
-		(property "Reference" "D45"
+		(property "Reference" "D18"
 			(at 134.62 248.92 0)
 			(effects
 				(font
@@ -20241,7 +20267,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D45")
+					(reference "D18")
 					(unit 1)
 				)
 			)
@@ -20257,7 +20283,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d47d77b2-f413-4bef-b091-d4a405c8e518")
-		(property "Reference" "J15"
+		(property "Reference" "J5"
 			(at 168.275 205.74 0)
 			(effects
 				(font
@@ -20312,7 +20338,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "J15")
+					(reference "J5")
 					(unit 1)
 				)
 			)
@@ -20327,7 +20353,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "da47ef05-390a-47bd-91f6-d7f0e7f64a50")
-		(property "Reference" "D44"
+		(property "Reference" "D1"
 			(at 178.562 80.518 90)
 			(effects
 				(font
@@ -20379,7 +20405,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D44")
+					(reference "D1")
 					(unit 1)
 				)
 			)
@@ -20411,7 +20437,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 655.32 54.61 0)
 			(effects
 				(font
@@ -20549,7 +20575,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Audio:Jack_3.5mm_CUI_SJ1-3523N_Horizontal"
+		(property "Footprint" "trsSocket:Jack_3.5mm_CUI_SJ1-3523N_Horizontal_edited_noEdgeCuts"
 			(at 156.21 76.2 0)
 			(effects
 				(font
@@ -20604,7 +20630,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "dce03531-787b-4c3a-81bc-d17bff8af27b")
-		(property "Reference" "D8"
+		(property "Reference" "D29"
 			(at 250.19 325.12 0)
 			(effects
 				(font
@@ -20656,7 +20682,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D8")
+					(reference "D29")
 					(unit 1)
 				)
 			)
@@ -20688,7 +20714,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 492.76 168.91 0)
 			(effects
 				(font
@@ -20759,7 +20785,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 477.52 54.61 0)
 			(effects
 				(font
@@ -20897,7 +20923,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 365.76 168.91 0)
 			(effects
 				(font
@@ -21035,7 +21061,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 706.12 54.61 0)
 			(effects
 				(font
@@ -21090,7 +21116,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f202a635-d6d1-4b22-b9f7-47b88ee17bfa")
-		(property "Reference" "D31"
+		(property "Reference" "D5"
 			(at 109.22 172.72 0)
 			(effects
 				(font
@@ -21142,7 +21168,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D31")
+					(reference "D5")
 					(unit 1)
 				)
 			)
@@ -21223,7 +21249,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "f3068f5a-3315-490c-a52b-0ea145930abe")
-		(property "Reference" "SW43"
+		(property "Reference" "SW15"
 			(at 112.522 260.096 90)
 			(effects
 				(font
@@ -21277,7 +21303,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "SW43")
+					(reference "SW15")
 					(unit 1)
 				)
 			)
@@ -21309,7 +21335,7 @@
 				)
 			)
 		)
-		(property "Footprint" "DIYSynthMNL:Potentiometer_RV09_BigPads"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Bourns_PTA2043_Single_Slide"
 			(at 553.72 54.61 0)
 			(effects
 				(font
@@ -21364,7 +21390,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f9379eb7-a281-4726-88f6-f383abe9ae16")
-		(property "Reference" "D42"
+		(property "Reference" "D16"
 			(at 83.82 248.92 0)
 			(effects
 				(font
@@ -21416,7 +21442,7 @@
 		(instances
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
-					(reference "D42")
+					(reference "D16")
 					(unit 1)
 				)
 			)
