@@ -19231,7 +19231,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MODOSC_PITCHTRANGE"
+		(property "Value" "MODOSC_MODULATIONMODE"
 			(at 138.176 211.074 90)
 			(effects
 				(font
