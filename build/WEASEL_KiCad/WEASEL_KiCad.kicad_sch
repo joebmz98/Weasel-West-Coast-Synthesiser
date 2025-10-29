@@ -14527,7 +14527,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MODOSC_MIDITOGGLE"
+		(property "Value" "MODOSC_WAVEFORMTOGGLE"
 			(at 112.776 211.074 90)
 			(effects
 				(font
@@ -18366,7 +18366,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "COMPLEXOSC_MIDITOGGLE"
+		(property "Value" "OSCILLATOR_MIDITOGGLE"
 			(at 61.468 236.982 90)
 			(effects
 				(font
