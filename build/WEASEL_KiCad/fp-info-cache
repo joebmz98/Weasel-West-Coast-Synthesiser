@@ -1,4 +1,4 @@
-26832602723749707
+26836126194984439
 AXS_LOGO_KICAD
 AXS_LOGO_FMASK_10X10
 
@@ -99195,6 +99195,20 @@ Panel Fader Slide Pot
 
 0
 3
+0
+SimpleSynthPanel
+Panel Fader Slide Pot_mountHoleMarker
+
+
+0
+1
+0
+SimpleSynthPanel
+Panel Fader Slide Pot_noMountHoles
+
+
+0
+1
 0
 SimpleSynthPanel
 Panel Jack
