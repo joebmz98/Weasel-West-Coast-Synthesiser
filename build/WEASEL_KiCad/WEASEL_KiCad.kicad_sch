@@ -14527,8 +14527,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MODOSC_WAVEFORMTOGGLE"
-			(at 112.776 211.074 90)
+		(property "Value" "MODOSC_MODULATIONMODE"
+			(at 119.126 216.408 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19257,8 +19257,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MODOSC_MODULATIONMODE"
-			(at 138.176 211.074 90)
+		(property "Value" "MODOSC_WAVEFORMTOGGLE"
+			(at 142.24 207.772 90)
 			(effects
 				(font
 					(size 1.27 1.27)
