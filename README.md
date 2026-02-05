@@ -1,2 +1,2 @@
-# Weasel-East-Coast-Synthesiser
-Digital east coast style synth heavily inspired by the Buchla Easel.
+# Weasel-West-Coast-Synthesiser
+Digital West coast style synth heavily inspired by the Buchla Easel.
