@@ -1038,7 +1038,6 @@ void updateParameters() {
     // 3 cents is 3/1200 of an octave.
     float fineRange = 3.0f / 12.0f; 
 
-
   // COMPLEX OSCILLATOR (25Hz to 4000Hz)
     // PITCH
     float complexOscFreqPot = potValues[16] / 65535.0f;
@@ -1129,7 +1128,7 @@ void updateParameters() {
 
   // Sequencer Clock Speed from MUX2 Channel 9 (potValues[25])
   float clockPot = potValues[25] / 65535.0f;
-  seqClockSpeed = 10.0f * pow(100.0f, (1.0f - clockPot));
+  seqClockSpeed = 1.0f * pow(2000.0f, (1.0f - clockPot));
 
   // REVERB
   reverbMix = potValues[26] / 65535.0f; // REVERB MIX CONTROL
