@@ -203,6 +203,11 @@ int seqMaxSteps = 5; // Default sequence length
   // AUDIO INTERRUPT TIMING
   uint32_t seqSampleCounter = 0;    // Counts samples to trigger the next step
   float    activeSeqCV = 0.0f;      // The CV of the currently active step
+  // SEQUENCER MODES
+  enum SeqTriggerMode { SEQ_TRIGGER_CLOCK, SEQ_TRIGGER_PULSAR, SEQ_TRIGGER_MIDI };
+  SeqTriggerMode currentSeqTriggerMode = SEQ_TRIGGER_CLOCK; // Default Mode
+  bool midiTriggerPending = false; // Flag to catch MIDI notes for the sequencer
+
 
 // MUX control function
 void selectMuxChannel(int channel, int s0, int s1, int s2, int s3) {
@@ -244,41 +249,41 @@ void initPotentiometers() {
   for (int i = 0; i < TOTAL_POTS; i++) {
     if (i < NUM_POTS_PER_MUX) {
       // Pots on MUX1
-      if (i == 0) potNames[i] = "MUX1-CH0: Sequencer Rate";
-      else if (i == 1) potNames[i] = "MUX1-CH1: Sequencer Length";
-      else if (i == 2) potNames[i] = "MUX1-CH2: Envelope Attack";
-      else if (i == 3) potNames[i] = "MUX1-CH3: Envelope Decay";
-      else if (i == 4) potNames[i] = "MUX1-CH4: LFO1 Rate";
-      else if (i == 5) potNames[i] = "MUX1-CH5: LFO1 Amount";
-      else if (i == 6) potNames[i] = "MUX1-CH6: LFO2 Rate";
-      else if (i == 7) potNames[i] = "MUX1-CH7: LFO2 Amount";
-      else if (i == 8) potNames[i] = "MUX1-CH8: Osc1 Pitch";
-      else if (i == 9) potNames[i] = "MUX1-CH9: Osc1 Wave";
-      else if (i == 10) potNames[i] = "MUX1-CH10: Osc2 Pitch";
-      else if (i == 11) potNames[i] = "MUX1-CH11: Osc2 Wave";
-      else if (i == 12) potNames[i] = "MUX1-CH12: Filter Cutoff";
-      else if (i == 13) potNames[i] = "MUX1-CH13: Filter Resonance";
-      else if (i == 14) potNames[i] = "MUX1-CH14: Mix Level";
-      else if (i == 15) potNames[i] = "MUX1-CH15: Output Volume";
+      if (i == 0) potNames[i] = "MUX1-CH0: Sequencer Step 1 CV";
+      else if (i == 1) potNames[i] = "MUX1-CH1: Sequencer Step 2 CV";
+      else if (i == 2) potNames[i] = "MUX1-CH2: Sequencer Step 3 CV";
+      else if (i == 3) potNames[i] = "MUX1-CH3: Sequencer Step 4 CV";
+      else if (i == 4) potNames[i] = "MUX1-CH4: Sequencer Step 5 CV";
+      else if (i == 5) potNames[i] = "MUX1-CH5: Attack";
+      else if (i == 6) potNames[i] = "MUX1-CH6: Sustain";
+      else if (i == 7) potNames[i] = "MUX1-CH7: Decay/Release";
+      else if (i == 8) potNames[i] = "MUX1-CH8: Pulsar Period Modulation Control";
+      else if (i == 9) potNames[i] = "MUX1-CH9: Pulsar Period";
+      else if (i == 10) potNames[i] = "MUX1-CH10: Modulation Oscillator Frequency Control";
+      else if (i == 11) potNames[i] = "MUX1-CH11: Modulation Oscillator Frequency";
+      else if (i == 12) potNames[i] = "MUX1-CH12: Modulation Oscillator Fine Tune +/-3";
+      else if (i == 13) potNames[i] = "MUX1-CH13: Modulation Oscillator Modulation Control";
+      else if (i == 14) potNames[i] = "MUX1-CH14: Modulation Oscillator Modulation Control";
+      else if (i == 15) potNames[i] = "MUX1-CH15: Complex Oscillator Frequency Control";
     } else {
       // Pots on MUX2 (indices 16-31)
       int mux2Index = i - NUM_POTS_PER_MUX;
-      if (mux2Index == 0) potNames[i] = "MUX2-CH0: FM Amount";
-      else if (mux2Index == 1) potNames[i] = "MUX2-CH1: Wavefolder Amount";
-      else if (mux2Index == 2) potNames[i] = "MUX2-CH2: LPG1 Cutoff";
-      else if (mux2Index == 3) potNames[i] = "MUX2-CH3: LPG1 Resonance";
-      else if (mux2Index == 4) potNames[i] = "MUX2-CH4: LPG2 Cutoff";
-      else if (mux2Index == 5) potNames[i] = "MUX2-CH5: LPG2 Resonance";
-      else if (mux2Index == 6) potNames[i] = "MUX2-CH6: Delay Time";
-      else if (mux2Index == 7) potNames[i] = "MUX2-CH7: Delay Feedback";
-      else if (mux2Index == 8) potNames[i] = "MUX2-CH8: Reverb Size";
-      else if (mux2Index == 9) potNames[i] = "MUX2-CH9: Reverb Damp";
-      else if (mux2Index == 10) potNames[i] = "MUX2-CH10: Mod Depth";
-      else if (mux2Index == 11) potNames[i] = "MUX2-CH11: Mod Rate";
-      else if (mux2Index == 12) potNames[i] = "MUX2-CH12: CV1 Atten";
-      else if (mux2Index == 13) potNames[i] = "MUX2-CH13: CV2 Atten";
-      else if (mux2Index == 14) potNames[i] = "MUX2-CH14: CV3 Atten";
-      else if (mux2Index == 15) potNames[i] = "MUX2-CH15: CV4 Atten";
+      if (mux2Index == 0) potNames[i] = "MUX2-CH0: Complex Oscillator Frequency";
+      else if (mux2Index == 1) potNames[i] = "MUX2-CH1: Complex Oscillator Fine Tune";
+      else if (mux2Index == 2) potNames[i] = "MUX2-CH2: Complex Oscillator Wavefolder Control";
+      else if (mux2Index == 3) potNames[i] = "MUX2-CH3: Complex Oscillator Wavefolder";
+      else if (mux2Index == 4) potNames[i] = "MUX2-CH4: Complex Oscillator Timbre";
+      else if (mux2Index == 5) potNames[i] = "MUX2-CH5: LPG1 Control";
+      else if (mux2Index == 6) potNames[i] = "MUX2-CH6: LPG1 Level";
+      else if (mux2Index == 7) potNames[i] = "MUX2-CH7: LPG2 Control";
+      else if (mux2Index == 8) potNames[i] = "MUX2-CH8: LPG2 Level";
+      else if (mux2Index == 9) potNames[i] = "MUX2-CH9: Clock Speed";
+      else if (mux2Index == 10) potNames[i] = "MUX2-CH10: Reverb Mix";
+      else if (mux2Index == 11) potNames[i] = "MUX2-CH11: N/C";
+      else if (mux2Index == 12) potNames[i] = "MUX2-CH12: N/C";
+      else if (mux2Index == 13) potNames[i] = "MUX2-CH13: N/C";
+      else if (mux2Index == 14) potNames[i] = "MUX2-CH14: N/C";
+      else if (mux2Index == 15) potNames[i] = "MUX2-CH15: N/C";
     }
   }
 
@@ -463,28 +468,22 @@ void readButtonMatrix2() {
   int rowPins[] = {MATRIX2_ROW0, MATRIX2_ROW1, MATRIX2_ROW2, MATRIX2_ROW3, MATRIX2_ROW4};
 
   for (int col = 0; col < 4; col++) {
-    // 1. Force all columns LOW and set to OUTPUT
-    for(int i=0; i<4; i++) digitalWrite(colPins[i], LOW);
-    
-    // 2. Special handling for Pin 13 (Column 1)
-    // Give the LED circuit extra time to drain
-    if(col == 1) delayMicroseconds(50); 
-
+    // 1. ACTIVATE: Set column to OUTPUT and HIGH to source current
+    pinMode(colPins[col], OUTPUT);
     digitalWrite(colPins[col], HIGH);
-    delayMicroseconds(150); // Settle time
+    
+    // Give Pin 13 (LED) extra time to overcome the resistor/LED load
+    delayMicroseconds(80); 
 
     for (int row = 0; row < 5; row++) {
       matrix2PreviousStates[col][row] = matrix2CurrentStates[col][row];
-      bool reading = (digitalRead(rowPins[row]) == HIGH);
-
-      // Debounce logic
-      static bool lastRaw[4][5];
-      if (reading == lastRaw[col][row]) {
-        matrix2CurrentStates[col][row] = reading;
-      }
-      lastRaw[col][row] = reading;
+      // Reading HIGH means button is pressed
+      matrix2CurrentStates[col][row] = (digitalRead(rowPins[row]) == HIGH);
     }
-    digitalWrite(colPins[col], LOW);
+
+    // 2. DEACTIVATE: Instead of digitalWrite(LOW), set to INPUT
+    // This puts the pin in High-Impedance mode, "unplugging" the LED circuit
+    pinMode(colPins[col], INPUT); 
   }
 }
 
@@ -553,8 +552,16 @@ void printButtonChanges() {
 
         // Corrected Mapping
         if (col == 1 && row == 0) {
-          buttonName = "SEQUENCER_TOGGLE_BUTTON";
-          function = " (SEQ TOGGLE)";
+          buttonName = "SEQUENCER_MODE_BUTTON";
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            // Cycle: 0 -> 1 -> 2 -> 0
+            currentSeqTriggerMode = static_cast<SeqTriggerMode>((currentSeqTriggerMode + 1) % 3);
+
+            Serial.print("Sequencer Trigger Mode changed to: ");
+            if (currentSeqTriggerMode == SEQ_TRIGGER_CLOCK) Serial.println("INTERNAL CLOCK");
+            else if (currentSeqTriggerMode == SEQ_TRIGGER_PULSAR) Serial.println("PULSAR ENVELOPE");
+            else if (currentSeqTriggerMode == SEQ_TRIGGER_MIDI) Serial.println("MIDI NOTE ON");
+          }
         } else if (col == 1 && row == 1) {
           buttonName = "MODULATION_TOGGLE_BUTTON";
           function = " (MODULATION TOGGLE)";
@@ -569,7 +576,7 @@ void printButtonChanges() {
           buttonName = "RANDOM_MODE_TOGGLE";
           if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
             currentRandomMode = static_cast<RandomMode>((currentRandomMode + 1) % 3);
-        
+
             Serial.print("Random Mode: ");
             if (currentRandomMode == RANDOM_MODE_SEQ) Serial.println("SEQUENCER");
             else if (currentRandomMode == RANDOM_MODE_PULSAR) Serial.println("PULSAR");
@@ -764,11 +771,30 @@ void AudioCallback(float** in, float** out, size_t size) {
     for (size_t i = 0; i < size; i++) {
         // --- 1. TRIGGERS & SEQUENCER ---
         bool seqStepTriggered = false;
-        seqSampleCounter++;
-        if (seqSampleCounter >= samplesPerTick) { 
-            seqSampleCounter = 0;
+
+        if (currentSeqTriggerMode == SEQ_TRIGGER_CLOCK) {
+            seqSampleCounter++;
+            if (seqSampleCounter >= samplesPerTick) { 
+                seqStepTriggered = true;
+                seqSampleCounter = 0;
+            }
+        } 
+        else if (currentSeqTriggerMode == SEQ_TRIGGER_PULSAR) {
+            bool isPulsarActive = pulsar.IsRunning();
+            if (isPulsarActive && !lastPulsarEnvActive) {
+                seqStepTriggered = true;
+            }
+            lastPulsarEnvActive = isPulsarActive;
+        } 
+        else if (currentSeqTriggerMode == SEQ_TRIGGER_MIDI) {
+            if (midiTriggerPending) {
+                seqStepTriggered = true;
+                midiTriggerPending = false; 
+            }
+        }
+
+        if (seqStepTriggered) {
             seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps;
-            seqStepTriggered = true; 
             if (seqStepEnabled[seqCurrentStep]) { 
                 activeSeqCV = seqStepCV[seqCurrentStep];
                 env.Retrigger(false);
@@ -780,7 +806,9 @@ void AudioCallback(float** in, float** out, size_t size) {
         if (currentPulsarMode == PULSAR_MODE_SEQ) {
             pulsarTrigger = seqStepTriggered;
         } else if (currentPulsarMode == PULSAR_MODE_OSC) {
-            if (!pulsar.IsRunning()) pulsarTrigger = true;
+            if (!pulsar.IsRunning()) {
+                pulsarTrigger = true;
+            }
         }
 
         if (pulsarTrigger) {
@@ -807,16 +835,18 @@ void AudioCallback(float** in, float** out, size_t size) {
         uint32_t gateSamples = (uint32_t)(sustainDuration * sampleRate);
         bool gate = (seqSampleCounter < gateSamples) && seqStepEnabled[seqCurrentStep];
         float envSig = env.Process(gate);
+        
+        // FIX: Pass pulsarTrigger as the gate to the Process function
         float pulsarEnvSig = pulsar.Process(pulsarTrigger);
 
         // --- 5. VIRTUAL PATCH BAY SUMMING (A0-A6) ---
-        float rawPulsarPeriodMod = 0.0f; // A0
-        float rawModOscFreqMod = 0.0f;   // A1
-        float rawModOscModMod = 0.0f;    // A2
-        float rawFreqMod = 0.0f;         // A3
-        float rawWFMod = 0.0f;           // A4
-        float rawModLPG1 = 0.0f;         // A5
-        float rawModLPG2 = 0.0f;         // A6
+        float rawPulsarPeriodMod = 0.0f;
+        float rawModOscFreqMod = 0.0f;  
+        float rawModOscModMod = 0.0f;   
+        float rawFreqMod = 0.0f;        
+        float rawWFMod = 0.0f;          
+        float rawModLPG1 = 0.0f;        
+        float rawModLPG2 = 0.0f;        
 
         for (int col = 0; col < 4; col++) {
             float src = 0.0f;
@@ -825,10 +855,23 @@ void AudioCallback(float** in, float** out, size_t size) {
             else if (col == 2) src = pulsarEnvSig;
             else if (col == 3) src = currentRandomValue;
 
-            // Apply manual scaling only if the source is the Pulsar (Col 2)
-            float gain = 1.0f;
-            if (col == 2) {
-                // Scaling matches your previously audible settings
+            if (col == 0) { // SEQUENCER CV 
+                if (matrixStates[col][0]) rawPulsarPeriodMod += src;
+                if (matrixStates[col][1]) rawModOscFreqMod   += src; 
+                if (matrixStates[col][2]) rawModOscModMod    += src; 
+                if (matrixStates[col][3]) rawFreqMod          += src; 
+                if (matrixStates[col][4]) rawWFMod            += src; 
+                if (matrixStates[col][5]) rawModLPG1         += src;
+                if (matrixStates[col][6]) rawModLPG2         += src;
+            } else if (col == 1) { // ENV GEN CV
+                if (matrixStates[col][0]) rawPulsarPeriodMod += src;
+                if (matrixStates[col][1]) rawModOscFreqMod   += src; 
+                if (matrixStates[col][2]) rawModOscModMod    += src; 
+                if (matrixStates[col][3]) rawFreqMod          += src; 
+                if (matrixStates[col][4]) rawWFMod            += src; 
+                if (matrixStates[col][5]) rawModLPG1         += src;
+                if (matrixStates[col][6]) rawModLPG2         += src;
+            } else if (col == 2) { // PULSER CV // SCALED 
                 if (matrixStates[col][0]) rawPulsarPeriodMod += src * 100.0f;
                 if (matrixStates[col][1]) rawModOscFreqMod   += src * 200.0f; 
                 if (matrixStates[col][2]) rawModOscModMod    += src * 100.0f; 
@@ -836,8 +879,7 @@ void AudioCallback(float** in, float** out, size_t size) {
                 if (matrixStates[col][4]) rawWFMod            += src * 100.0f; 
                 if (matrixStates[col][5]) rawModLPG1         += src * 400.0f;
                 if (matrixStates[col][6]) rawModLPG2         += src * 400.0f;
-            } else {
-                // Default scaling for Seq, Env, and Random
+            } else { // RANDOM VOLTAGE
                 if (matrixStates[col][0]) rawPulsarPeriodMod += src;
                 if (matrixStates[col][1]) rawModOscFreqMod   += src;
                 if (matrixStates[col][2]) rawModOscModMod    += src;
@@ -1009,6 +1051,10 @@ void loop() {
                 break;
         }
     }
+  
+  // Wait 200 microseconds for the MUX selector pins to settle 
+  // and the ADC internal capacitor to drain
+  delayMicroseconds(200);
 
   // READ BUTTON MATRICES
   if (millis() - lastMatrixRead > MATRIX_READ_INTERVAL) {
@@ -1144,26 +1190,21 @@ float midiNoteToFactor(int note) {
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
-    // Calculate relative octave distance from C4
-    float factor = powf(2.0f, (note - 60.0f) / 12.0f);
-    
-    complexOscMidiFreq = factor;
-    modulationOscMidiFreq = factor;
-    
-    // TRIGGER ENV
-    env.Retrigger(false);
+    if (velocity > 0) {
+        // Set the flag for the sequencer to advance one step
+        midiTriggerPending = true;
 
-    // PULSAR TRIGGER
-    if (currentPulsarMode == PULSAR_MODE_MIDI) {
-        pulsar.Retrigger(false);
-    }
+        // Trigger the Pulser if it is in MIDI mode
+        if (currentPulsarMode == PULSAR_MODE_MIDI) {
+            pulsar.Retrigger(false);
+        }
 
-    // RANDOM VOLTAGE
-    // Trigger Random if in MIDI mode
-    if (currentRandomMode == RANDOM_MODE_MIDI) {
-        currentRandomValue = (float)rand() / (float)RAND_MAX;
+        // Calculate relative octave distance from C4
+        float factor = powf(2.0f, (note - 60.0f) / 12.0f);
+        
+        complexOscMidiFreq = factor;
+        modulationOscMidiFreq = factor;
     }
-    
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {

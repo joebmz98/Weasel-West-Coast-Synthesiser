@@ -500,7 +500,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "gbrs/WEASEL_allBoards_gbrs/",
+      "plot": "gbrs/WEASEL_mainBoard_gbrs/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
