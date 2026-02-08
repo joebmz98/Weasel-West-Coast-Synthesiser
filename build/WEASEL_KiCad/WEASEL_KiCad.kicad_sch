@@ -3648,6 +3648,12 @@
 		(uuid "1173d455-1961-4c6a-90fd-68d048acd2bf")
 	)
 	(junction
+		(at 208.28 87.63)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1289fcca-09bb-453a-a168-e8110841d3fa")
+	)
+	(junction
 		(at 205.74 270.51)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5439,6 +5445,16 @@
 	)
 	(wire
 		(pts
+			(xy 205.74 87.63) (xy 208.28 87.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "40ba24c8-8b94-4cac-a8f8-3b461b057c8e")
+	)
+	(wire
+		(pts
 			(xy 568.96 172.72) (xy 568.96 198.12)
 		)
 		(stroke
@@ -5826,6 +5842,16 @@
 			(type default)
 		)
 		(uuid "58e073c0-cc24-4c80-888a-c43b29c9d52b")
+	)
+	(wire
+		(pts
+			(xy 205.74 76.2) (xy 203.2 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5928aa84-de12-43a1-8ad9-24a06126c6d7")
 	)
 	(wire
 		(pts
@@ -7639,6 +7665,16 @@
 	)
 	(wire
 		(pts
+			(xy 205.74 78.74) (xy 205.74 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b32c3b76-9f7e-4274-aeee-c907d7985ae9")
+	)
+	(wire
+		(pts
 			(xy 238.76 207.01) (xy 238.76 209.55)
 		)
 		(stroke
@@ -8876,6 +8912,16 @@
 			(type default)
 		)
 		(uuid "f53a2450-159b-4f8a-a195-6da3620ada76")
+	)
+	(wire
+		(pts
+			(xy 205.74 86.36) (xy 205.74 87.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f555967b-bfa1-432e-8454-18d5c4dba48e")
 	)
 	(wire
 		(pts
@@ -17863,6 +17909,75 @@
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
 					(reference "RV4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 205.74 82.55 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9b0b8662-7c2c-4120-a2e7-6d372ddacfeb")
+		(property "Reference" "R3"
+			(at 208.28 81.2799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4k7"
+			(at 208.28 83.8199 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "PCM_4ms_Resistor:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal"
+			(at 203.962 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 205.74 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 205.74 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5ae61dda-105c-453f-9acf-27fa6682b65e")
+		)
+		(pin "2"
+			(uuid "646e048a-4c97-4d77-b962-f64762c53984")
+		)
+		(instances
+			(project "WEASEL_KiCad"
+				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
+					(reference "R3")
 					(unit 1)
 				)
 			)
