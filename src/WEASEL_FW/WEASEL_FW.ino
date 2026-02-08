@@ -42,22 +42,21 @@
 #include "DaisyDuino.h"
 
 // EXTRA INCLUSIONS
-#include <MIDI.h>                  // MIDI
-#include "wavefolder.h"            // EXTRACTED FROM DAISYSP
-#include <ResponsiveAnalogRead.h>  // SMOOTHER POTS
+#include <MIDI.h>        // MIDI
+#include "wavefolder.h"  // EXTRACTED FROM DAISYSP
 
 // MUX PINS - FIRST MUX
-#define MUX1_S0 0
-#define MUX1_S1 1
-#define MUX1_S2 2
-#define MUX1_S3 3
+#define MUX1_S0 D0
+#define MUX1_S1 D1
+#define MUX1_S2 D2
+#define MUX1_S3 D3
 #define MUX1_SIG A0  // MUX signal pin
 
 // MUX PINS - SECOND MUX
-#define MUX2_S0 4
-#define MUX2_S1 5
-#define MUX2_S2 6
-#define MUX2_S3 7
+#define MUX2_S0 D4
+#define MUX2_S1 D5
+#define MUX2_S2 D6
+#define MUX2_S3 D7
 #define MUX2_SIG A1  // Second MUX signal pin
 
 // NEW 4x7 BUTTON MATRIX PINS
@@ -105,14 +104,13 @@ unsigned long lastMatrix2Read = 0;
 
 // POT VARIABLES
 const int NUM_POTS_PER_MUX = 16;
-const int TOTAL_POTS = 27;  // 2 muxes * 16 channels each
+const int TOTAL_POTS = 32;  // 2 muxes * 16 channels each
 int potValues[TOTAL_POTS] = { 0 };
 int lastPotValues[TOTAL_POTS] = { 0 };
 unsigned long lastPotRead = 0;
-const unsigned long POT_READ_INTERVAL = 0;  // Read pots every Xms
+const unsigned long POT_READ_INTERVAL = 1;  // Read pots every Xms
 String potNames[TOTAL_POTS];                // Array to store pot names
 const int POT_THRESHOLD = 50;               //
-ResponsiveAnalogRead filteredPots[27];      // Create 27 filter objects
 
 
 // DAISY DUINO OBJECTS
@@ -184,6 +182,7 @@ LpgMode modOscLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
 float attackTime = 0.0f;
 float releaseTime = 0.0f;
 float sustainDuration = 0.0f;
+uint32_t gateRemainingSamples = 0;
 
 // PULSAR ENV
 enum PulsarMode { PULSAR_MODE_SEQ,
@@ -306,7 +305,7 @@ void initPotentiometers() {
   }
 
   // Read initial pot values
-  readPotentiometers();
+  //readPotentiometers();
   // Copy to last values to avoid initial spurious changes
   for (int i = 0; i < TOTAL_POTS; i++) {
     lastPotValues[i] = potValues[i];
@@ -317,27 +316,16 @@ void initPotentiometers() {
 // APPLIES RESPONSIVE ANALOG READ LIBRARY TO READINGS
 void readPotentiometers() {
   for (int i = 0; i < TOTAL_POTS; i++) {
-    int rawValue;
-
     if (i < NUM_POTS_PER_MUX) {
-      // Read from MUX1
       selectMuxChannel(i, MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3);
-      delayMicroseconds(10);  // Slightly increased for 16-bit stability
-      rawValue = analogRead(MUX1_SIG);
+      delayMicroseconds(100);  // Use the stable delay from your test
+      potValues[i] = analogRead(MUX1_SIG);
     } else {
-      // Read from MUX2 (channels 16-31)
       int mux2Channel = i - NUM_POTS_PER_MUX;
       selectMuxChannel(mux2Channel, MUX2_S0, MUX2_S1, MUX2_S2, MUX2_S3);
-      delayMicroseconds(10);  // Slightly increased for 16-bit stability
-      rawValue = analogRead(MUX2_SIG);
+      delayMicroseconds(100);
+      potValues[i] = analogRead(MUX2_SIG);
     }
-
-    // Pass the raw ADC value into the filter
-    filteredPots[i].update(rawValue);
-    
-    // Store the clean, filtered value into your potValues array
-    potValues[i] = filteredPots[i].getValue();
-
   }
 }
 
@@ -609,10 +597,10 @@ void printButtonChanges() {
               Serial.print(F("TRI"));
               modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
             } else if (modWaveformIndex == 2) {
-              Serial.print(F("SAW"));  
+              Serial.print(F("SAW"));
               modulationOsc.SetWaveform(modulationOsc.WAVE_SAW);
             } else if (modWaveformIndex == 3) {
-              Serial.print(F("SQUARE"));  
+              Serial.print(F("SQUARE"));
               modulationOsc.SetWaveform(modulationOsc.WAVE_SQUARE);
             }
           }
@@ -702,7 +690,15 @@ void AudioCallback(float** in, float** out, size_t size) {
       seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps;
       if (seqStepEnabled[seqCurrentStep]) {
         activeSeqCV = seqStepCV[seqCurrentStep];
-        env.Retrigger(false);
+
+        // Start the sustain duration countdown based on Pot 6
+        gateRemainingSamples = (uint32_t)(sustainDuration * sampleRate);
+
+        // Retrigger the envelope internal state
+        //env.Retrigger(false);
+      } else {
+        // If step is disabled, ensure gate is closed
+        gateRemainingSamples = 0;
       }
     }
 
@@ -737,11 +733,15 @@ void AudioCallback(float** in, float** out, size_t size) {
     }
 
     // --- 4. ENVELOPE GENERATION ---
-    uint32_t gateSamples = (uint32_t)(sustainDuration * sampleRate);
-    bool gate = (seqSampleCounter < gateSamples) && seqStepEnabled[seqCurrentStep];
+    bool gate = false;
+    if (gateRemainingSamples > 0) {
+      gate = true;
+      gateRemainingSamples--;  // Decrease until the sustain duration expires
+    }
+
+    // Process the ADSR: Attack -> Sustain (High) -> Release (Low)
     float envSig = env.Process(gate);
 
-    // FIX: Pass pulsarTrigger as the gate to the Process function
     float pulsarEnvSig = pulsar.Process(pulsarTrigger);
 
     // --- 5. VIRTUAL PATCH BAY SUMMING (A0-A6) ---
@@ -760,7 +760,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       else if (col == 2) src = pulsarEnvSig;
       else if (col == 3) src = currentRandomValue;
 
-      if (col == 0) {  // SEQUENCER CV
+      if (col == 0) {
         if (matrixStates[col][0]) rawPulsarPeriodMod += src;
         if (matrixStates[col][1]) rawModOscFreqMod += src;
         if (matrixStates[col][2]) rawModOscModMod += src;
@@ -768,7 +768,7 @@ void AudioCallback(float** in, float** out, size_t size) {
         if (matrixStates[col][4]) rawWFMod += src;
         if (matrixStates[col][5]) rawModLPG1 += src;
         if (matrixStates[col][6]) rawModLPG2 += src;
-      } else if (col == 1) {  // ENV GEN CV
+      } else if (col == 1) {
         if (matrixStates[col][0]) rawPulsarPeriodMod += src;
         if (matrixStates[col][1]) rawModOscFreqMod += src;
         if (matrixStates[col][2]) rawModOscModMod += src;
@@ -776,7 +776,7 @@ void AudioCallback(float** in, float** out, size_t size) {
         if (matrixStates[col][4]) rawWFMod += src;
         if (matrixStates[col][5]) rawModLPG1 += src;
         if (matrixStates[col][6]) rawModLPG2 += src;
-      } else if (col == 2) {  // PULSER CV // SCALED
+      } else if (col == 2) {
         if (matrixStates[col][0]) rawPulsarPeriodMod += src * 100.0f;
         if (matrixStates[col][1]) rawModOscFreqMod += src * 200.0f;
         if (matrixStates[col][2]) rawModOscModMod += src * 100.0f;
@@ -784,7 +784,7 @@ void AudioCallback(float** in, float** out, size_t size) {
         if (matrixStates[col][4]) rawWFMod += src * 100.0f;
         if (matrixStates[col][5]) rawModLPG1 += src * 200.0f;
         if (matrixStates[col][6]) rawModLPG2 += src * 200.0f;
-      } else {  // RANDOM VOLTAGE
+      } else {
         if (matrixStates[col][0]) rawPulsarPeriodMod += src;
         if (matrixStates[col][1]) rawModOscFreqMod += src;
         if (matrixStates[col][2]) rawModOscModMod += src;
@@ -869,20 +869,13 @@ void setup() {
   initButtonMatrix2();
 
   // INIT POTS
+  analogReadResolution(16);  // 16-BIT ADC
   initPotentiometers();
-  // RESPONSIVE ANALOG READ POTS
-  for (int i = 0; i < 27; i++) {
-    filteredPots[i] = ResponsiveAnalogRead(0, true);  // (dummy pin, sleep enabled)
-    filteredPots[i].setAnalogResolution(65535);       // Match your 16-bit ADC
-    filteredPots[i].setSnapMultiplier(0.001); // SMOOTHING AMOUNT
-  }
 
   Serial.println("Potentiometer Configuration:");
   Serial.println("MUX1: Channels 0-15 connected to A0");
   Serial.println("MUX2: Channels 0-15 connected to A1");
-  Serial.println("Threshold for reporting changes: ±10 units");
-  Serial.println();
-  Serial.println("Turn pots or press buttons to see changes...");
+  Serial.println("Threshold for reporting changes: ±50 units");
   Serial.println("==============================================");
 
   // DAISY SEED INIT AT 48kHz
@@ -944,8 +937,6 @@ void setup() {
 
 void loop() {
 
-  analogReadResolution(16);  // 16-BIT ADC
-
   // MIDI PROCESSING
   if (MIDI.read()) {
     switch (MIDI.getType()) {
@@ -964,21 +955,18 @@ void loop() {
   // READ BUTTON MATRICES
   if (millis() - lastMatrixRead > MATRIX_READ_INTERVAL) {
     readButtonMatrix();
-    readButtonMatrix2();  // Read both matrices
-    printButtonChanges();
+    readButtonMatrix2();
+    printButtonChanges();  // DELETE COMMENT MARKS FOR DEBUG
     lastMatrixRead = millis();
   }
 
   // READ POTENTIOMETERS
-  readPotentiometers();
-  updateParameters();  // UPDATE PARAMS
-
-  /* Previous pot handling
   if (millis() - lastPotRead > POT_READ_INTERVAL) {
-
-    //printPotentiometerChanges(); // DELETE COMMENT MARKS FOR DEBUG
+    readPotentiometers();
+    updateParameters();  // UPDATE PARAMS
+    //printPotentiometerChanges();  // DELETE COMMENT MARKS FOR DEBUG
     lastPotRead = millis();
-  }*/
+  }
 }
 
 // UPDATE PARAMETERS
@@ -1043,14 +1031,15 @@ void updateParameters() {
   attackTime = minTime * pow(timeRatio, attackPot);
   env.SetAttackTime(attackTime);
 
+  // Sustain Duration (Logarithmic)
+  float sustainDurationPot = potValues[6] / 65535.0f;
+  sustainDuration = minTime * pow(timeRatio, sustainDurationPot);
+
   // Release Time (Logarithmic)
   float releasePot = potValues[7] / 65535.0f;
   releaseTime = minTime * pow(timeRatio, releasePot);
   env.SetReleaseTime(releaseTime);
 
-  // Sustain Duration (Logarithmic)
-  float sustainDurationPot = potValues[6] / 65535.0f;
-  sustainDuration = minTime * pow(timeRatio, sustainDurationPot);
 
   // Fixed ADSR settings to behave as a gated ASR
   env.SetDecayTime(0.0f);
@@ -1113,5 +1102,4 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
-  // Optional: Reset factor to 1.0 or leave at last note played
 }
