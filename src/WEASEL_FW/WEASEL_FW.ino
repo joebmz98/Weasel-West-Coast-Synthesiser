@@ -224,9 +224,10 @@ enum SeqTriggerMode { SEQ_TRIGGER_CLOCK,
                       SEQ_TRIGGER_MIDI };
 SeqTriggerMode currentSeqTriggerMode = SEQ_TRIGGER_CLOCK;  // Default Mode
 bool midiTriggerPending = false;                           // Flag to catch MIDI notes for the sequencer
+int currentMidiNote = 60;                                  // Default to Middle C when no midi is detected
 
 
-// MUX INIT 
+// MUX INIT
 void selectMuxChannel(int channel, int s0, int s1, int s2, int s3) {
   digitalWrite(s0, bitRead(channel, 0));
   digitalWrite(s1, bitRead(channel, 1));
@@ -684,7 +685,6 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentSeqTriggerMode == SEQ_TRIGGER_MIDI) {
       if (midiTriggerPending) {
         seqStepTriggered = true;
-        midiTriggerPending = false;
       }
     }
 
@@ -692,14 +692,8 @@ void AudioCallback(float** in, float** out, size_t size) {
       seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps;
       if (seqStepEnabled[seqCurrentStep]) {
         activeSeqCV = seqStepCV[seqCurrentStep];
-
-        // Start the sustain duration countdown based on Pot 6
         gateRemainingSamples = (uint32_t)(sustainDuration * sampleRate);
-
-        // Retrigger the envelope internal state
-        //env.Retrigger(false);
       } else {
-        // If step is disabled, ensure gate is closed
         gateRemainingSamples = 0;
       }
     }
@@ -710,6 +704,10 @@ void AudioCallback(float** in, float** out, size_t size) {
       pulsarTrigger = seqStepTriggered;
     } else if (currentPulsarMode == PULSAR_MODE_OSC) {
       if (!pulsar.IsRunning()) {
+        pulsarTrigger = true;
+      }
+    } else if (currentPulsarMode == PULSAR_MODE_MIDI) {
+      if (midiTriggerPending) {
         pulsarTrigger = true;
       }
     }
@@ -729,7 +727,12 @@ void AudioCallback(float** in, float** out, size_t size) {
       randomTrigger = seqStepTriggered;
     } else if (currentRandomMode == RANDOM_MODE_PULSAR) {
       randomTrigger = pulsarTrigger;
+    } else if (currentRandomMode == RANDOM_MODE_MIDI) {
+      if (midiTriggerPending) {
+        randomTrigger = true;
+      }
     }
+    
     if (randomTrigger) {
       currentRandomValue = (float)rand() / (float)RAND_MAX;
     }
@@ -738,15 +741,13 @@ void AudioCallback(float** in, float** out, size_t size) {
     bool gate = false;
     if (gateRemainingSamples > 0) {
       gate = true;
-      gateRemainingSamples--;  // Decrease until the sustain duration expires
+      gateRemainingSamples--;
     }
 
-    // Process the ADSR: Attack -> Sustain (High) -> Release (Low)
     float envSig = env.Process(gate);
-
     float pulsarEnvSig = pulsar.Process(pulsarTrigger);
 
-    // --- 5. VIRTUAL PATCH BAY SUMMING (A0-A6) ---
+    // --- 5. VIRTUAL PATCH BAY SUMMING ---
     float rawPulsarPeriodMod = 0.0f;
     float rawModOscFreqMod = 0.0f;
     float rawModOscModMod = 0.0f;
@@ -806,12 +807,21 @@ void AudioCallback(float** in, float** out, size_t size) {
     vcaComplexOsc = rawModLPG1 * foldedLpgModAmount;
     vcaModulationOsc = rawModLPG2 * modOscLpgModAmount;
 
-    // --- 7. OSCILLATORS ---
-    float modMidiFactor = modulationMidiEnabled ? modulationOscMidiFreq : 1.0f;
-    float compMidiFactor = complexOscMidiEnabled ? complexOscMidiFreq : 1.0f;
-
-    float modPanelFreq = modulationOscFreq * powf(2.0f, (modulationFreqCoeff * 5.0f) + modulationFine);
-    modulationOsc.SetFreq(modPanelFreq * modMidiFactor);
+    // --- 7. OSCILLATORS (Corrected Quantization Logic) ---
+    
+    // MODULATION OSCILLATOR
+    float modFinalFreq;
+    if (modulationMidiEnabled) {
+      // Pot 27 = MUX2 CH11 (Modulation Frequency)
+      // Map to Notes 24-96 (6 Octaves)
+      float rawNote = 24.0f + (potValues[27] / 65535.0f) * 72.0f;
+      int quantizedNote = (int)(rawNote + 0.5f);
+      // Still apply Fine tune and Patch Bay modulation on top of the quantized note
+      modFinalFreq = mtof(quantizedNote) * powf(2.0f, (modulationFreqCoeff * 5.0f) + modulationFine);
+    } else {
+      modFinalFreq = modulationOscFreq * powf(2.0f, (modulationFreqCoeff * 5.0f) + modulationFine);
+    }
+    modulationOsc.SetFreq(modFinalFreq);
     float modOscSig = modulationOsc.Process();
 
     float totalModDepth = fminf(fmaxf(modulationOscMod + (modulationOscModCoeff * 2.0f), 0.0f), 2.0f);
@@ -819,9 +829,20 @@ void AudioCallback(float** in, float** out, size_t size) {
     float fmSignal = 0.0f;
     if (!useAmplitudeMod) fmSignal = modOscSig * totalModDepth;
 
-    float compPanelFreq = complexOscFreq * powf(2.0f, (complexOscFreqCoeff + fmSignal) * 5.0f + complexOscFine);
-    complexOsc.SetFreq(compPanelFreq * compMidiFactor);
-    complexOscMorph.SetFreq(compPanelFreq * compMidiFactor);
+    // COMPLEX OSCILLATOR
+    float compFinalFreq;
+    if (complexOscMidiEnabled) {
+      // Pot 16 = MUX2 CH0 (Complex Frequency)
+      float rawNote = 24.0f + (potValues[16] / 65535.0f) * 72.0f;
+      int quantizedNote = (int)(rawNote + 0.5f);
+      // Still apply FM signal and Patch Bay modulation on top of the quantized note
+      compFinalFreq = mtof(quantizedNote) * powf(2.0f, (complexOscFreqCoeff + fmSignal) * 5.0f + complexOscFine);
+    } else {
+      compFinalFreq = complexOscFreq * powf(2.0f, (complexOscFreqCoeff + fmSignal) * 5.0f + complexOscFine);
+    }
+    
+    complexOsc.SetFreq(compFinalFreq);
+    complexOscMorph.SetFreq(compFinalFreq);
 
     float mixedSig = (complexOsc.Process() * (1.0f - complexOscMorphMix)) + (complexOscMorph.Process() * complexOscMorphMix);
     if (complexOscInverted) mixedSig *= -1.0f;
@@ -849,6 +870,8 @@ void AudioCallback(float** in, float** out, size_t size) {
       }
       finalMix += processedSig;
     }
+
+    midiTriggerPending = false;
 
     // --- 10. REVERB & OUTPUT ---
     float revL, revR;
@@ -933,44 +956,52 @@ void setup() {
   Serial1.begin(31250);  // Standard MIDI baud rate
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.turnThruOff();  // Disable MIDI thru to reduce load
+  currentMidiNote = 60;
+  midiTriggerPending = false;
   Serial.println("=============================================");
   Serial.println("MIDI initialized with pin 30 (Digital pin 30)");
   Serial.println("=============================================");
 }
- 
+
 // LOOP
 void loop() {
 
   // MIDI PROCESSING
-  if (MIDI.read()) {
-    switch (MIDI.getType()) {
-      case midi::NoteOn:
-        // Only update if we're not receiving a 'Note On' with 0 velocity (which some controllers use as Note Off)
-        if (MIDI.getData2() > 0) {
-          complexOscMidiFreq = mtof(MIDI.getData1());     // Use the built-in Daisy mtof (midi to freq) function
-          modulationOscMidiFreq = mtof(MIDI.getData1());  // Use the built-in Daisy mtof (midi to freq) function
-        }
-        break;
-      default:
-        break;
+  while (MIDI.read()) {
+    uint8_t type = MIDI.getType();
+    if (type == midi::NoteOn && MIDI.getData2() > 0) {
+      int incomingNote = MIDI.getData1();
+      currentMidiNote = incomingNote;  // Store for the frequency math
+
+      // Global flag to trigger events across the synth
+      midiTriggerPending = true;
     }
   }
 
   // READ BUTTON MATRICES
+  //readButtonMatrix();
+  //readButtonMatrix2();
+  //printButtonChanges();  // DELETE COMMENT MARKS FOR DEBUG
+  ///*  
   if (millis() - lastMatrixRead > MATRIX_READ_INTERVAL) {
     readButtonMatrix();
     readButtonMatrix2();
     printButtonChanges();  // DELETE COMMENT MARKS FOR DEBUG
     lastMatrixRead = millis();
   }
+  //*/
 
   // READ POTENTIOMETERS
+  //readPotentiometers();
+  //updateParameters();  // UPDATE PARAMS
+  ///*  
   if (millis() - lastPotRead > POT_READ_INTERVAL) {
     readPotentiometers();
     updateParameters();  // UPDATE PARAMS
     //printPotentiometerChanges();  // DELETE COMMENT MARKS FOR DEBUG
     lastPotRead = millis();
   }
+  //*/
 }
 
 // UPDATE PARAMETERS
