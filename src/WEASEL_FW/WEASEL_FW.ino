@@ -81,7 +81,7 @@
 #define MATRIX2_ROW1 9   // Y1
 #define MATRIX2_ROW2 10  // Y2
 #define MATRIX2_ROW3 11  // Y3
-#define MATRIX2_ROW4 14  // Y4
+#define MATRIX2_ROW4 30  // Y4
 
 // BUTTON MATRIX 1 VARIABLES
 bool matrixStates[4][7] = { { false } };
@@ -205,7 +205,7 @@ float currentRandomValue = 0.0f;
 float reverbMix;  // REVERB MIX COEFF
 
 // MIDI
-#define MIDI_RX_PIN 30  // USART1 Rx (Digital pin 30)
+#define MIDI_RX_PIN 14  // USART1 Rx (Digital pin 30)
   // MIDI OBJECT
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 
@@ -226,7 +226,7 @@ SeqTriggerMode currentSeqTriggerMode = SEQ_TRIGGER_CLOCK;  // Default Mode
 bool midiTriggerPending = false;                           // Flag to catch MIDI notes for the sequencer
 
 
-// MUX control function
+// MUX INIT 
 void selectMuxChannel(int channel, int s0, int s1, int s2, int s3) {
   digitalWrite(s0, bitRead(channel, 0));
   digitalWrite(s1, bitRead(channel, 1));
@@ -234,7 +234,7 @@ void selectMuxChannel(int channel, int s0, int s1, int s2, int s3) {
   digitalWrite(s3, bitRead(channel, 3));
 }
 
-// Initialize potentiometer monitoring
+// INIT POTS
 void initPotentiometers() {
   // Initialize MUX control pins as outputs
   pinMode(MUX1_S0, OUTPUT);
@@ -313,7 +313,6 @@ void initPotentiometers() {
 }
 
 // READ ALL POTS
-// APPLIES RESPONSIVE ANALOG READ LIBRARY TO READINGS
 void readPotentiometers() {
   for (int i = 0; i < TOTAL_POTS; i++) {
     if (i < NUM_POTS_PER_MUX) {
@@ -329,7 +328,8 @@ void readPotentiometers() {
   }
 }
 
-// Check for potentiometer changes and print them
+// POT CHANGES
+// SERIAL PRINT
 /*
 void printPotentiometerChanges() {
   bool anyPotChange = false;
@@ -377,7 +377,9 @@ void printPotentiometerChanges() {
   }
 }
 */
-// Button matrix initialization
+
+// INIT BUTTON MATRICES
+// MATRIX 1
 void initButtonMatrix() {
   // Initialize column pins as outputs
   pinMode(MATRIX_COL0, OUTPUT);
@@ -400,7 +402,7 @@ void initButtonMatrix() {
   digitalWrite(MATRIX_COL2, LOW);
   digitalWrite(MATRIX_COL3, LOW);
 }
-
+// MATRIX 2
 void initButtonMatrix2() {
   // Initialize column pins as outputs
   pinMode(MATRIX2_COL0, OUTPUT);
@@ -421,8 +423,8 @@ void initButtonMatrix2() {
   digitalWrite(MATRIX2_COL2, LOW);
   digitalWrite(MATRIX2_COL3, LOW);
 }
-
-// Read button matrices
+// READ BUTTON MATRICES
+// MATRIX 1
 void readButtonMatrix() {
   for (int col = 0; col < 4; col++) {
     // Activate current column
@@ -477,7 +479,7 @@ void readButtonMatrix() {
   digitalWrite(MATRIX_COL2, LOW);
   digitalWrite(MATRIX_COL3, LOW);
 }
-
+// MATRIX 2
 void readButtonMatrix2() {
   int colPins[] = { MATRIX2_COL0, MATRIX2_COL1, MATRIX2_COL2, MATRIX2_COL3 };
   int rowPins[] = { MATRIX2_ROW0, MATRIX2_ROW1, MATRIX2_ROW2, MATRIX2_ROW3, MATRIX2_ROW4 };
@@ -501,8 +503,8 @@ void readButtonMatrix2() {
     pinMode(colPins[col], INPUT);
   }
 }
-
-// Print button changes with detailed coordinate information
+// PRINT BUTTON PRESSES
+// SERIAL PRINT
 void printButtonChanges() {
   bool anyChange = false;
 
@@ -856,6 +858,7 @@ void AudioCallback(float** in, float** out, size_t size) {
   }
 }
 
+// SETUP
 void setup() {
   Serial.begin(115200);
   delay(1000);  // Wait for serial to initialize
@@ -925,7 +928,7 @@ void setup() {
   reverb.SetLpFreq(18000.0f);
 
   // MIDI INIT
-  // Configure Serial1 to use pin 30 for RX
+  // Configure Serial1 to use pin D14 for RX
   Serial1.setRx(MIDI_RX_PIN);
   Serial1.begin(31250);  // Standard MIDI baud rate
   MIDI.begin(MIDI_CHANNEL_OMNI);
@@ -934,7 +937,8 @@ void setup() {
   Serial.println("MIDI initialized with pin 30 (Digital pin 30)");
   Serial.println("=============================================");
 }
-
+ 
+// LOOP
 void loop() {
 
   // MIDI PROCESSING
@@ -1073,14 +1077,6 @@ void updateParameters() {
 
   // REVERB
   reverbMix = potValues[26] / 65535.0f;  // REVERB MIX CONTROL
-}
-
-// MIDI HANDLING
-// 60 is C4 (Middle C)
-// We calculate how many octaves the incoming note is from C4
-// Factor = 2 ^ ((Note - 60) / 12)
-float midiNoteToFactor(int note) {
-  return powf(2.0f, (note - 60.0f) / 12.0f);
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
