@@ -42,9 +42,14 @@
 #include "DaisyDuino.h"
 
 // EXTRA INCLUSIONS
-#include <MIDI.h>        // MIDI
-#include "wavefolder.h"  // EXTRACTED FROM DAISYSP
+#include <MIDI.h>          // MIDI
+#include <CpuLoadMeter.h>  // CPU LOAD METER
+#include "wavefolder.h"    // EXTRACTED FROM DAISYSP
 #include <math.h>
+
+// DEBUG
+//unsigned long lastCpuPrint = 0;
+//CpuLoadMeter cpuMeter;
 
 // -- MUX PINS - FIRST MUX
 #define MUX1_S0 D0
@@ -194,6 +199,7 @@ float pulsarReleaseTime = 0.02f;
 float pulsarEnvSig = 0.0f;
 bool lastPulsarEnvActive = false;
 float pulsarPeriodModCoeff = 0.0f;
+bool pulsarGate = false;
 
 // -- SAMPLE&HOLD / RANDOM VOLTAGE --
 enum RandomMode { RANDOM_MODE_SEQ,
@@ -226,6 +232,8 @@ enum SeqTriggerMode { SEQ_TRIGGER_CLOCK,
 SeqTriggerMode currentSeqTriggerMode = SEQ_TRIGGER_CLOCK;  // Default Mode
 bool midiTriggerPending = false;                           // Flag to catch MIDI notes for the sequencer
 int currentMidiNote = 60;                                  // Default to Middle C when no midi is detected
+uint8_t midiTriggerCounter = 0;
+const uint8_t MIDI_TRIGGER_HOLDOFF = 10;  // Adjust as needed (5-20 is good)
 
 // -- OPTIMIZATION VARIABLES --
 float rawModulationValues[7] = { 0 };  // Pre-calculated modulation values
@@ -690,8 +698,13 @@ void printButtonChanges() {
     Serial.println();
   }
 }
+
 // -- AUDIO PROCESSING --
 void AudioCallback(float** in, float** out, size_t size) {
+
+  // -- CPU --
+  //cpuMeter.OnBlockStart();
+
   float sampleRate = DAISY.get_samplerate();
 
   // Update samples per tick less frequently to save CPU
@@ -722,6 +735,10 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentSeqTriggerMode == SEQ_TRIGGER_MIDI) {
       if (midiTriggerPending) {
         seqStepTriggered = true;
+        // Decrement counter and clear flag when done
+        if (--midiTriggerCounter == 0) {
+          midiTriggerPending = false;
+        }
       }
     }
 
@@ -746,16 +763,19 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentPulsarMode == PULSAR_MODE_MIDI) {
       if (midiTriggerPending) {
         pulsarTrigger = true;
+        // Decrement counter and clear flag when done
+        if (--midiTriggerCounter == 0) {
+          midiTriggerPending = false;
+        }
       }
     }
 
     if (pulsarTrigger) {
-      pulsar.Init(sampleRate);
       pulsar.SetAttackTime(0.02f);
       pulsar.SetDecayTime(0.02f);
-      pulsar.SetSustainLevel(1.0f);
+      pulsar.SetSustainLevel(0.0f);
       pulsar.SetReleaseTime(pulsarReleaseTime);
-      pulsar.Retrigger(false);
+      pulsar.Retrigger(true);
     }
 
     // --- 3. RANDOM TRIGGER LOGIC ---
@@ -921,8 +941,6 @@ void AudioCallback(float** in, float** out, size_t size) {
     // --- 10. OUTPUT ANALOGUE FILTER ---
     finalMix = outputFilter.Process(finalMix);
 
-    midiTriggerPending = false;
-
     // --- 11. REVERB & OUTPUT ---
     float revL, revR;
     reverb.Process(finalMix, finalMix, &revL, &revR);
@@ -931,6 +949,10 @@ void AudioCallback(float** in, float** out, size_t size) {
     out[0][i] = (finalMix * dryWet + revL * reverbMix) * 0.4f;
     out[1][i] = (finalMix * dryWet + revR * reverbMix) * 0.4f;
   }
+
+  // -- CPU -- 
+  //cpuMeter.OnBlockEnd();
+
 }
 
 // -- SETUP --
@@ -956,11 +978,15 @@ void setup() {
   Serial.println("Threshold for reporting changes: ±50 units");
   Serial.println("==============================================");
 
-  // -- DAISY SEED INIT AT 48kHz --
+    // -- DAISY SEED INIT AT 48kHz --
   float sample_rate;
   hw = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
   sample_rate = DAISY.get_samplerate();
-  DAISY.SetAudioBlockSize(128);
+  int block_size = 128;  // Get the actual block size
+  DAISY.SetAudioBlockSize(block_size);
+
+  // -- CPU DEBUG --
+  //cpuMeter.Init(sample_rate, block_size);
   // -- START AUDIO
   DAISY.begin(AudioCallback);
 
@@ -1004,10 +1030,13 @@ void setup() {
   // Configure Serial1 to use pin D14 for RX
   Serial1.setRx(MIDI_RX_PIN);
   Serial1.begin(31250);  // Standard MIDI baud rate
+  MIDI.setHandleNoteOn(handleNoteOn);
+  MIDI.setHandleNoteOff(handleNoteOff);
   MIDI.begin(MIDI_CHANNEL_OMNI);
-  MIDI.turnThruOff();  // Disable MIDI thru to reduce load
+  MIDI.turnThruOff();
   currentMidiNote = 60;
   midiTriggerPending = false;
+
   Serial.println("=============================================");
   Serial.println("MIDI initialized with pin 30 (Digital pin 30)");
   Serial.println("=============================================");
@@ -1017,15 +1046,13 @@ void setup() {
 void loop() {
 
   // MIDI PROCESSING
-  while (MIDI.read()) {
-    uint8_t type = MIDI.getType();
-    if (type == midi::NoteOn && MIDI.getData2() > 0) {
-      int incomingNote = MIDI.getData1();
-      currentMidiNote = incomingNote;  // Store for the frequency math
+  MIDI.read();  // Call once per loop - the callbacks will handle the events
 
-      // Global flag to trigger events across the synth
-      midiTriggerPending = true;
-    }
+  static bool lastMidiTriggerState = false;
+  if (midiTriggerPending) {
+    lastMidiTriggerState = true;
+  } else {
+    lastMidiTriggerState = false;
   }
 
   // READ BUTTON MATRICES
@@ -1042,6 +1069,22 @@ void loop() {
     updateParameters();  // UPDATE PARAMS
     lastPotRead = millis();
   }
+
+  // CPU & DEBUG PRINTING (Runs every 0.5 seconds)
+  /*
+  if (millis() - lastCpuPrint >= 500) {
+    lastCpuPrint = millis();
+
+    // CPU LOAD REPORTING
+    float avgLoad = cpuMeter.GetAvgCpuLoad();
+    float maxLoad = cpuMeter.GetMaxCpuLoad();
+
+    Serial.print("CPU Load: ");
+    Serial.print(avgLoad * 100.0f);
+    Serial.print("% | Max: ");
+    Serial.print(maxLoad * 100.0f);
+    Serial.println("%");
+  }*/
 }
 
 // -- UPDATE PARAMETERS --
@@ -1137,15 +1180,15 @@ void updateParameters() {
   float pulsarReleasePot = potValues[9] / 65535.0f;
 
   // Logarithmic mapping: 20ms to 5000ms (0.02s to 5.0s)
-  float pulsarMinTime = 0.02f;                           // 20ms - very short decay
-  float pulsarMaxTime = 5.0f;                            // 5000ms - long decay
-  float pulsarTimeRatio = pulsarMaxTime / pulsarMinTime;  
+  float pulsarMinTime = 0.02f;  // 20ms - very short decay
+  float pulsarMaxTime = 5.0f;   // 5000ms - long decay
+  float pulsarTimeRatio = pulsarMaxTime / pulsarMinTime;
 
   // Base release time from pot (logarithmic)
   float basePulsarRelease = pulsarMinTime * powf(pulsarTimeRatio, pulsarReleasePot);
 
   // Subtract modulation (clamped) to ensure time decreases
-  float adjustedPulsarTime = basePulsarRelease - (2.0f*pulsarPeriodModCoeff);  // Scale modulation appropriately
+  float adjustedPulsarTime = basePulsarRelease - (2.0f * pulsarPeriodModCoeff);  // Scale modulation appropriately
   if (adjustedPulsarTime < pulsarMinTime) adjustedPulsarTime = pulsarMinTime;
   if (adjustedPulsarTime > pulsarMaxTime) adjustedPulsarTime = pulsarMaxTime;
 
@@ -1174,21 +1217,14 @@ void updateParameters() {
 // -- MIDI NOTE HANDLING
 void handleNoteOn(byte channel, byte note, byte velocity) {
   if (velocity > 0) {
-    // Set the flag for the sequencer to advance one step
+    currentMidiNote = note;
     midiTriggerPending = true;
-
-    // Trigger the Pulser if it is in MIDI mode
-    if (currentPulsarMode == PULSAR_MODE_MIDI) {
-      pulsar.Retrigger(false);
-    }
-
-    // Calculate relative octave distance from C4
-    float factor = powf(2.0f, (note - 60.0f) / 12.0f);
-
-    complexOscMidiFreq = factor;
-    modulationOscMidiFreq = factor;
+    midiTriggerCounter = MIDI_TRIGGER_HOLDOFF;  // Set holdoff counter
   }
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
+  // You can handle note off if needed
+  // Serial.print("MIDI Note OFF: ");
+  // Serial.println(note);
 }

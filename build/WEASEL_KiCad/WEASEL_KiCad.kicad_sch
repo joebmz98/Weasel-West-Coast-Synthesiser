@@ -509,6 +509,186 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector:Jack-DC"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0 5.334 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Jack-DC"
+				(at 0 -5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 1.27 -1.016 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 1.27 -1.016 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "DC Barrel Jack"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "DC power barrel jack connector"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "BarrelJack*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Jack-DC_0_1"
+				(rectangle
+					(start -5.08 3.81)
+					(end 5.08 -3.81)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy -3.81 -2.54) (xy -2.54 -2.54) (xy -1.27 -1.27) (xy 0 -2.54) (xy 2.54 -2.54) (xy 5.08 -2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -3.302 1.905)
+					(mid -3.9343 2.54)
+					(end -3.302 3.175)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -3.302 1.905)
+					(mid -3.9343 2.54)
+					(end -3.302 3.175)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start 3.683 3.175)
+					(end -3.302 1.905)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 5.08 2.54) (xy 3.81 2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Jack-DC_1_1"
+				(pin passive line
+					(at 7.62 2.54 180)
+					(length 2.54)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 -2.54 180)
+					(length 2.54)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Connector_Audio:AudioJack2_SwitchT"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -3369,6 +3549,18 @@
 		(uuid cad0be6c-8df4-4501-91f9-d03f74c384bd)
 	)
 	(rectangle
+		(start 25.4 35.56)
+		(end 60.96 60.96)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid d8d3860a-c078-44f2-9ae8-72b9f1668ce3)
+	)
+	(rectangle
 		(start 142.24 93.98)
 		(end 173.99 116.84)
 		(stroke
@@ -3467,6 +3659,19 @@
 			)
 		)
 		(uuid "3efe8883-bf83-4f9e-9859-60bd269fe525")
+	)
+	(text "POWER"
+		(exclude_from_sim no)
+		(at 25.908 59.182 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left)
+		)
+		(uuid "63f7f38f-e86b-4ef3-b9ef-68d88b09f1af")
 	)
 	(text "PLSR_PERIODCTRL"
 		(exclude_from_sim no)
@@ -4152,10 +4357,6 @@
 		(uuid "74e3f5fe-f84e-47ba-bda6-ab59022ee913")
 	)
 	(no_connect
-		(at 76.2 66.04)
-		(uuid "81d0a02a-2fd7-46a2-a25f-5315a13184ce")
-	)
-	(no_connect
 		(at 53.34 81.28)
 		(uuid "93f2534c-7ddc-42e2-80c7-7cc9419e761e")
 	)
@@ -4262,6 +4463,16 @@
 			(type default)
 		)
 		(uuid "0473aef0-827d-42de-ae84-cbc0c58ef347")
+	)
+	(wire
+		(pts
+			(xy 74.93 64.77) (xy 76.2 64.77)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "047ca5d6-d5e1-4384-b4e3-332de4872301")
 	)
 	(wire
 		(pts
@@ -5035,6 +5246,16 @@
 	)
 	(wire
 		(pts
+			(xy 46.99 46.99) (xy 46.99 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2ae05211-c637-45fd-81fa-21d7e98de0fa")
+	)
+	(wire
+		(pts
 			(xy 359.41 168.91) (xy 361.95 168.91)
 		)
 		(stroke
@@ -5072,6 +5293,16 @@
 			(type default)
 		)
 		(uuid "2bbe0d89-3504-43c6-a469-21b064921a34")
+	)
+	(wire
+		(pts
+			(xy 43.18 50.8) (xy 50.8 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2dc744b5-5d68-4789-8f3b-ff69e9d9ad61")
 	)
 	(wire
 		(pts
@@ -5582,6 +5813,16 @@
 			(type default)
 		)
 		(uuid "490d8f9f-04c2-4824-88dd-2541133bba36")
+	)
+	(wire
+		(pts
+			(xy 76.2 64.77) (xy 76.2 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "49cc53db-3453-47fb-93af-ab4ec67076bb")
 	)
 	(wire
 		(pts
@@ -7022,6 +7263,16 @@
 			(type default)
 		)
 		(uuid "96b27ae1-d6d9-4214-b7c4-21d42e6afed6")
+	)
+	(wire
+		(pts
+			(xy 46.99 45.72) (xy 43.18 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9712082d-2bcd-4393-af36-85931912f31a")
 	)
 	(wire
 		(pts
@@ -9493,6 +9744,28 @@
 			)
 		)
 	)
+	(global_label "Vin"
+		(shape input)
+		(at 74.93 64.77 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "2a0715d7-3b84-4d6a-9714-5d69aeaf1c4f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 69.1024 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "MUX2_SIGNAL"
 		(shape input)
 		(at 322.58 220.98 180)
@@ -11139,6 +11412,28 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "Vin"
+		(shape input)
+		(at 50.8 50.8 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "da6e8202-e90d-4f36-8501-44c595d7a03c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 56.6276 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -16484,6 +16779,74 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:Jack-DC")
+		(at 35.56 48.26 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "728b04d7-05d8-4f8b-8724-163d5febedc5")
+		(property "Reference" "J22"
+			(at 35.56 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Jack-DC"
+			(at 35.56 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_BarrelJack:BarrelJack_GCT_DCJ200-10-A_Horizontal"
+			(at 36.83 49.276 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 36.83 49.276 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "DC Barrel Jack"
+			(at 35.56 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "196cf824-0607-4796-af7a-5a87c58fa6ec")
+		)
+		(pin "1"
+			(uuid "f18cf924-3ea4-4820-bab9-4e21fab2f9d6")
+		)
+		(instances
+			(project ""
+				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
+					(reference "J22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 160.02 113.03 0)
 		(unit 1)
@@ -20872,6 +21235,72 @@
 			(project "WEASEL_KiCad"
 				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
 					(reference "D5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 46.99 46.99 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f2b855d1-520f-404e-9db7-8b1c0c6aa3e0")
+		(property "Reference" "#PWR01"
+			(at 46.99 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 48.006 47.498 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 46.99 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 46.99 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 46.99 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3b0a256f-4e22-4d4b-9a45-0f1aebe8b0f9")
+		)
+		(instances
+			(project "WEASEL_KiCad"
+				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
+					(reference "#PWR01")
 					(unit 1)
 				)
 			)
