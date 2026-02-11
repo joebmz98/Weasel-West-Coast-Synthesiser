@@ -44,22 +44,23 @@
 // EXTRA INCLUSIONS
 #include <MIDI.h>        // MIDI
 #include "wavefolder.h"  // EXTRACTED FROM DAISYSP
+#include <math.h>
 
-// MUX PINS - FIRST MUX
+// -- MUX PINS - FIRST MUX
 #define MUX1_S0 D0
 #define MUX1_S1 D1
 #define MUX1_S2 D2
 #define MUX1_S3 D3
 #define MUX1_SIG A0  // MUX signal pin
 
-// MUX PINS - SECOND MUX
+// -- MUX PINS - SECOND MUX
 #define MUX2_S0 D4
 #define MUX2_S1 D5
 #define MUX2_S2 D6
 #define MUX2_S3 D7
 #define MUX2_SIG A1  // Second MUX signal pin
 
-// NEW 4x7 BUTTON MATRIX PINS
+// -- 4x7 BUTTON MATRIX PINS // VIRTUAL PATCH BAY
 #define MATRIX_COL0 19  // Column 0 (B0) // SEQUENCER CV OUT
 #define MATRIX_COL1 20  // Column 1 (B1) // EG CV OUT
 #define MATRIX_COL2 21  // Column 2 (B2) // PULSAR CV OUT
@@ -72,7 +73,7 @@
 #define MATRIX_ROW5 28  // Row 5 (A5) // LPG CH1 LEVEL MODULATION
 #define MATRIX_ROW6 29  // Row 6 (A6) // LPG CH2 LEVEL MODULATION
 
-// SECOND BUTTON MATRIX PINS
+// -- SECOND BUTTON MATRIX PINS
 #define MATRIX2_COL0 12  // X0
 #define MATRIX2_COL1 13  // X1
 #define MATRIX2_COL2 17  // X2
@@ -83,7 +84,7 @@
 #define MATRIX2_ROW3 11  // Y3
 #define MATRIX2_ROW4 30  // Y4
 
-// BUTTON MATRIX 1 VARIABLES
+// -- BUTTON MATRIX 1 VARIABLES --
 bool matrixStates[4][7] = { { false } };
 bool lastMatrixStates[4][7] = { { false } };
 unsigned long lastMatrixRead = 0;
@@ -96,13 +97,13 @@ const char* matrix1Functions[4][7] = {
   { "S&H -> Pulsar Decay", "S&H -> ModOsc Pitch", "S&H -> Mod Amount", "S&H -> CompOsc Pitch", "S&H -> WF Mod", "S&H -> LPG1", "S&H -> LPG2" }
 };
 
-// BUTTON MATRIX 2 - SIMPLIFIED without debounce for testing
+// -- BUTTON MATRIX 2 --
 bool matrix2CurrentStates[4][5] = { { false } };
 bool matrix2PreviousStates[4][5] = { { false } };
 bool matrix2DebouncedStates[4][5] = { { false } };
 unsigned long lastMatrix2Read = 0;
 
-// POT VARIABLES
+// -- POT VARIABLES --
 const int NUM_POTS_PER_MUX = 16;
 const int TOTAL_POTS = 32;  // 2 muxes * 16 channels each
 int potValues[TOTAL_POTS] = { 0 };
@@ -113,30 +114,30 @@ String potNames[TOTAL_POTS];                // Array to store pot names
 const int POT_THRESHOLD = 50;               //
 
 
-// DAISY DUINO OBJECTS
+// -- DAISY DUINO OBJECTS --
 DaisyHardware hw;  // DAISY SEED
-// OSCILLATORS
+// -- OSCILLATORS
 Oscillator complexOsc;       // COMPLEX OSCILLATOR
 Oscillator complexOscMorph;  // COMPLEX MORPH OSCILLATOR
 Oscillator modulationOsc;    // COMPLEX OSCILLATOR
-// ENVELOPE GENERATOR
+// -- ENVELOPE GENERATOR
 Adsr env;  // ENV GENERATOR
-// PULSAR GENERATOR
+// -- PULSAR GENERATOR
 Adsr pulsar;  // ENV GENERATOR FOR PULSAR
-// LOW-PASS - LPG
+// -- LOW-PASS - LPG
 MoogLadder lpGateFilter1;  // FILTER FOR LPG CHAN1
 MoogLadder lpGateFilter2;  // FILTER FOR LPG CHAN2
-// OUTPUT ANALOGUE FILTER
+// -- OUTPUT ANALOGUE FILTER
 MoogLadder outputFilter;
-// REVERB
+// -- REVERB
 ReverbSc reverb;  // REVERB
-// WAVEFOLDER
+// -- WAVEFOLDER
 daisysp::Wavefolder waveFolder;
 
 
-// OBJECT VARIABLES
-// OSCILLATORS
-// COMPLEX
+// -- OBJECT VARIABLES --
+// -- OSCILLATORS
+// -- COMPLEX
 float complexOscFreq;                 // CONTROLS FREQUENCY
 float complexOscFine;                 // CONTROLS FINE TUNE
 float complexOscFreqCoeff;            // COEFF FOR FREQUENCY MODULATION USING MATRIX
@@ -151,7 +152,7 @@ float complexOscMorphMix;             // COMPLEX OSC TIMBRE AMOUNT
 int morphWaveformIndex = 0;           // 0 = SAW, 1 = SQUARE, 2 = TRIANGLE
 float complexOscSigLevel = 0.0f;      // LPG CONTROL
 
-// MODULATION
+// -- MODULATION
 float modulationOscFreq = 0.0f;           // CONTROLS FREQUENCY
 float modulationFine = 0.0f;              // CONTROLS FINE TUNE
 float modulationFreqCoeff = 0.0f;         // COEFF FOR FREQUENCY MODULATION USING MATRIX
@@ -165,7 +166,7 @@ float modulationOscMidiFreq = 0.0f;       // FREQUENCY OFFSET FROM MIDI
 int modWaveformIndex = 0;                 // 0: SIN, 1: TRI, 2: SQUARE, 3: SAW
 float modOscSigLevel = 0.0f;              // LPG CONTROL
 
-// LPG
+// -- LPG --
 float vcaComplexOsc;              // AMPLITUDE COEFF FOR COMPLEXOSC
 float vcaModulationOsc;           // AMPLITUDE COEFF FOR MODULATIONOSC
 float lpComplexOsc;               // FREQ COEFF FOR COMPLEXOSC
@@ -178,13 +179,13 @@ enum LpgMode { LPG_MODE_VCA,
 LpgMode foldedLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
 LpgMode modOscLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
 
-// ENVELOPE [BUCHLA ASD/ASR]
+// -- ENVELOPE [BUCHLA ASD/ASR] --
 float attackTime = 0.0f;
 float releaseTime = 0.0f;
 float sustainDuration = 0.0f;
 uint32_t gateRemainingSamples = 0;
 
-// PULSAR ENV
+// -- PULSAR ENV --
 enum PulsarMode { PULSAR_MODE_SEQ,
                   PULSAR_MODE_MIDI,
                   PULSAR_MODE_OSC };
@@ -194,22 +195,22 @@ float pulsarEnvSig = 0.0f;
 bool lastPulsarEnvActive = false;
 float pulsarPeriodModCoeff = 0.0f;
 
-// SAMPLE&HOLD / RANDOM VOLTAGE
+// -- SAMPLE&HOLD / RANDOM VOLTAGE --
 enum RandomMode { RANDOM_MODE_SEQ,
                   RANDOM_MODE_PULSAR,
                   RANDOM_MODE_MIDI };
 RandomMode currentRandomMode = RANDOM_MODE_SEQ;
 float currentRandomValue = 0.0f;
 
-// REVERB
+// -- REVERB --
 float reverbMix;  // REVERB MIX COEFF
 
-// MIDI
+// -- MIDI --
 #define MIDI_RX_PIN 14  // USART1 Rx (Digital pin 30)
   // MIDI OBJECT
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 
-// SEQUENCER
+// -- SEQUENCER --
 int seqCurrentStep = 0;
 bool seqStepEnabled[5] = { true, true, true, true, true };  // All steps ON by default
 float seqStepCV[5] = { 0.0f };                              // Stores current CV from MUX1 0-4
@@ -226,8 +227,27 @@ SeqTriggerMode currentSeqTriggerMode = SEQ_TRIGGER_CLOCK;  // Default Mode
 bool midiTriggerPending = false;                           // Flag to catch MIDI notes for the sequencer
 int currentMidiNote = 60;                                  // Default to Middle C when no midi is detected
 
+// -- OPTIMIZATION VARIABLES --
+float rawModulationValues[7] = { 0 };  // Pre-calculated modulation values
+float ln2 = 0.69314718056f;            // ln(2) for fast exp approximations
+uint32_t modUpdateCounter = 0;         // REMOVE THE DUPLICATE IN AudioCallback
+const uint32_t MOD_UPDATE_RATE = 4;    // Update modulation every 4 samples
 
-// MUX INIT
+// -- FAST MATH APPROXIMATIONS --
+inline float fast_exp2_approx(float x) {
+  // Fast 2^x approximation using Taylor series expansion
+  x = 1.0f + x * ln2;  // First-order approximation
+  // Second-order improvement for better accuracy
+  return x * (1.0f + (x - 1.0f) * 0.5f);
+}
+
+inline float fast_pow_approx(float base, float exponent) {
+  // Simple pow approximation for audio use
+  // Works well for exponent in range 0-1
+  return 1.0f + (base - 1.0f) * exponent;
+}
+
+// -- MUX INIT --
 void selectMuxChannel(int channel, int s0, int s1, int s2, int s3) {
   digitalWrite(s0, bitRead(channel, 0));
   digitalWrite(s1, bitRead(channel, 1));
@@ -235,7 +255,7 @@ void selectMuxChannel(int channel, int s0, int s1, int s2, int s3) {
   digitalWrite(s3, bitRead(channel, 3));
 }
 
-// INIT POTS
+// -- INIT POTS --
 void initPotentiometers() {
   // Initialize MUX control pins as outputs
   pinMode(MUX1_S0, OUTPUT);
@@ -263,7 +283,7 @@ void initPotentiometers() {
   pinMode(MUX1_SIG, INPUT);
   pinMode(MUX2_SIG, INPUT);
 
-  // Initialize pot names - you can customize these based on your setup
+  // Initialize pot names
   for (int i = 0; i < TOTAL_POTS; i++) {
     if (i < NUM_POTS_PER_MUX) {
       // Pots on MUX1
@@ -313,7 +333,7 @@ void initPotentiometers() {
   }
 }
 
-// READ ALL POTS
+// -- READ POTS --
 void readPotentiometers() {
   for (int i = 0; i < TOTAL_POTS; i++) {
     if (i < NUM_POTS_PER_MUX) {
@@ -329,58 +349,8 @@ void readPotentiometers() {
   }
 }
 
-// POT CHANGES
-// SERIAL PRINT
-/*
-void printPotentiometerChanges() {
-  bool anyPotChange = false;
-  float fullScale = 65535.0f; // Since you set resolution to 16-bit
-
-  for (int i = 0; i < TOTAL_POTS; i++) {
-    // Calculate the difference as a percentage of the full range
-    float difference = abs(potValues[i] - lastPotValues[i]);
-    float percentChange = difference / fullScale;
-
-    // Only print if the change is 2% (0.02) or greater
-    if (percentChange >= 0.02f) {
-      anyPotChange = true;
-
-      String muxIdentifier = (i < NUM_POTS_PER_MUX) ? "MUX1" : "MUX2";
-      int channel = (i < NUM_POTS_PER_MUX) ? i : i - NUM_POTS_PER_MUX;
-
-      // Print the change
-      Serial.print("POT - ");
-      Serial.print(muxIdentifier);
-      Serial.print(" CH");
-      if (channel < 10) Serial.print("0");
-      Serial.print(channel);
-      Serial.print(" [");
-      Serial.print(potNames[i]);
-      Serial.print("]: ");
-      
-      // Print raw value and calculated percentage
-      Serial.print(potValues[i]);
-      Serial.print(" (");
-      Serial.print((potValues[i] / fullScale) * 100.0f, 1); // 1 decimal place
-      Serial.print("%)");
-
-      // Show direction
-      if (potValues[i] > lastPotValues[i]) Serial.println(" ▲");
-      else Serial.println(" ▼");
-
-      // Update last value to the new "anchor" point
-      lastPotValues[i] = potValues[i];
-    }
-  }
-
-  if (anyPotChange) {
-    Serial.println();
-  }
-}
-*/
-
-// INIT BUTTON MATRICES
-// MATRIX 1
+// -- INIT BUTTON MATRICES --
+// -- MATRIX 1
 void initButtonMatrix() {
   // Initialize column pins as outputs
   pinMode(MATRIX_COL0, OUTPUT);
@@ -403,7 +373,7 @@ void initButtonMatrix() {
   digitalWrite(MATRIX_COL2, LOW);
   digitalWrite(MATRIX_COL3, LOW);
 }
-// MATRIX 2
+// -- MATRIX 2
 void initButtonMatrix2() {
   // Initialize column pins as outputs
   pinMode(MATRIX2_COL0, OUTPUT);
@@ -424,8 +394,8 @@ void initButtonMatrix2() {
   digitalWrite(MATRIX2_COL2, LOW);
   digitalWrite(MATRIX2_COL3, LOW);
 }
-// READ BUTTON MATRICES
-// MATRIX 1
+// -- READ BUTTON MATRICES --
+// -- MATRIX 1
 void readButtonMatrix() {
   for (int col = 0; col < 4; col++) {
     // Activate current column
@@ -480,9 +450,9 @@ void readButtonMatrix() {
   digitalWrite(MATRIX_COL2, LOW);
   digitalWrite(MATRIX_COL3, LOW);
 }
-// MATRIX 2
+// -- MATRIX 2
 void readButtonMatrix2() {
-  int colPins[] = { MATRIX2_COL0, MATRIX2_COL1, MATRIX2_COL2, MATRIX2_COL3 };
+  int colPins[] = { MATRIX2_COL0, MATRIX2_COL1, MATRIX2_COL2, MATRIX2_COL3 };  // FIXED: Use COL3
   int rowPins[] = { MATRIX2_ROW0, MATRIX2_ROW1, MATRIX2_ROW2, MATRIX2_ROW3, MATRIX2_ROW4 };
 
   for (int col = 0; col < 4; col++) {
@@ -490,7 +460,6 @@ void readButtonMatrix2() {
     pinMode(colPins[col], OUTPUT);
     digitalWrite(colPins[col], HIGH);
 
-    // Give Pin 13 (LED) extra time to overcome the resistor/LED load
     delayMicroseconds(80);
 
     for (int row = 0; row < 5; row++) {
@@ -500,12 +469,48 @@ void readButtonMatrix2() {
     }
 
     // 2. DEACTIVATE: Instead of digitalWrite(LOW), set to INPUT
-    // This puts the pin in High-Impedance mode, "unplugging" the LED circuit
     pinMode(colPins[col], INPUT);
   }
 }
-// PRINT BUTTON PRESSES
-// SERIAL PRINT
+
+// -- UPDATE MATRIX MODULATION VALUES --
+void updateMatrixModulation(float envSig, float pulsarEnvSig) {
+  // Reset modulation values
+  for (int i = 0; i < 7; i++) {
+    rawModulationValues[i] = 0.0f;
+  }
+
+  // Calculate modulation from all sources
+  for (int col = 0; col < 4; col++) {
+    float src = 0.0f;
+
+    // Get source value
+    switch (col) {
+      case 0: src = activeSeqCV; break;
+      case 1: src = envSig; break;
+      case 2: src = pulsarEnvSig; break;
+      case 3: src = currentRandomValue; break;
+    }
+
+    // Apply different scaling for pulsar source
+    float scaleFactor = (col == 2) ? 100.0f : 1.0f;
+    float freqScaleFactor = (col == 2) ? 200.0f : 1.0f;
+
+    // Accumulate modulation for each destination
+    // Only process if matrix connection is active
+    if (matrixStates[col][0]) rawModulationValues[0] += src * scaleFactor;
+    if (matrixStates[col][1]) rawModulationValues[1] += src * freqScaleFactor;
+    if (matrixStates[col][2]) rawModulationValues[2] += src * scaleFactor;
+    if (matrixStates[col][3]) rawModulationValues[3] += src * freqScaleFactor;
+    if (matrixStates[col][4]) rawModulationValues[4] += src * scaleFactor;
+    if (matrixStates[col][5]) rawModulationValues[5] += src * freqScaleFactor;
+    if (matrixStates[col][6]) rawModulationValues[6] += src * freqScaleFactor;
+  }
+}
+
+// -- PRINT BUTTON PRESSES --
+// -- SERIAL PRINT
+// -- BUTTON FUNCTIONS
 void printButtonChanges() {
   bool anyChange = false;
 
@@ -613,26 +618,51 @@ void printButtonChanges() {
             complexOscInverted = !complexOscInverted;
           }
         } else if (col == 2 && row == 2) {
-          Serial.print(F("MORPH_WAVE_TOGGLE"));
+          Serial.print(F("COMPLEX_WAVE_CYCLE"));
           if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
             morphWaveformIndex = (morphWaveformIndex + 1) % 3;
-            complexOscMorph.SetWaveform(morphWaveformIndex);
+            Serial.print(F(" -> "));
+
+            if (morphWaveformIndex == 0) {
+              Serial.print(F("TRI"));
+              complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
+            } else if (morphWaveformIndex == 1) {
+              Serial.print(F("SAW"));
+              complexOscMorph.SetWaveform(complexOscMorph.WAVE_SAW);
+            } else if (morphWaveformIndex == 2) {
+              Serial.print(F("SQUARE"));
+              complexOscMorph.SetWaveform(complexOscMorph.WAVE_SQUARE);
+            }
           }
-        } else if (col == 3 && row == 3) {
+        }
+        // -- SEQUENCER STEP TOGGLE SWITCHES (SPDT) --
+        // Set state directly based on switch position, don't toggle
+        else if (col == 3 && row == 3) {
           Serial.print(F("SEQ_STEP_1_TOGGLE"));
-          seqStepEnabled[0] = !matrix2CurrentStates[col][row];
+          // Directly set step state to switch position (HIGH = DISABLED, LOW = ENABLED)
+          seqStepEnabled[0] = !matrix2CurrentStates[col][row];  // When switch is ON (HIGH), step is DISABLED (false)
+          Serial.print(F(" -> "));
+          Serial.print(seqStepEnabled[0] ? F("ENABLED") : F("DISABLED"));
         } else if (col == 0 && row == 4) {
           Serial.print(F("SEQ_STEP_2_TOGGLE"));
           seqStepEnabled[1] = !matrix2CurrentStates[col][row];
+          Serial.print(F(" -> "));
+          Serial.print(seqStepEnabled[1] ? F("ENABLED") : F("DISABLED"));
         } else if (col == 1 && row == 4) {
           Serial.print(F("SEQ_STEP_3_TOGGLE"));
           seqStepEnabled[2] = !matrix2CurrentStates[col][row];
+          Serial.print(F(" -> "));
+          Serial.print(seqStepEnabled[2] ? F("ENABLED") : F("DISABLED"));
         } else if (col == 2 && row == 4) {
           Serial.print(F("SEQ_STEP_4_TOGGLE"));
           seqStepEnabled[3] = !matrix2CurrentStates[col][row];
+          Serial.print(F(" -> "));
+          Serial.print(seqStepEnabled[3] ? F("ENABLED") : F("DISABLED"));
         } else if (col == 3 && row == 4) {
           Serial.print(F("SEQ_STEP_5_TOGGLE"));
           seqStepEnabled[4] = !matrix2CurrentStates[col][row];
+          Serial.print(F(" -> "));
+          Serial.print(seqStepEnabled[4] ? F("ENABLED") : F("DISABLED"));
         } else if (col == 0 && row == 0) {
           Serial.print(F("SEQ_LENGTH_CYCLE"));
           if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
@@ -660,14 +690,21 @@ void printButtonChanges() {
     Serial.println();
   }
 }
-
-// AUDIO PROCESSING
+// -- AUDIO PROCESSING --
 void AudioCallback(float** in, float** out, size_t size) {
   float sampleRate = DAISY.get_samplerate();
+
+  // Update samples per tick less frequently to save CPU
+  static uint32_t tickUpdateCounter = 0;
   uint32_t samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * sampleRate);
 
+  if (++tickUpdateCounter >= 1000) {
+    samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * sampleRate);
+    tickUpdateCounter = 0;
+  }
+
   for (size_t i = 0; i < size; i++) {
-    // --- 1. TRIGGERS & SEQUENCER ---
+    // --- 1. TRIGGERS & SEQUENCER (optimized) ---
     bool seqStepTriggered = false;
 
     if (currentSeqTriggerMode == SEQ_TRIGGER_CLOCK) {
@@ -732,9 +769,10 @@ void AudioCallback(float** in, float** out, size_t size) {
         randomTrigger = true;
       }
     }
-    
+
     if (randomTrigger) {
-      currentRandomValue = (float)rand() / (float)RAND_MAX;
+      // Fast random value generation
+      currentRandomValue = (float)rand() * (1.0f / RAND_MAX);
     }
 
     // --- 4. ENVELOPE GENERATION ---
@@ -747,141 +785,155 @@ void AudioCallback(float** in, float** out, size_t size) {
     float envSig = env.Process(gate);
     float pulsarEnvSig = pulsar.Process(pulsarTrigger);
 
-    // --- 5. VIRTUAL PATCH BAY SUMMING ---
-    float rawPulsarPeriodMod = 0.0f;
-    float rawModOscFreqMod = 0.0f;
-    float rawModOscModMod = 0.0f;
-    float rawFreqMod = 0.0f;
-    float rawWFMod = 0.0f;
-    float rawModLPG1 = 0.0f;
-    float rawModLPG2 = 0.0f;
-
-    for (int col = 0; col < 4; col++) {
-      float src = 0.0f;
-      if (col == 0) src = activeSeqCV;
-      else if (col == 1) src = envSig;
-      else if (col == 2) src = pulsarEnvSig;
-      else if (col == 3) src = currentRandomValue;
-
-      if (col == 0) {
-        if (matrixStates[col][0]) rawPulsarPeriodMod += src;
-        if (matrixStates[col][1]) rawModOscFreqMod += src;
-        if (matrixStates[col][2]) rawModOscModMod += src;
-        if (matrixStates[col][3]) rawFreqMod += src;
-        if (matrixStates[col][4]) rawWFMod += src;
-        if (matrixStates[col][5]) rawModLPG1 += src;
-        if (matrixStates[col][6]) rawModLPG2 += src;
-      } else if (col == 1) {
-        if (matrixStates[col][0]) rawPulsarPeriodMod += src;
-        if (matrixStates[col][1]) rawModOscFreqMod += src;
-        if (matrixStates[col][2]) rawModOscModMod += src;
-        if (matrixStates[col][3]) rawFreqMod += src;
-        if (matrixStates[col][4]) rawWFMod += src;
-        if (matrixStates[col][5]) rawModLPG1 += src;
-        if (matrixStates[col][6]) rawModLPG2 += src;
-      } else if (col == 2) {
-        if (matrixStates[col][0]) rawPulsarPeriodMod += src * 100.0f;
-        if (matrixStates[col][1]) rawModOscFreqMod += src * 200.0f;
-        if (matrixStates[col][2]) rawModOscModMod += src * 100.0f;
-        if (matrixStates[col][3]) rawFreqMod += src * 200.0f;
-        if (matrixStates[col][4]) rawWFMod += src * 100.0f;
-        if (matrixStates[col][5]) rawModLPG1 += src * 200.0f;
-        if (matrixStates[col][6]) rawModLPG2 += src * 200.0f;
-      } else {
-        if (matrixStates[col][0]) rawPulsarPeriodMod += src;
-        if (matrixStates[col][1]) rawModOscFreqMod += src;
-        if (matrixStates[col][2]) rawModOscModMod += src;
-        if (matrixStates[col][3]) rawFreqMod += src;
-        if (matrixStates[col][4]) rawWFMod += src;
-        if (matrixStates[col][5]) rawModLPG1 += src;
-        if (matrixStates[col][6]) rawModLPG2 += src;
-      }
+    // --- 5. UPDATE MODULATION MATRIX (less frequently) ---
+    // Use the GLOBAL modUpdateCounter, not a local static one
+    if (++modUpdateCounter >= MOD_UPDATE_RATE) {
+      updateMatrixModulation(envSig, pulsarEnvSig);
+      modUpdateCounter = 0;
     }
 
-    // --- 6. APPLY ATTENUATORS ---
-    pulsarPeriodModCoeff = rawPulsarPeriodMod * (potValues[8] / 65535.0f);
-    modulationFreqCoeff = rawModOscFreqMod * modulationFreqModDepth;
-    modulationOscModCoeff = rawModOscModMod * modulationOscModCoeffDepth;
-    complexOscFreqCoeff = rawFreqMod * complexOscFreqModDepth;
-    complexOscWFCoeff = rawWFMod * complexOscWFModDepth;
-    vcaComplexOsc = rawModLPG1 * foldedLpgModAmount;
-    vcaModulationOsc = rawModLPG2 * modOscLpgModAmount;
+    // --- 6. APPLY ATTENUATORS (using pre-calculated modulation values) ---
+    float pot8Norm = potValues[8] * (1.0f / 65535.0f);
+    pulsarPeriodModCoeff = rawModulationValues[0] * pot8Norm;
+    modulationFreqCoeff = rawModulationValues[1] * modulationFreqModDepth;
+    modulationOscModCoeff = rawModulationValues[2] * modulationOscModCoeffDepth;
+    complexOscFreqCoeff = rawModulationValues[3] * complexOscFreqModDepth;
+    complexOscWFCoeff = rawModulationValues[4] * complexOscWFModDepth;
+    vcaComplexOsc = rawModulationValues[5] * foldedLpgModAmount;
+    vcaModulationOsc = rawModulationValues[6] * modOscLpgModAmount;
 
-    // --- 7. OSCILLATORS (Corrected Quantization Logic) ---
-    
+    // --- 7. OSCILLATORS (optimized with fast approximations) ---
+
     // MODULATION OSCILLATOR
     float modFinalFreq;
     if (modulationMidiEnabled) {
-      // Pot 27 = MUX2 CH11 (Modulation Frequency)
-      // Map to Notes 24-96 (6 Octaves)
-      float rawNote = 24.0f + (potValues[27] / 65535.0f) * 72.0f;
+      float rawNote = 24.0f + (potValues[27] * (72.0f / 65535.0f));
       int quantizedNote = (int)(rawNote + 0.5f);
-      // Still apply Fine tune and Patch Bay modulation on top of the quantized note
-      modFinalFreq = mtof(quantizedNote) * powf(2.0f, (modulationFreqCoeff * 5.0f) + modulationFine);
+      modFinalFreq = mtof(quantizedNote) * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
     } else {
-      modFinalFreq = modulationOscFreq * powf(2.0f, (modulationFreqCoeff * 5.0f) + modulationFine);
+      modFinalFreq = modulationOscFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
     }
     modulationOsc.SetFreq(modFinalFreq);
     float modOscSig = modulationOsc.Process();
 
-    float totalModDepth = fminf(fmaxf(modulationOscMod + (modulationOscModCoeff * 2.0f), 0.0f), 2.0f);
+    float totalModDepth = modulationOscMod + (modulationOscModCoeff * 2.0f);
+    if (totalModDepth < 0.0f) totalModDepth = 0.0f;
+    if (totalModDepth > 2.0f) totalModDepth = 2.0f;
 
     float fmSignal = 0.0f;
-    if (!useAmplitudeMod) fmSignal = modOscSig * totalModDepth;
+    if (!useAmplitudeMod) {
+      fmSignal = modOscSig * totalModDepth;
+    }
 
     // COMPLEX OSCILLATOR
     float compFinalFreq;
     if (complexOscMidiEnabled) {
-      // Pot 16 = MUX2 CH0 (Complex Frequency)
-      float rawNote = 24.0f + (potValues[16] / 65535.0f) * 72.0f;
+      float rawNote = 24.0f + (potValues[16] * (72.0f / 65535.0f));
       int quantizedNote = (int)(rawNote + 0.5f);
-      // Still apply FM signal and Patch Bay modulation on top of the quantized note
-      compFinalFreq = mtof(quantizedNote) * powf(2.0f, (complexOscFreqCoeff + fmSignal) * 5.0f + complexOscFine);
+      float totalFreqMod = complexOscFreqCoeff + fmSignal;
+      compFinalFreq = mtof(quantizedNote) * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
     } else {
-      compFinalFreq = complexOscFreq * powf(2.0f, (complexOscFreqCoeff + fmSignal) * 5.0f + complexOscFine);
+      float totalFreqMod = complexOscFreqCoeff + fmSignal;
+      compFinalFreq = complexOscFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
     }
-    
+
     complexOsc.SetFreq(compFinalFreq);
     complexOscMorph.SetFreq(compFinalFreq);
 
-    float mixedSig = (complexOsc.Process() * (1.0f - complexOscMorphMix)) + (complexOscMorph.Process() * complexOscMorphMix);
-    if (complexOscInverted) mixedSig *= -1.0f;
+    float complexSig = complexOsc.Process();
+    float morphSig = complexOscMorph.Process();
+
+    float mixedSig = complexSig + (morphSig - complexSig) * complexOscMorphMix;
+
+    if (complexOscInverted) {
+      mixedSig = -mixedSig;
+    }
 
     // --- 8. WAVEFOLDER & AM ---
-    waveFolder.SetGain(fminf(fmaxf(complexOscWF + (complexOscWFCoeff * 20.0f), 1.0f), 20.0f));
+    float wfGain = complexOscWF + (complexOscWFCoeff * 20.0f);
+    if (wfGain < 1.0f) wfGain = 1.0f;
+    if (wfGain > 20.0f) wfGain = 20.0f;
+
+    waveFolder.SetGain(wfGain);
     float foldedSig = waveFolder.Process(mixedSig);
-    if (useAmplitudeMod) foldedSig *= (1.0f + (modOscSig * totalModDepth));
 
-    // --- 9. BUCHLA LPG MIXER ---
-    float finalMix = 0.0f;
-    for (int ch = 0; ch < 2; ch++) {
-      float signal = (ch == 0) ? foldedSig : modOscSig;
-      float ctrl = fminf(fmaxf(((ch == 0) ? complexOscSigLevel : modOscSigLevel) + ((ch == 0) ? vcaComplexOsc : vcaModulationOsc), 0.0f), 1.0f);
-      MoogLadder& filter = (ch == 0) ? lpGateFilter1 : lpGateFilter2;
-      LpgMode mode = (ch == 0) ? foldedLpgMode : modOscLpgMode;
-
-      float processedSig = signal;
-      if (mode == LPG_MODE_VCA) processedSig *= ctrl;
-      else {
-        filter.SetFreq(20.0f * powf(1000.0f, ctrl));
-        filter.SetRes((mode == LPG_MODE_LP) ? powf(ctrl, 2.0f) * 0.2f : 0.0f);
-        processedSig = filter.Process(processedSig);
-        if (mode == LPG_MODE_COMBI) processedSig *= ctrl;
-      }
-      finalMix += processedSig;
+    if (useAmplitudeMod) {
+      foldedSig *= (1.0f + (modOscSig * totalModDepth));
     }
+
+    // --- 9. BUCHLA LPG MIXER (optimized) ---
+    float finalMix = 0.0f;
+
+    // Process folded signal (channel 0)
+    float signal0 = foldedSig;
+    float ctrl0 = complexOscSigLevel + vcaComplexOsc;
+    if (ctrl0 < 0.0f) ctrl0 = 0.0f;
+    if (ctrl0 > 1.0f) ctrl0 = 1.0f;
+
+    float processedSig0 = signal0;
+    if (foldedLpgMode == LPG_MODE_VCA) {
+      processedSig0 *= ctrl0;
+    } else {
+      float filterFreq0 = 20.0f * powf(1000.0f, ctrl0);
+      lpGateFilter1.SetFreq(filterFreq0);
+
+      if (foldedLpgMode == LPG_MODE_LP) {
+        lpGateFilter1.SetRes(ctrl0 * ctrl0 * 0.2f);
+      } else {
+        lpGateFilter1.SetRes(0.0f);
+      }
+
+      processedSig0 = lpGateFilter1.Process(processedSig0);
+
+      if (foldedLpgMode == LPG_MODE_COMBI) {
+        processedSig0 *= ctrl0;
+      }
+    }
+    finalMix += processedSig0;
+
+    // Process modulation oscillator signal (channel 1)
+    float signal1 = modOscSig;
+    float ctrl1 = modOscSigLevel + vcaModulationOsc;
+    if (ctrl1 < 0.0f) ctrl1 = 0.0f;
+    if (ctrl1 > 1.0f) ctrl1 = 1.0f;
+
+    float processedSig1 = signal1;
+    if (modOscLpgMode == LPG_MODE_VCA) {
+      processedSig1 *= ctrl1;
+    } else {
+      float filterFreq1 = 20.0f * powf(1000.0f, ctrl1);
+      lpGateFilter2.SetFreq(filterFreq1);
+
+      if (modOscLpgMode == LPG_MODE_LP) {
+        lpGateFilter2.SetRes(ctrl1 * ctrl1 * 0.2f);
+      } else {
+        lpGateFilter2.SetRes(0.0f);
+      }
+
+      processedSig1 = lpGateFilter2.Process(processedSig1);
+
+      if (modOscLpgMode == LPG_MODE_COMBI) {
+        processedSig1 *= ctrl1;
+      }
+    }
+    finalMix += processedSig1;
+
+    // --- 10. OUTPUT ANALOGUE FILTER ---
+    finalMix = outputFilter.Process(finalMix);
 
     midiTriggerPending = false;
 
-    // --- 10. REVERB & OUTPUT ---
+    // --- 11. REVERB & OUTPUT ---
     float revL, revR;
     reverb.Process(finalMix, finalMix, &revL, &revR);
-    out[0][i] = ((finalMix * (1.0f - reverbMix)) + (revL * reverbMix)) * 0.4f;
-    out[1][i] = ((finalMix * (1.0f - reverbMix)) + (revR * reverbMix)) * 0.4f;
+
+    float dryWet = 1.0f - reverbMix;
+    out[0][i] = (finalMix * dryWet + revL * reverbMix) * 0.4f;
+    out[1][i] = (finalMix * dryWet + revR * reverbMix) * 0.4f;
   }
 }
 
-// SETUP
+// -- SETUP --
 void setup() {
   Serial.begin(115200);
   delay(1000);  // Wait for serial to initialize
@@ -890,11 +942,11 @@ void setup() {
   Serial.println("Displaying button state changes and potentiometer values...");
   Serial.println();
 
-  // INIT BUTTON MATRICES
+  // -- INIT BUTTON MATRICES --
   initButtonMatrix();
   initButtonMatrix2();
 
-  // INIT POTS
+  // -- INIT POTS --
   analogReadResolution(16);  // 16-BIT ADC
   initPotentiometers();
 
@@ -904,16 +956,16 @@ void setup() {
   Serial.println("Threshold for reporting changes: ±50 units");
   Serial.println("==============================================");
 
-  // DAISY SEED INIT AT 48kHz
+  // -- DAISY SEED INIT AT 48kHz --
   float sample_rate;
   hw = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
   sample_rate = DAISY.get_samplerate();
   DAISY.SetAudioBlockSize(128);
-  // START AUDIO
+  // -- START AUDIO
   DAISY.begin(AudioCallback);
 
-  // DAISY DUINO INIT
-  // COMPLEX OSC // SINE + MORPH
+  // -- DAISY DUINO INIT --
+  // -- COMPLEX OSC // SINE + MORPH --
   complexOsc.Init(sample_rate);
   complexOsc.SetWaveform(complexOsc.WAVE_SIN);
   complexOsc.SetFreq(440.0f);
@@ -922,35 +974,33 @@ void setup() {
   complexOscMorph.SetWaveform(complexOsc.WAVE_SAW);
   complexOscMorph.SetFreq(440.0f);
   complexOscMorph.SetAmp(1.0f);
-  // WAVEFOLDER
+  // -- WAVEFOLDER --
   waveFolder.Init();
-  // MODULATION OSC
+  // -- MODULATION OSC --
   modulationOsc.Init(sample_rate);
-  modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
+  modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
   modulationOsc.SetFreq(440.0f);
   modulationOsc.SetAmp(1.0f);
-  // LPG FILTER
+  // -- LPG FILTER --
   lpGateFilter1.Init(sample_rate);
   lpGateFilter2.Init(sample_rate);
-  // ENVELOPE
+  // -- ENVELOPE --
   env.Init(sample_rate);
-  // PULSAR ENV
+  // -- PULSAR ENV --
   pulsar.Init(sample_rate);
   pulsar.SetAttackTime(0.02f);
   pulsar.SetDecayTime(0.02f);
   pulsar.SetSustainLevel(1.0f);
-  // ANALOGUE OUTPUT FILTER
+  // -- ANALOGUE OUTPUT FILTER --
   outputFilter.Init(sample_rate);
   outputFilter.SetFreq(15000.0f);
   outputFilter.SetRes(0.3f);
-  // PULSAR
-  //pulsar.Init(sample_rate);
-  // REVERB
+  // -- REVERB --
   reverb.Init(sample_rate);
   reverb.SetFeedback(0.85f);
-  reverb.SetLpFreq(18000.0f);
+  reverb.SetLpFreq(17000.0f);
 
-  // MIDI INIT
+  // -- MIDI INIT --
   // Configure Serial1 to use pin D14 for RX
   Serial1.setRx(MIDI_RX_PIN);
   Serial1.begin(31250);  // Standard MIDI baud rate
@@ -963,7 +1013,7 @@ void setup() {
   Serial.println("=============================================");
 }
 
-// LOOP
+// -- LOOP --
 void loop() {
 
   // MIDI PROCESSING
@@ -979,137 +1029,149 @@ void loop() {
   }
 
   // READ BUTTON MATRICES
-  //readButtonMatrix();
-  //readButtonMatrix2();
-  //printButtonChanges();  // DELETE COMMENT MARKS FOR DEBUG
-  ///*  
   if (millis() - lastMatrixRead > MATRIX_READ_INTERVAL) {
     readButtonMatrix();
     readButtonMatrix2();
-    printButtonChanges();  // DELETE COMMENT MARKS FOR DEBUG
+    printButtonChanges();  //BUTTON FNCs
     lastMatrixRead = millis();
   }
-  //*/
 
-  // READ POTENTIOMETERS
-  //readPotentiometers();
-  //updateParameters();  // UPDATE PARAMS
-  ///*  
+  // READ POTENTIOMETERS AND UPDATE PARAMETERS
   if (millis() - lastPotRead > POT_READ_INTERVAL) {
     readPotentiometers();
     updateParameters();  // UPDATE PARAMS
-    //printPotentiometerChanges();  // DELETE COMMENT MARKS FOR DEBUG
     lastPotRead = millis();
   }
-  //*/
 }
 
-// UPDATE PARAMETERS
+// -- UPDATE PARAMETERS --
 void updateParameters() {
-
-  // OSCILLATORS
+  // -- OSCILLATORS --
 
   // FINE TUNE
   // 3 cents is 3/1200 of an octave.
   float fineRange = 3.0f / 12.0f;
 
-  // COMPLEX OSCILLATOR (25Hz to 4000Hz)
+  // -- COMPLEX OSCILLATOR (25Hz to 4000Hz) --
   // PITCH
   float complexOscFreqPot = potValues[16] / 65535.0f;
-  // 4000 / 25 = 160 (The total frequency ratio)
-  complexOscFreq = 25.0f * pow(160.0f, complexOscFreqPot);
+  // LOGARITHMIC MAPPING: 20Hz to 8000Hz (6 octaves)
+  // Use exact powf for smooth, accurate response
+  float freqMin = 20.0f;    // Low C (~32.7Hz) but slightly lower for sub-bass
+  float freqMax = 3560.0f;  // ~8kHz, 8 octaves above 31.25Hz
+  complexOscFreq = freqMin * powf(freqMax / freqMin, complexOscFreqPot);
+
   // Pot 15: Complex Osc Frequency Modulation Amount
   complexOscFreqModDepth = potValues[15] / 65535.0f;
+
   // Pot 17: Fine Tune Complex Oscillator (+/- 3 cents)
   complexOscFine = ((potValues[17] / 65535.0f) * 2.0f - 1.0f) * fineRange;
+
   // TIMBRE/MORPH CONTROL
   complexOscMorphMix = potValues[20] / 65535.0f;
+
   // WAVEFOLDER (0.0 to 1.0f)
   float complexOscWFPot = potValues[19] / 65535.0f;
   complexOscWF = 1.0f + (19.0f * complexOscWFPot);
+
   // Pot 18: Wavefolder Modulation Amount
   complexOscWFModDepth = potValues[18] / 65535.0f;
+
   // LPG
   // Pot 21: Amount of modulation for Folded Signal LPG
   foldedLpgModAmount = potValues[21] / 65535.0f;
+
   // Pot 22: Channel 1 Sig Level
   complexOscSigLevel = potValues[22] / 65535.0f;
 
-  // MODULATION OSCILLATOR (1Hz to 2000Hz)
+  // -- MODULATION OSCILLATOR (1Hz to 2000Hz) --
   // PITCH
   float modulationOscFreqPot = potValues[11] / 65535.0f;
-  float modMin = 1.0f;
-  float modMax = 2000.0f;
-  modulationOscFreq = modMin * pow((modMax / modMin), modulationOscFreqPot);
+  float modMin = 0.1f;
+  float modMax = 1760.0f;
+  modulationOscFreq = modMin * powf(modMax / modMin, modulationOscFreqPot);
+
   // Pot 10: Amount of modulation applied to Mod Osc Frequency
   modulationFreqModDepth = potValues[10] / 65535.0f;
+
   // Pot 12: Fine Tune Modulation Oscillator (+/- 3 cents)
   modulationFine = ((potValues[12] / 65535.0f) * 2.0f - 1.0f) * fineRange;
+
   // MODULATION (FM/AM)
   // Pot 14: Modulation Depth (FM or AM depth)
   modulationOscMod = potValues[14] / 65535.0f;
+
   // Pot 13: Amount of modulation applied to Mod Osc Modulation Depth (FM/AM amount)
   modulationOscModCoeffDepth = potValues[13] / 65535.0f;
+
   // LPG
   // Pot 23: Amount of modulation for Mod Osc Signal LPG
   modOscLpgModAmount = potValues[23] / 65535.0f;
+
   // Pot 24: Channel 2 Sig Level
   modOscSigLevel = potValues[24] / 65535.0f;
 
-  // ENVELOPE [Buchla ASD config]
+  // -- ENVELOPE [Buchla ASD config] --
   float minTime = 0.02f;
   float maxTime = 10.0f;
   float timeRatio = maxTime / minTime;  // 500.0f
 
   // Attack Time (Logarithmic)
   float attackPot = potValues[5] / 65535.0f;
-  attackTime = minTime * pow(timeRatio, attackPot);
+  attackTime = minTime * fast_pow_approx(timeRatio, attackPot);
   env.SetAttackTime(attackTime);
 
   // Sustain Duration (Logarithmic)
   float sustainDurationPot = potValues[6] / 65535.0f;
-  sustainDuration = minTime * pow(timeRatio, sustainDurationPot);
+  sustainDuration = minTime * fast_pow_approx(timeRatio, sustainDurationPot);
 
   // Release Time (Logarithmic)
   float releasePot = potValues[7] / 65535.0f;
-  releaseTime = minTime * pow(timeRatio, releasePot);
+  releaseTime = minTime * fast_pow_approx(timeRatio, releasePot);
   env.SetReleaseTime(releaseTime);
-
-
-  // Fixed ADSR settings to behave as a gated ASR
   env.SetDecayTime(0.0f);
   env.SetSustainLevel(1.0f);
 
-  // PULSAR
+  // -- PULSAR --
   // Pot 9: Base Pulsar Release Time
   float pulsarReleasePot = potValues[9] / 65535.0f;
 
-  // Subtract modulation (clamped) to ensure time decreases
-  // We use a log-style calculation similar to your other time constants
-  float adjustedPulsarPot = pulsarReleasePot - pulsarPeriodModCoeff;
-  adjustedPulsarPot = fminf(fmaxf(adjustedPulsarPot, 0.0f), 1.0f);
+  // Logarithmic mapping: 20ms to 5000ms (0.02s to 5.0s)
+  float pulsarMinTime = 0.02f;                           // 20ms - very short decay
+  float pulsarMaxTime = 5.0f;                            // 5000ms - long decay
+  float pulsarTimeRatio = pulsarMaxTime / pulsarMinTime;  
 
-  pulsarReleaseTime = 0.02f * powf(500.0f, adjustedPulsarPot);
+  // Base release time from pot (logarithmic)
+  float basePulsarRelease = pulsarMinTime * powf(pulsarTimeRatio, pulsarReleasePot);
+
+  // Subtract modulation (clamped) to ensure time decreases
+  float adjustedPulsarTime = basePulsarRelease - (2.0f*pulsarPeriodModCoeff);  // Scale modulation appropriately
+  if (adjustedPulsarTime < pulsarMinTime) adjustedPulsarTime = pulsarMinTime;
+  if (adjustedPulsarTime > pulsarMaxTime) adjustedPulsarTime = pulsarMaxTime;
+
+  pulsarReleaseTime = adjustedPulsarTime;
   pulsar.SetReleaseTime(pulsarReleaseTime);
 
-
-  // SEQUENCER
+  // -- SEQUENCER --
   // Update Sequencer CV steps from MUX1 Channels 0-4
-  // Mapping the 16-bit pot value to a usable frequency offset (e.g., 0 to 500Hz)
-  // SEQUENCER
   for (int i = 0; i < 5; i++) {
     // Store normalized 0.0 to 1.0 values
     seqStepCV[i] = potValues[i] / 65535.0f;
   }
 
-  // Sequencer Clock Speed from MUX2 Channel 9 (potValues[25])
+  // -- CLOCK --
   float clockPot = potValues[25] / 65535.0f;
-  seqClockSpeed = 1.0f * pow(2000.0f, (1.0f - clockPot));
+  seqClockSpeed = 1.0f * powf(2000.0f, (1.0f - clockPot));  // Use exact powf
 
-  // REVERB
+  // CLOCK CLAMPING
+  if (seqClockSpeed < 0.5f) seqClockSpeed = 0.5f;
+  if (seqClockSpeed > 2000.0f) seqClockSpeed = 2000.0f;
+
+  // -- REVERB --
   reverbMix = potValues[26] / 65535.0f;  // REVERB MIX CONTROL
 }
 
+// -- MIDI NOTE HANDLING
 void handleNoteOn(byte channel, byte note, byte velocity) {
   if (velocity > 0) {
     // Set the flag for the sequencer to advance one step
