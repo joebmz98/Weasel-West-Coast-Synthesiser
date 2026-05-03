@@ -184,7 +184,10 @@ WEASEL is a digital synthesizer inspired by the iconic Buchla Music Easel, built
 
 ### Basic Signal Flow
 
-
+[Complex Osc] → [Wavefolder] → [LPG Ch1] → [Mixer] → [Output Filter] → [Reverb]
+[Mod Osc] ──────────────────→ [LPG Ch2] ↗
+     ↓
+  (FM/AM to Complex Osc)
 
 ### Sequencer Operation
 
