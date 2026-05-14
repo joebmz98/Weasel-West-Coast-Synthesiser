@@ -68,22 +68,6 @@
           "inentional"
         ],
         [
-          "hole_clearance|107300000|23500000|777c791c-90d8-4cd2-9cfd-f4ccffeab4d0|229ba9d1-c7c8-41c3-9338-a843100c2511",
-          ""
-        ],
-        [
-          "hole_clearance|107325000|23525000|02500df8-7fde-46bf-9928-0003f61ae5c9|229ba9d1-c7c8-41c3-9338-a843100c2511",
-          ""
-        ],
-        [
-          "hole_clearance|112500000|23500000|119b07b7-ddd4-4a7c-9f83-95bc3e4f1ff1|93a1bb6e-b85b-4ed8-865d-801190debec5",
-          ""
-        ],
-        [
-          "hole_clearance|112600000|23600000|f8af97bb-8995-4b97-9107-310dba7d6f4d|93a1bb6e-b85b-4ed8-865d-801190debec5",
-          ""
-        ],
-        [
           "invalid_outline|18550000|432000000|5f13fcbd-4361-4e97-aab7-cc8e57556d75|76fbc827-53b5-4448-bfa2-aba93d92bc5d",
           ""
         ],
@@ -156,15 +140,11 @@
           ""
         ],
         [
-          "unconnected_items|142300000|108018500|F.Cu|4|dfc5b1cc-6096-4c19-af3e-b6d5166a12ae|80ae6c1d-2808-4092-bc33-c0e857a5d811",
+          "unconnected_items|137997300|110215800|F.Cu|4|80ae6c1d-2808-4092-bc33-c0e857a5d811|90eb6b20-cca3-4997-a837-fa6b83aaae05",
           ""
         ],
         [
-          "unconnected_items|144497300|105715800|F.Cu|4|a6ab1a05-d501-4aab-9af5-ba3d6be4a6b7|ba9e1e34-745d-4d0b-a9cb-7822526b4744",
-          ""
-        ],
-        [
-          "unconnected_items|160500000|30630000|F.Cu|4|fbd6afdc-23d7-4a90-b921-fc4424b0475a|fb8da2ed-7223-4742-b99b-2570902a99b2",
+          "unconnected_items|144497300|105715800|F.Cu|4|a6ab1a05-d501-4aab-9af5-ba3d6be4a6b7|07876e13-d221-49d9-a75f-44432d4872be",
           ""
         ],
         [
@@ -180,11 +160,11 @@
           ""
         ],
         [
-          "unconnected_items|185500000|26130000|F.Cu|4|30a9212f-447e-4b35-a526-55ea3188f59f|915dd5ae-5cfe-4ac1-9843-38929db7f3b2",
+          "unconnected_items|167000000|30630000|F.Cu|4|fb8da2ed-7223-4742-b99b-2570902a99b2|fbd6afdc-23d7-4a90-b921-fc4424b0475a",
           ""
         ],
         [
-          "unconnected_items|230500000|30630000|F.Cu|4|1007581f-96f8-4cbe-a077-94df90950d3c|69d56e72-ce4a-4331-b139-aded27d85355",
+          "unconnected_items|185500000|26130000|F.Cu|4|4313212e-b8f8-4655-bfa4-a1a7481d9e47|915dd5ae-5cfe-4ac1-9843-38929db7f3b2",
           ""
         ],
         [
@@ -192,15 +172,19 @@
           ""
         ],
         [
-          "unconnected_items|232500000|28130000|F.Cu|4|81ff85fc-9b82-4069-bddc-499e3c0a1494|0068eea8-0045-49f4-be10-4052522b889e",
+          "unconnected_items|232500000|28130000|F.Cu|4|0332ebd6-9170-4cbf-800f-f2db21c38779|0068eea8-0045-49f4-be10-4052522b889e",
           ""
         ],
         [
-          "unconnected_items|237000000|43630000|F.Cu|4|c7175f16-7be6-4def-b9ad-19ccb1fff25b|62c2da0e-fe2c-4154-b615-c209a2c29990",
+          "unconnected_items|237000000|30630000|F.Cu|4|5a4b7104-f472-406c-9fa0-a86c5a2982cc|1007581f-96f8-4cbe-a077-94df90950d3c",
           ""
         ],
         [
-          "unconnected_items|263000000|26130000|F.Cu|4|4e7cfc57-a26b-4b97-90d2-a1c927940b5c|23be3a38-537d-4a57-bb50-e28cbac0df22",
+          "unconnected_items|237000000|43630000|F.Cu|4|a185653d-d71b-4599-8751-2f2cbaa072fd|62c2da0e-fe2c-4154-b615-c209a2c29990",
+          ""
+        ],
+        [
+          "unconnected_items|263000000|26130000|F.Cu|4|87c6f32e-9855-4344-aded-abdf05cf13ad|23be3a38-537d-4a57-bb50-e28cbac0df22",
           ""
         ],
         [
@@ -212,15 +196,7 @@
           ""
         ],
         [
-          "unconnected_items|267997300|105715800|F.Cu|4|c7ecf926-3227-4375-876b-ade7d98909cd|2258123f-8992-4bcf-8387-a419b1d0b6d3",
-          ""
-        ],
-        [
-          "unconnected_items|267997300|110215800|F.Cu|4|0d19677f-85fc-4cce-b013-da62c0562e8e|55384e79-667b-4bf4-80be-54f4d898a9ce",
-          ""
-        ],
-        [
-          "unconnected_items|267997300|127715800|F.Cu|4|da395ce3-ebfc-4e47-b963-19c7439c94be|30e8df6c-7ae9-4b1a-b615-87265edb59f7",
+          "unconnected_items|267997300|105715800|F.Cu|4|a21a485f-1aef-4e05-9c59-24b7a1a383fc|632491ce-4d4a-4581-b076-e0cfeb7d2fbf",
           ""
         ],
         [
@@ -228,23 +204,31 @@
           ""
         ],
         [
+          "unconnected_items|267997300|145215800|F.Cu|4|f687235b-50cf-4fb4-b0e6-296c594ed6b8|de6777d7-d5ad-4ebc-9ece-2b02607a092d",
+          ""
+        ],
+        [
           "unconnected_items|269500000|43630000|F.Cu|4|849bcace-1727-4724-9796-d67dc852ffde|4d3e8174-3dee-4d4f-b4e7-18db97dad7a2",
           ""
         ],
         [
-          "unconnected_items|270750000|125968500|F.Cu|4|646d92c3-af13-4b70-8578-cccf94c247bb|f56a1c2b-2b7b-408b-ac1d-15614b26ba55",
+          "unconnected_items|270750000|125968500|F.Cu|4|393db3aa-89a9-4200-bc1c-d0b04aee6e2d|2b3cf66f-0184-4b79-9b1d-7c6e9d202882",
           ""
         ],
         [
-          "unconnected_items|274497300|145215800|F.Cu|4|106867a9-dbb2-467c-be90-2e19880d4da5|25914bfe-4cee-44c4-9a59-16d59b451304",
+          "unconnected_items|274497300|110215800|F.Cu|4|0e053b23-9d66-407b-ad3c-3f5934d404e5|73a5f802-3e9a-4707-a475-0d540aa64f5f",
           ""
         ],
         [
-          "unconnected_items|294750000|34750000|F.Cu|4|74cffc50-a398-44a1-8023-283366ff7a97|fb504359-c594-4f09-ae52-6b27cca1ff79",
+          "unconnected_items|274497300|127715800|F.Cu|4|30e8df6c-7ae9-4b1a-b615-87265edb59f7|2a2f73b7-9060-4844-9d7f-f5b41038efa8",
           ""
         ],
         [
-          "unconnected_items|294750000|39250000|F.Cu|4|c3188cbb-175d-45dd-8c82-00579bdf4fc7|1e71332f-fb29-4d66-a6c9-d16ac40ae164",
+          "unconnected_items|294750000|34750000|F.Cu|4|74cffc50-a398-44a1-8023-283366ff7a97|8c6383f5-f3e0-4140-bdf2-260ae032d3fc",
+          ""
+        ],
+        [
+          "unconnected_items|294750000|39250000|F.Cu|4|ae3ea783-3413-4ab0-8acf-07e41d831a47|1e71332f-fb29-4d66-a6c9-d16ac40ae164",
           ""
         ],
         [
@@ -252,7 +236,7 @@
           ""
         ],
         [
-          "unconnected_items|300497300|145215800|F.Cu|4|1f2513ba-2f7e-492b-9234-45a34793841e|0f27c867-633b-42b7-ba81-394f3ba95756",
+          "unconnected_items|300497300|145215800|F.Cu|4|43cc4b4f-e5fb-4831-8d2e-7b5921db4304|0f27c867-633b-42b7-ba81-394f3ba95756",
           ""
         ],
         [
@@ -260,15 +244,15 @@
           ""
         ],
         [
-          "unconnected_items|306997300|140715800|F.Cu|4|e1c3a60d-c11b-465e-adea-d398da0a97d6|9ac3d590-8332-44df-8c48-63c43ebd3ed1",
+          "unconnected_items|306997300|140715800|F.Cu|4|e1c3a60d-c11b-465e-adea-d398da0a97d6|b7907e35-55c5-43e3-a205-63bdc118315d",
           ""
         ],
         [
-          "unconnected_items|319750000|34750000|F.Cu|4|e221c4bf-503b-4cd7-8c33-a02e65eda0a2|c58adddf-f78b-4e83-acd2-fd7fc1a2761e",
+          "unconnected_items|313250000|39250000|F.Cu|4|dd60d9e5-1e50-422b-876e-ac24803e5bfa|7684fe59-8ecf-4162-917f-b6aaf42baf04",
           ""
         ],
         [
-          "unconnected_items|319750000|39250000|F.Cu|4|7684fe59-8ecf-4162-917f-b6aaf42baf04|7746293d-430c-4f01-b4e2-36d91aea018f",
+          "unconnected_items|319750000|34750000|F.Cu|4|e221c4bf-503b-4cd7-8c33-a02e65eda0a2|e6206c67-f1a5-453f-853b-89b7baa4d68f",
           ""
         ]
       ],
@@ -352,7 +336,7 @@
         "min_track_width": 0.0,
         "min_via_annular_width": 0.1,
         "min_via_diameter": 0.5,
-        "solder_mask_to_copper_clearance": 0.0,
+        "solder_mask_to_copper_clearance": 0.005,
         "use_height_for_length_calcs": true
       },
       "teardrop_options": [
