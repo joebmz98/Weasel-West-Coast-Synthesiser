@@ -1029,7 +1029,7 @@ void setup() {
   // -- MIDI INIT --
   // Configure Serial1 to use pin D14 for RX
   Serial1.setRx(MIDI_RX_PIN);
-  Serial1.begin(31250);  // Standard MIDI baud rate
+  //Serial1.begin(31250);  // Standard MIDI baud rate
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
   MIDI.begin(MIDI_CHANNEL_OMNI);
