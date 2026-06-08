@@ -47,9 +47,10 @@
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
 #include <math.h>
 
+using namespace daisysp;
+
 // DEBUG
-//unsigned long lastCpuPrint = 0;
-//CpuLoadMeter cpuMeter;
+#pragma GCC optimize("O2")
 
 // -- MUX PINS - FIRST MUX
 #define MUX1_S0 D0
@@ -116,7 +117,7 @@ int lastPotValues[TOTAL_POTS] = { 0 };
 unsigned long lastPotRead = 0;
 const unsigned long POT_READ_INTERVAL = 1;  // Read pots every Xms
 String potNames[TOTAL_POTS];                // Array to store pot names
-const int POT_THRESHOLD = 50;               //
+const int POT_THRESHOLD = 5;                //
 
 
 // -- DAISY DUINO OBJECTS --
@@ -130,8 +131,8 @@ Adsr env;  // ENV GENERATOR
 // -- PULSAR GENERATOR
 Adsr pulsar;  // ENV GENERATOR FOR PULSAR
 // -- LOW-PASS - LPG
-MoogLadder lpGateFilter1;  // FILTER FOR LPG CHAN1
-MoogLadder lpGateFilter2;  // FILTER FOR LPG CHAN2
+Svf lpGateFilter1;  // FILTER FOR LPG CHAN1
+Svf lpGateFilter2;  // FILTER FOR LPG CHAN2
 // -- OUTPUT ANALOGUE FILTER
 MoogLadder outputFilter;
 // -- REVERB
@@ -225,6 +226,9 @@ int seqMaxSteps = 5;  // Default sequence length
 // AUDIO INTERRUPT TIMING
 uint32_t seqSampleCounter = 0;  // Counts samples to trigger the next step
 float activeSeqCV = 0.0f;       // The CV of the currently active step
+// SAMPLE_RATE
+uint32_t samplesPerTick = 48000;  // default, will be updated in updateParameters()
+
 // SEQUENCER MODES
 enum SeqTriggerMode { SEQ_TRIGGER_CLOCK,
                       SEQ_TRIGGER_PULSAR,
@@ -253,6 +257,17 @@ inline float fast_pow_approx(float base, float exponent) {
   // Simple pow approximation for audio use
   // Works well for exponent in range 0-1
   return 1.0f + (base - 1.0f) * exponent;
+}
+
+inline float fast_lpg_freq(float ctrl) {
+  // Use powf here — called at most twice per sample but only in LP/COMBI mode
+  // fast_exp2_approx is too inaccurate for exponents this large
+  // 20Hz * 900 = 18000Hz at ctrl=1.0
+  // log2(900) = 9.81
+  float freq = 20.0f * powf(2.0f, ctrl * 9.81f);
+  if (freq < 30.0f) freq = 30.0f;        // LOW end SVF stability cap
+  if (freq > 18000.0f) freq = 18000.0f;  // HIGH end SVF stability cap
+  return freq;
 }
 
 // -- MUX INIT --
@@ -346,12 +361,12 @@ void readPotentiometers() {
   for (int i = 0; i < TOTAL_POTS; i++) {
     if (i < NUM_POTS_PER_MUX) {
       selectMuxChannel(i, MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3);
-      delayMicroseconds(100);  // Use the stable delay from your test
+      delayMicroseconds(10);  // Use the stable delay from your test
       potValues[i] = analogRead(MUX1_SIG);
     } else {
       int mux2Channel = i - NUM_POTS_PER_MUX;
       selectMuxChannel(mux2Channel, MUX2_S0, MUX2_S1, MUX2_S2, MUX2_S3);
-      delayMicroseconds(100);
+      delayMicroseconds(10);
       potValues[i] = analogRead(MUX2_SIG);
     }
   }
@@ -468,7 +483,7 @@ void readButtonMatrix2() {
     pinMode(colPins[col], OUTPUT);
     digitalWrite(colPins[col], HIGH);
 
-    delayMicroseconds(80);
+    delayMicroseconds(10);
 
     for (int row = 0; row < 5; row++) {
       matrix2PreviousStates[col][row] = matrix2CurrentStates[col][row];
@@ -707,15 +722,6 @@ void AudioCallback(float** in, float** out, size_t size) {
 
   float sampleRate = DAISY.get_samplerate();
 
-  // Update samples per tick less frequently to save CPU
-  static uint32_t tickUpdateCounter = 0;
-  uint32_t samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * sampleRate);
-
-  if (++tickUpdateCounter >= 1000) {
-    samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * sampleRate);
-    tickUpdateCounter = 0;
-  }
-
   for (size_t i = 0; i < size; i++) {
     // --- 1. TRIGGERS & SEQUENCER (optimized) ---
     bool seqStepTriggered = false;
@@ -735,10 +741,6 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentSeqTriggerMode == SEQ_TRIGGER_MIDI) {
       if (midiTriggerPending) {
         seqStepTriggered = true;
-        // Decrement counter and clear flag when done
-        if (--midiTriggerCounter == 0) {
-          midiTriggerPending = false;
-        }
       }
     }
 
@@ -763,10 +765,6 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentPulsarMode == PULSAR_MODE_MIDI) {
       if (midiTriggerPending) {
         pulsarTrigger = true;
-        // Decrement counter and clear flag when done
-        if (--midiTriggerCounter == 0) {
-          midiTriggerPending = false;
-        }
       }
     }
 
@@ -787,6 +785,12 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentRandomMode == RANDOM_MODE_MIDI) {
       if (midiTriggerPending) {
         randomTrigger = true;
+      }
+    }
+
+    if (midiTriggerPending) {
+      if (--midiTriggerCounter == 0) {
+        midiTriggerPending = false;
       }
     }
 
@@ -888,25 +892,30 @@ void AudioCallback(float** in, float** out, size_t size) {
     float signal0 = foldedSig;
     float ctrl0 = complexOscSigLevel + vcaComplexOsc;
     if (ctrl0 < 0.0f) ctrl0 = 0.0f;
-    if (ctrl0 > 1.0f) ctrl0 = 1.0f;
+    if (ctrl0 > 0.95f) ctrl0 = 0.95f;
 
     float processedSig0 = signal0;
     if (foldedLpgMode == LPG_MODE_VCA) {
-      processedSig0 *= ctrl0;
+      processedSig0 *= ctrl0 * ctrl0;
     } else {
-      float filterFreq0 = 20.0f * powf(1000.0f, ctrl0);
-      lpGateFilter1.SetFreq(filterFreq0);
-
-      if (foldedLpgMode == LPG_MODE_LP) {
-        lpGateFilter1.SetRes(ctrl0 * ctrl0 * 0.2f);
+      if (ctrl0 < 0.0005f) {
+        processedSig0 = 0.0f;  // Hard mute below threshold
       } else {
-        lpGateFilter1.SetRes(0.0f);
-      }
+        float filterFreq0 = fast_lpg_freq(ctrl0);
+        lpGateFilter1.SetFreq(filterFreq0);
 
-      processedSig0 = lpGateFilter1.Process(processedSig0);
+        float res0 = (foldedLpgMode == LPG_MODE_LP) ? ctrl0 * ctrl0 * 0.2f : 0.1f;
+        if (res0 > 0.95f) res0 = 0.95f;
+        lpGateFilter1.SetRes(res0);
 
-      if (foldedLpgMode == LPG_MODE_COMBI) {
-        processedSig0 *= ctrl0;
+        lpGateFilter1.Process(processedSig0);
+        processedSig0 = lpGateFilter1.Low();
+        if (processedSig0 > 1.0f) processedSig0 = 1.0f;
+        if (processedSig0 < -1.0f) processedSig0 = -1.0f;
+
+        if (foldedLpgMode == LPG_MODE_COMBI) {
+          processedSig0 *= ctrl0;
+        }
       }
     }
     finalMix += processedSig0;
@@ -915,25 +924,30 @@ void AudioCallback(float** in, float** out, size_t size) {
     float signal1 = modOscSig;
     float ctrl1 = modOscSigLevel + vcaModulationOsc;
     if (ctrl1 < 0.0f) ctrl1 = 0.0f;
-    if (ctrl1 > 1.0f) ctrl1 = 1.0f;
+    if (ctrl1 > 0.95f) ctrl1 = 0.95f;
 
     float processedSig1 = signal1;
     if (modOscLpgMode == LPG_MODE_VCA) {
       processedSig1 *= ctrl1;
     } else {
-      float filterFreq1 = 20.0f * powf(1000.0f, ctrl1);
-      lpGateFilter2.SetFreq(filterFreq1);
-
-      if (modOscLpgMode == LPG_MODE_LP) {
-        lpGateFilter2.SetRes(ctrl1 * ctrl1 * 0.2f);
+      if (ctrl1 < 0.0001f) {
+        processedSig1 = 0.0f;  // Hard mute below threshold
       } else {
-        lpGateFilter2.SetRes(0.0f);
-      }
+        float filterFreq1 = fast_lpg_freq(ctrl1);
+        lpGateFilter2.SetFreq(filterFreq1);
 
-      processedSig1 = lpGateFilter2.Process(processedSig1);
+        float res1 = (modOscLpgMode == LPG_MODE_LP) ? ctrl1 * ctrl1 * 0.2f : 0.0f;
+        if (res1 > 0.95f) res1 = 0.95f;
+        lpGateFilter2.SetRes(res1);
 
-      if (modOscLpgMode == LPG_MODE_COMBI) {
-        processedSig1 *= ctrl1;
+        lpGateFilter2.Process(processedSig1);
+        processedSig1 = lpGateFilter2.Low();
+        if (processedSig1 > 1.0f) processedSig1 = 1.0f;
+        if (processedSig1 < -1.0f) processedSig1 = -1.0f;
+
+        if (modOscLpgMode == LPG_MODE_COMBI) {
+          processedSig1 *= ctrl1;
+        }
       }
     }
     finalMix += processedSig1;
@@ -950,9 +964,8 @@ void AudioCallback(float** in, float** out, size_t size) {
     out[1][i] = (finalMix * dryWet + revR * reverbMix) * 0.4f;
   }
 
-  // -- CPU -- 
+  // -- CPU --
   //cpuMeter.OnBlockEnd();
-
 }
 
 // -- SETUP --
@@ -978,7 +991,7 @@ void setup() {
   Serial.println("Threshold for reporting changes: ±50 units");
   Serial.println("==============================================");
 
-    // -- DAISY SEED INIT AT 48kHz --
+  // -- DAISY SEED INIT AT 48kHz --
   float sample_rate;
   hw = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
   sample_rate = DAISY.get_samplerate();
@@ -1019,8 +1032,8 @@ void setup() {
   pulsar.SetSustainLevel(1.0f);
   // -- ANALOGUE OUTPUT FILTER --
   outputFilter.Init(sample_rate);
-  outputFilter.SetFreq(15000.0f);
-  outputFilter.SetRes(0.3f);
+  outputFilter.SetFreq(8000.0f);
+  outputFilter.SetRes(0.2f);
   // -- REVERB --
   reverb.Init(sample_rate);
   reverb.SetFeedback(0.85f);
@@ -1095,14 +1108,9 @@ void updateParameters() {
   // 3 cents is 3/1200 of an octave.
   float fineRange = 3.0f / 12.0f;
 
-  // -- COMPLEX OSCILLATOR (25Hz to 4000Hz) --
+  // -- COMPLEX OSCILLATOR --
   // PITCH
-  float complexOscFreqPot = potValues[16] / 65535.0f;
-  // LOGARITHMIC MAPPING: 20Hz to 8000Hz (6 octaves)
-  // Use exact powf for smooth, accurate response
-  float freqMin = 20.0f;    // Low C (~32.7Hz) but slightly lower for sub-bass
-  float freqMax = 3560.0f;  // ~8kHz, 8 octaves above 31.25Hz
-  complexOscFreq = freqMin * powf(freqMax / freqMin, complexOscFreqPot);
+  complexOscFreq = fmap(potValues[16] / 65535.0f, 5.0f, 1760.0f, Mapping::EXP);
 
   // Pot 15: Complex Osc Frequency Modulation Amount
   complexOscFreqModDepth = potValues[15] / 65535.0f;
@@ -1122,17 +1130,14 @@ void updateParameters() {
 
   // LPG
   // Pot 21: Amount of modulation for Folded Signal LPG
-  foldedLpgModAmount = potValues[21] / 65535.0f;
+  foldedLpgModAmount = fmap(potValues[21] / 65535.0f, 0.0f, 0.98f, Mapping::LINEAR);
 
   // Pot 22: Channel 1 Sig Level
-  complexOscSigLevel = potValues[22] / 65535.0f;
+  complexOscSigLevel = fmap(potValues[22] / 65535.0f, 0.0f, 0.98f, Mapping::EXP);
 
   // -- MODULATION OSCILLATOR (1Hz to 2000Hz) --
   // PITCH
-  float modulationOscFreqPot = potValues[11] / 65535.0f;
-  float modMin = 0.1f;
-  float modMax = 1760.0f;
-  modulationOscFreq = modMin * powf(modMax / modMin, modulationOscFreqPot);
+  modulationOscFreq = fmap(potValues[11] / 65535.0f, 0.1f, 1760.0f, Mapping::LINEAR);
 
   // Pot 10: Amount of modulation applied to Mod Osc Frequency
   modulationFreqModDepth = potValues[10] / 65535.0f;
@@ -1149,28 +1154,25 @@ void updateParameters() {
 
   // LPG
   // Pot 23: Amount of modulation for Mod Osc Signal LPG
-  modOscLpgModAmount = potValues[23] / 65535.0f;
+  modOscLpgModAmount = fmap(potValues[23] / 65535.0f, 0.0f, 0.98f, Mapping::LINEAR);
 
   // Pot 24: Channel 2 Sig Level
-  modOscSigLevel = potValues[24] / 65535.0f;
+  modOscSigLevel = fmap(potValues[24] / 65535.0f, 0.0f, 0.98f, Mapping::EXP);
 
   // -- ENVELOPE [Buchla ASD config] --
-  float minTime = 0.02f;
+  float minTime = 0.002f;
   float maxTime = 10.0f;
-  float timeRatio = maxTime / minTime;  // 500.0f
 
   // Attack Time (Logarithmic)
-  float attackPot = potValues[5] / 65535.0f;
-  attackTime = minTime * fast_pow_approx(timeRatio, attackPot);
+  attackTime = fmap(potValues[5] / 65535.0f, minTime, maxTime, Mapping::EXP);
   env.SetAttackTime(attackTime);
 
   // Sustain Duration (Logarithmic)
-  float sustainDurationPot = potValues[6] / 65535.0f;
-  sustainDuration = minTime * fast_pow_approx(timeRatio, sustainDurationPot);
+  sustainDuration = fmap(potValues[6] / 65535.0f, 0.02f, 5.0f, Mapping::EXP);
 
   // Release Time (Logarithmic)
-  float releasePot = potValues[7] / 65535.0f;
-  releaseTime = minTime * fast_pow_approx(timeRatio, releasePot);
+  releaseTime = fmap(potValues[7] / 65535.0f, minTime, maxTime, Mapping::EXP);
+
   env.SetReleaseTime(releaseTime);
   env.SetDecayTime(0.0f);
   env.SetSustainLevel(1.0f);
@@ -1199,16 +1201,19 @@ void updateParameters() {
   // Update Sequencer CV steps from MUX1 Channels 0-4
   for (int i = 0; i < 5; i++) {
     // Store normalized 0.0 to 1.0 values
-    seqStepCV[i] = potValues[i] / 65535.0f;
+    seqStepCV[i] = fmap(potValues[i] / 65535.0f, 0.0f, 1.0f, Mapping::EXP);
   }
 
   // -- CLOCK --
   float clockPot = potValues[25] / 65535.0f;
-  seqClockSpeed = 1.0f * powf(2000.0f, (1.0f - clockPot));  // Use exact powf
+  seqClockSpeed = 0.1f * powf(40000.0f, (1.0f - clockPot));
 
   // CLOCK CLAMPING
-  if (seqClockSpeed < 0.5f) seqClockSpeed = 0.5f;
-  if (seqClockSpeed > 2000.0f) seqClockSpeed = 2000.0f;
+  if (seqClockSpeed < 0.1f) seqClockSpeed = 0.1f;
+  if (seqClockSpeed > 4000.0f) seqClockSpeed = 4000.0f;
+
+  samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * DAISY.get_samplerate());
+
 
   // -- REVERB --
   reverbMix = potValues[26] / 65535.0f;  // REVERB MIX CONTROL
