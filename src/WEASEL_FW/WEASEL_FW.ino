@@ -117,7 +117,7 @@ int lastPotValues[TOTAL_POTS] = { 0 };
 unsigned long lastPotRead = 0;
 const unsigned long POT_READ_INTERVAL = 1;  // Read pots every Xms
 String potNames[TOTAL_POTS];                // Array to store pot names
-const int POT_THRESHOLD = 5;                //
+const int POT_THRESHOLD = 2;                //
 
 
 // -- DAISY DUINO OBJECTS --
@@ -142,6 +142,7 @@ daisysp::Wavefolder waveFolder;
 
 
 // -- OBJECT VARIABLES --
+float sampleRate;
 // -- OSCILLATORS
 // -- COMPLEX
 float complexOscFreq;                 // CONTROLS FREQUENCY
@@ -184,6 +185,13 @@ enum LpgMode { LPG_MODE_VCA,
                LPG_MODE_COMBI };
 LpgMode foldedLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
 LpgMode modOscLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
+float lastCtrl0 = -1.0f;
+float lastCtrl1 = -1.0f;
+int lastMode0 = -1;
+int lastMode1 = -1;
+#define LPG_TABLE_SIZE 64
+float lpgFreqTable[LPG_TABLE_SIZE];
+
 
 // -- ENVELOPE [BUCHLA ASD/ASR] --
 float attackTime = 0.0f;
@@ -226,7 +234,7 @@ int seqMaxSteps = 5;  // Default sequence length
 // AUDIO INTERRUPT TIMING
 uint32_t seqSampleCounter = 0;  // Counts samples to trigger the next step
 float activeSeqCV = 0.0f;       // The CV of the currently active step
-// SAMPLE_RATE
+// SAMPLE RATE
 uint32_t samplesPerTick = 48000;  // default, will be updated in updateParameters()
 
 // SEQUENCER MODES
@@ -243,7 +251,7 @@ const uint8_t MIDI_TRIGGER_HOLDOFF = 10;  // Adjust as needed (5-20 is good)
 float rawModulationValues[7] = { 0 };  // Pre-calculated modulation values
 float ln2 = 0.69314718056f;            // ln(2) for fast exp approximations
 uint32_t modUpdateCounter = 0;         // REMOVE THE DUPLICATE IN AudioCallback
-const uint32_t MOD_UPDATE_RATE = 4;    // Update modulation every 4 samples
+const uint32_t MOD_UPDATE_RATE = 16;    // 
 
 // -- FAST MATH APPROXIMATIONS --
 inline float fast_exp2_approx(float x) {
@@ -260,14 +268,16 @@ inline float fast_pow_approx(float base, float exponent) {
 }
 
 inline float fast_lpg_freq(float ctrl) {
-  // Use powf here — called at most twice per sample but only in LP/COMBI mode
-  // fast_exp2_approx is too inaccurate for exponents this large
-  // 20Hz * 900 = 18000Hz at ctrl=1.0
-  // log2(900) = 9.81
-  float freq = 20.0f * powf(2.0f, ctrl * 9.81f);
-  if (freq < 30.0f) freq = 30.0f;        // LOW end SVF stability cap
-  if (freq > 18000.0f) freq = 18000.0f;  // HIGH end SVF stability cap
-  return freq;
+    // Clamp ctrl to [0,1]
+    if (ctrl < 0.0f) ctrl = 0.0f;
+    if (ctrl > 1.0f) ctrl = 1.0f;
+    
+    // Linear interpolation between table values
+    float idx = ctrl * (LPG_TABLE_SIZE - 1);
+    int i = (int)idx;
+    if (i >= LPG_TABLE_SIZE - 1) return lpgFreqTable[LPG_TABLE_SIZE - 1];
+    float frac = idx - i;
+    return lpgFreqTable[i] + frac * (lpgFreqTable[i + 1] - lpgFreqTable[i]);
 }
 
 // -- MUX INIT --
@@ -717,11 +727,6 @@ void printButtonChanges() {
 // -- AUDIO PROCESSING --
 void AudioCallback(float** in, float** out, size_t size) {
 
-  // -- CPU --
-  //cpuMeter.OnBlockStart();
-
-  float sampleRate = DAISY.get_samplerate();
-
   for (size_t i = 0; i < size; i++) {
     // --- 1. TRIGGERS & SEQUENCER (optimized) ---
     bool seqStepTriggered = false;
@@ -901,12 +906,18 @@ void AudioCallback(float** in, float** out, size_t size) {
       if (ctrl0 < 0.0005f) {
         processedSig0 = 0.0f;  // Hard mute below threshold
       } else {
-        float filterFreq0 = fast_lpg_freq(ctrl0);
-        lpGateFilter1.SetFreq(filterFreq0);
+        int currentMode = (int)foldedLpgMode;
+        if (fabsf(ctrl0 - lastCtrl0) > 0.002f || currentMode != lastMode0) {
+          float filterFreq0 = fast_lpg_freq(ctrl0);
+          lpGateFilter1.SetFreq(filterFreq0);
 
-        float res0 = (foldedLpgMode == LPG_MODE_LP) ? ctrl0 * ctrl0 * 0.2f : 0.1f;
-        if (res0 > 0.95f) res0 = 0.95f;
-        lpGateFilter1.SetRes(res0);
+          float res0 = (foldedLpgMode == LPG_MODE_LP) ? ctrl0 * ctrl0 * 0.2f : 0.1f;
+          if (res0 > 0.95f) res0 = 0.95f;
+          lpGateFilter1.SetRes(res0);
+
+          lastCtrl0 = ctrl0;
+          lastMode0 = currentMode;
+        }
 
         lpGateFilter1.Process(processedSig0);
         processedSig0 = lpGateFilter1.Low();
@@ -933,12 +944,18 @@ void AudioCallback(float** in, float** out, size_t size) {
       if (ctrl1 < 0.0001f) {
         processedSig1 = 0.0f;  // Hard mute below threshold
       } else {
-        float filterFreq1 = fast_lpg_freq(ctrl1);
-        lpGateFilter2.SetFreq(filterFreq1);
+        int currentMode = (int)modOscLpgMode;
+        if (fabsf(ctrl1 - lastCtrl1) > 0.002f || currentMode != lastMode1) {
+          float filterFreq1 = fast_lpg_freq(ctrl1);
+          lpGateFilter2.SetFreq(filterFreq1);
 
-        float res1 = (modOscLpgMode == LPG_MODE_LP) ? ctrl1 * ctrl1 * 0.2f : 0.0f;
-        if (res1 > 0.95f) res1 = 0.95f;
-        lpGateFilter2.SetRes(res1);
+          float res1 = (modOscLpgMode == LPG_MODE_LP) ? ctrl1 * ctrl1 * 0.2f : 0.0f;
+          if (res1 > 0.95f) res1 = 0.95f;
+          lpGateFilter2.SetRes(res1);
+
+          lastCtrl1 = ctrl1;
+          lastMode1 = currentMode;
+        }
 
         lpGateFilter2.Process(processedSig1);
         processedSig1 = lpGateFilter2.Low();
@@ -973,9 +990,9 @@ void setup() {
   Serial.begin(115200);
   delay(1000);  // Wait for serial to initialize
 
-  Serial.println("=== DaisySeed Button & Potentiometer Monitor ===");
-  Serial.println("Displaying button state changes and potentiometer values...");
-  Serial.println();
+  //Serial.println("=== DaisySeed Button & Potentiometer Monitor ===");
+  //Serial.println("Displaying button state changes and potentiometer values...");
+  //Serial.println();
 
   // -- INIT BUTTON MATRICES --
   initButtonMatrix();
@@ -985,57 +1002,63 @@ void setup() {
   analogReadResolution(16);  // 16-BIT ADC
   initPotentiometers();
 
-  Serial.println("Potentiometer Configuration:");
-  Serial.println("MUX1: Channels 0-15 connected to A0");
-  Serial.println("MUX2: Channels 0-15 connected to A1");
-  Serial.println("Threshold for reporting changes: ±50 units");
-  Serial.println("==============================================");
+  //Serial.println("Potentiometer Configuration:");
+  //Serial.println("MUX1: Channels 0-15 connected to A0");
+  //Serial.println("MUX2: Channels 0-15 connected to A1");
+  //Serial.println("Threshold for reporting changes: ±50 units");
+  //Serial.println("==============================================");
 
   // -- DAISY SEED INIT AT 48kHz --
-  float sample_rate;
   hw = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
-  sample_rate = DAISY.get_samplerate();
+  sampleRate = DAISY.get_samplerate();
   int block_size = 128;  // Get the actual block size
   DAISY.SetAudioBlockSize(block_size);
 
-  // -- CPU DEBUG --
-  //cpuMeter.Init(sample_rate, block_size);
+  // -- LPG LUT
+  for (int i = 0; i < LPG_TABLE_SIZE; i++) {
+    float ctrl = (float)i / (float)(LPG_TABLE_SIZE - 1);
+    float freq = 20.0f * powf(2.0f, ctrl * 9.81f);
+    if (freq < 30.0f) freq = 30.0f;
+    if (freq > 18000.0f) freq = 18000.0f;
+    lpgFreqTable[i] = freq;
+}
+
   // -- START AUDIO
   DAISY.begin(AudioCallback);
 
   // -- DAISY DUINO INIT --
   // -- COMPLEX OSC // SINE + MORPH --
-  complexOsc.Init(sample_rate);
+  complexOsc.Init(sampleRate);
   complexOsc.SetWaveform(complexOsc.WAVE_SIN);
   complexOsc.SetFreq(440.0f);
   complexOsc.SetAmp(1.0f);
-  complexOscMorph.Init(sample_rate);
+  complexOscMorph.Init(sampleRate);
   complexOscMorph.SetWaveform(complexOsc.WAVE_SAW);
   complexOscMorph.SetFreq(440.0f);
   complexOscMorph.SetAmp(1.0f);
   // -- WAVEFOLDER --
   waveFolder.Init();
   // -- MODULATION OSC --
-  modulationOsc.Init(sample_rate);
+  modulationOsc.Init(sampleRate);
   modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
   modulationOsc.SetFreq(440.0f);
   modulationOsc.SetAmp(1.0f);
   // -- LPG FILTER --
-  lpGateFilter1.Init(sample_rate);
-  lpGateFilter2.Init(sample_rate);
+  lpGateFilter1.Init(sampleRate);
+  lpGateFilter2.Init(sampleRate);
   // -- ENVELOPE --
-  env.Init(sample_rate);
+  env.Init(sampleRate);
   // -- PULSAR ENV --
-  pulsar.Init(sample_rate);
+  pulsar.Init(sampleRate);
   pulsar.SetAttackTime(0.02f);
   pulsar.SetDecayTime(0.02f);
   pulsar.SetSustainLevel(1.0f);
   // -- ANALOGUE OUTPUT FILTER --
-  outputFilter.Init(sample_rate);
+  outputFilter.Init(sampleRate);
   outputFilter.SetFreq(8000.0f);
   outputFilter.SetRes(0.2f);
   // -- REVERB --
-  reverb.Init(sample_rate);
+  reverb.Init(sampleRate);
   reverb.SetFeedback(0.85f);
   reverb.SetLpFreq(17000.0f);
 
@@ -1050,9 +1073,9 @@ void setup() {
   currentMidiNote = 60;
   midiTriggerPending = false;
 
-  Serial.println("=============================================");
-  Serial.println("MIDI initialized with pin 30 (Digital pin 30)");
-  Serial.println("=============================================");
+  //Serial.println("=============================================");
+  //Serial.println("MIDI initialized with pin 30 (Digital pin 30)");
+  //Serial.println("=============================================");
 }
 
 // -- LOOP --
@@ -1110,7 +1133,7 @@ void updateParameters() {
 
   // -- COMPLEX OSCILLATOR --
   // PITCH
-  complexOscFreq = fmap(potValues[16] / 65535.0f, 5.0f, 1760.0f, Mapping::EXP);
+  complexOscFreq = fmap(potValues[16] / 65535.0f, 25.0f, 1760.0f, Mapping::EXP);
 
   // Pot 15: Complex Osc Frequency Modulation Amount
   complexOscFreqModDepth = potValues[15] / 65535.0f;
@@ -1135,7 +1158,7 @@ void updateParameters() {
   // Pot 22: Channel 1 Sig Level
   complexOscSigLevel = fmap(potValues[22] / 65535.0f, 0.0f, 0.98f, Mapping::EXP);
 
-  // -- MODULATION OSCILLATOR (1Hz to 2000Hz) --
+  // -- MODULATION OSCILLATOR --
   // PITCH
   modulationOscFreq = fmap(potValues[11] / 65535.0f, 0.1f, 1760.0f, Mapping::LINEAR);
 
