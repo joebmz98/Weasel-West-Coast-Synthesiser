@@ -94,7 +94,7 @@ using namespace daisysp;
 bool matrixStates[4][7] = { { false } };
 bool lastMatrixStates[4][7] = { { false } };
 unsigned long lastMatrixRead = 0;
-const unsigned long MATRIX_READ_INTERVAL = 10;
+const unsigned long MATRIX_READ_INTERVAL = 20;
 
 const char* matrix1Functions[4][7] = {
   { "Seq CV -> Pulsar Decay", "Seq CV -> ModOsc Pitch", "Seq CV -> Mod Amount", "Seq CV -> CompOsc Pitch", "Seq CV -> WF Mod", "Seq CV -> LPG1", "Seq CV -> LPG2" },
@@ -115,7 +115,7 @@ const int TOTAL_POTS = 32;  // 2 muxes * 16 channels each
 int potValues[TOTAL_POTS] = { 0 };
 int lastPotValues[TOTAL_POTS] = { 0 };
 unsigned long lastPotRead = 0;
-const unsigned long POT_READ_INTERVAL = 1;  // Read pots every Xms
+const unsigned long POT_READ_INTERVAL = 5;  // Read pots every Xms
 String potNames[TOTAL_POTS];                // Array to store pot names
 const int POT_THRESHOLD = 2;                //
 
@@ -154,7 +154,6 @@ float complexOscWFModDepth = 0.0f;    // WAVEFOLDER MOD DEPTH
 float complexOscFreqModDepth = 0.0f;  // FREQ MOD DEPTH
 bool complexOscInverted = false;      // TOGGLE POLARITY
 bool complexOscMidiEnabled = false;   // TOGGLE MIDI
-float complexOscMidiFreq = 0.0f;      // FREQUENCY OFFSET FROM MIDI
 float complexOscMorphMix;             // COMPLEX OSC TIMBRE AMOUNT
 int morphWaveformIndex = 0;           // 0 = SAW, 1 = SQUARE, 2 = TRIANGLE
 float complexOscSigLevel = 0.0f;      // LPG CONTROL
@@ -169,15 +168,12 @@ float modulationFreqModDepth = 0.0f;      // FREQ MOD DEPTH
 float modulationOscModCoeffDepth = 0.0f;  // MODULATION MOD DEPTH
 bool useAmplitudeMod = false;             // False = FM, True = AM
 bool modulationMidiEnabled = false;       // TOGGLE MIDI
-float modulationOscMidiFreq = 0.0f;       // FREQUENCY OFFSET FROM MIDI
 int modWaveformIndex = 0;                 // 0: SIN, 1: TRI, 2: SQUARE, 3: SAW
 float modOscSigLevel = 0.0f;              // LPG CONTROL
 
 // -- LPG --
 float vcaComplexOsc;              // AMPLITUDE COEFF FOR COMPLEXOSC
 float vcaModulationOsc;           // AMPLITUDE COEFF FOR MODULATIONOSC
-float lpComplexOsc;               // FREQ COEFF FOR COMPLEXOSC
-float lpModulationOsc;            // FREQ COEFF FOR MODULATIONOSC
 float foldedLpgModAmount = 0.0f;  // Multiplier for Folded LPG mod
 float modOscLpgModAmount = 0.0f;  // Multiplier for Mod Osc LPG mod
 enum LpgMode { LPG_MODE_VCA,
@@ -205,10 +201,10 @@ enum PulsarMode { PULSAR_MODE_SEQ,
                   PULSAR_MODE_OSC };
 PulsarMode currentPulsarMode = PULSAR_MODE_SEQ;
 float pulsarReleaseTime = 0.02f;
-float pulsarEnvSig = 0.0f;
 bool lastPulsarEnvActive = false;
 float pulsarPeriodModCoeff = 0.0f;
-bool pulsarGate = false;
+bool manualPulsarTrigger = false;
+bool pulsarMidiTrigger = false;  
 
 // -- SAMPLE&HOLD / RANDOM VOLTAGE --
 enum RandomMode { RANDOM_MODE_SEQ,
@@ -224,6 +220,13 @@ float reverbMix;  // REVERB MIX COEFF
 #define MIDI_RX_PIN 14  // USART1 Rx (Digital pin 30)
   // MIDI OBJECT
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
+// --
+bool quantizeToMidi = false;       // Enable/disable MIDI quantization mode
+float baseFreqComplex = 261.63f;   // Base frequency for complex osc (C4 = 261.63Hz)
+float baseFreqMod = 261.63f;       // Base frequency for mod osc (C4 = 261.63Hz)
+float lastMidiNoteFreq = 261.63f;  // Last received MIDI note frequency
+bool midiNoteReceived = false;     // Track if we've received a MIDI note in quantize mode
+
 
 // -- SEQUENCER --
 int seqCurrentStep = 0;
@@ -251,7 +254,7 @@ const uint8_t MIDI_TRIGGER_HOLDOFF = 10;  // Adjust as needed (5-20 is good)
 float rawModulationValues[7] = { 0 };  // Pre-calculated modulation values
 float ln2 = 0.69314718056f;            // ln(2) for fast exp approximations
 uint32_t modUpdateCounter = 0;         // REMOVE THE DUPLICATE IN AudioCallback
-const uint32_t MOD_UPDATE_RATE = 16;    // 
+const uint32_t MOD_UPDATE_RATE = 16;   //
 
 // -- FAST MATH APPROXIMATIONS --
 inline float fast_exp2_approx(float x) {
@@ -268,16 +271,54 @@ inline float fast_pow_approx(float base, float exponent) {
 }
 
 inline float fast_lpg_freq(float ctrl) {
-    // Clamp ctrl to [0,1]
-    if (ctrl < 0.0f) ctrl = 0.0f;
-    if (ctrl > 1.0f) ctrl = 1.0f;
-    
-    // Linear interpolation between table values
-    float idx = ctrl * (LPG_TABLE_SIZE - 1);
-    int i = (int)idx;
-    if (i >= LPG_TABLE_SIZE - 1) return lpgFreqTable[LPG_TABLE_SIZE - 1];
-    float frac = idx - i;
-    return lpgFreqTable[i] + frac * (lpgFreqTable[i + 1] - lpgFreqTable[i]);
+  // Clamp ctrl to [0,1]
+  if (ctrl < 0.0f) ctrl = 0.0f;
+  if (ctrl > 1.0f) ctrl = 1.0f;
+
+  // Linear interpolation between table values
+  float idx = ctrl * (LPG_TABLE_SIZE - 1);
+  int i = (int)idx;
+  if (i >= LPG_TABLE_SIZE - 1) return lpgFreqTable[LPG_TABLE_SIZE - 1];
+  float frac = idx - i;
+  return lpgFreqTable[i] + frac * (lpgFreqTable[i + 1] - lpgFreqTable[i]);
+}
+
+// Soft clipper for SVF input protection
+inline float svf_input_protect(float x) {
+  // Prevent extreme values that cause SVF instability
+  if (x > 1.5f) return 1.5f;
+  if (x < -1.5f) return -1.5f;
+  // Soft clip near the edges to prevent harsh edges
+  if (x > 1.0f) return 1.0f + (x - 1.0f) * 0.25f;
+  if (x < -1.0f) return -1.0f + (x + 1.0f) * 0.25f;
+  return x;
+}
+
+// NaN and bad float detection
+inline bool isBadFloat(float x) {
+  // Check for NaN (x != x) and infinity
+  return (x != x) || (x > 1e10f) || (x < -1e10f);
+}
+
+// Get frequency ratio from MIDI note relative to C4 (note 60)
+inline float getMidiTransposeRatio(int midiNote) {
+  // C4 = note 60, ratio = 2^((note - 60)/12)
+  float semitones = (float)(midiNote - 60);
+  return powf(2.0f, semitones / 12.0f);
+}
+
+// SVF state reset function
+void resetSvfFilters() {
+  lpGateFilter1.Init(sampleRate);
+  lpGateFilter2.Init(sampleRate);
+  // Reset cached values to force parameter updates
+  lastCtrl0 = -1.0f;
+  lastCtrl1 = -1.0f;
+  lastMode0 = -1;
+  lastMode1 = -1;
+
+  // Reset the cached processed signals to avoid residual DC
+  // (Add these as static variables in AudioCallback if needed)
 }
 
 // -- MUX INIT --
@@ -545,22 +586,13 @@ void updateMatrixModulation(float envSig, float pulsarEnvSig) {
 // -- SERIAL PRINT
 // -- BUTTON FUNCTIONS
 void printButtonChanges() {
-  bool anyChange = false;
-
   // Check Matrix 1 (4x7) - Modulation Matrix
   for (int col = 0; col < 4; col++) {
     for (int row = 0; row < 7; row++) {
       if (matrixStates[col][row] != lastMatrixStates[col][row]) {
-        anyChange = true;
-
-        Serial.print(F("Matrix 1 - B"));
-        Serial.print(col);
-        Serial.print(F("+A"));
-        Serial.print(row);
-        Serial.print(F(" ["));
-        Serial.print(matrix1Functions[col][row]);
-        Serial.print(F("]: "));
-        Serial.println(matrixStates[col][row] ? F("PRESSED") : F("RELEASED"));
+        // Matrix 1 buttons don't have state changes to process
+        // They just connect modulation sources to destinations
+        // No action needed on press/release
       }
     }
   }
@@ -569,158 +601,162 @@ void printButtonChanges() {
   for (int col = 0; col < 4; col++) {
     for (int row = 0; row < 5; row++) {
       if (matrix2CurrentStates[col][row] != matrix2PreviousStates[col][row]) {
-        anyChange = true;
 
-        Serial.print(F("Matrix 2 - X"));
-        Serial.print(col);
-        Serial.print(F("+Y"));
-        Serial.print(row);
-        Serial.print(F(" ["));
+        // --- ROW 0 BUTTONS ---
 
-        // Specific Logic for Buttons
         if (col == 1 && row == 0) {
-          Serial.print(F("SEQUENCER_MODE_BUTTON"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            currentSeqTriggerMode = static_cast<SeqTriggerMode>((currentSeqTriggerMode + 1) % 3);
-            Serial.print(F(" -> "));
-            if (currentSeqTriggerMode == SEQ_TRIGGER_CLOCK) Serial.print(F("INTERNAL CLOCK"));
-            else if (currentSeqTriggerMode == SEQ_TRIGGER_PULSAR) Serial.print(F("PULSAR ENVELOPE"));
-            else if (currentSeqTriggerMode == SEQ_TRIGGER_MIDI) Serial.print(F("MIDI NOTE ON"));
-          }
-        } else if (col == 1 && row == 1) Serial.print(F("PULSER CLOCK MODE"));
-        else if (col == 1 && row == 2) {
-          Serial.print(F("OSCILLATOR MIDI_TOGGLE"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            complexOscMidiEnabled = !complexOscMidiEnabled;
-            modulationMidiEnabled = !modulationMidiEnabled;
-          }
-        } else if (col == 1 && row == 3) {
-          Serial.print(F("RANDOM_TRIGGER_MODE_TOGGLE"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            currentRandomMode = static_cast<RandomMode>((currentRandomMode + 1) % 3);
-            Serial.print(F(" -> "));
-            if (currentRandomMode == RANDOM_MODE_SEQ) Serial.print(F("SEQUENCER"));
-            else if (currentRandomMode == RANDOM_MODE_PULSAR) Serial.print(F("PULSAR"));
-            else Serial.print(F("MIDI NOTE ON"));
-          }
-        } else if (col == 3 && row == 1) {
-          Serial.print(F("FM/AM_TOGGLE"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            useAmplitudeMod = !useAmplitudeMod;
-          }
-        } else if (col == 3 && row == 2) {
-          Serial.print(F("LPG_MODE_TOGGLE"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            foldedLpgMode = static_cast<LpgMode>((foldedLpgMode + 1) % 3);
-            Serial.print(F(" -> "));
-            if (foldedLpgMode == LPG_MODE_VCA) Serial.print(F("VCA"));
-            else if (foldedLpgMode == LPG_MODE_LP) Serial.print(F("LP"));
-            else Serial.print(F("COMBI"));
-          }
-        } else if (col == 0 && row == 3) {
-          Serial.print(F("MODOSC_LPG_MODE"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            modOscLpgMode = static_cast<LpgMode>((modOscLpgMode + 1) % 3);
-            Serial.print(F(" -> "));
-            Serial.print(modOscLpgMode == LPG_MODE_VCA ? F("VCA") : modOscLpgMode == LPG_MODE_LP ? F("LP")
-                                                                                                 : F("COMBI"));
-          }
-        } else if (col == 2 && row == 1) {
-          Serial.print(F("MOD_WAVE_CYCLE"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            modWaveformIndex = (modWaveformIndex + 1) % 4;
-            Serial.print(F(" -> "));
-
-            if (modWaveformIndex == 0) {
-              Serial.print(F("SINE"));
-              modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
-            } else if (modWaveformIndex == 1) {
-              Serial.print(F("TRI"));
-              modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
-            } else if (modWaveformIndex == 2) {
-              Serial.print(F("SAW"));
-              modulationOsc.SetWaveform(modulationOsc.WAVE_SAW);
-            } else if (modWaveformIndex == 3) {
-              Serial.print(F("SQUARE"));
-              modulationOsc.SetWaveform(modulationOsc.WAVE_SQUARE);
-            }
-          }
-        } else if (col == 0 && row == 2) {
-          Serial.print(F("OSC_POLARITY_INVERT"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            complexOscInverted = !complexOscInverted;
-          }
-        } else if (col == 2 && row == 2) {
-          Serial.print(F("COMPLEX_WAVE_CYCLE"));
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            morphWaveformIndex = (morphWaveformIndex + 1) % 3;
-            Serial.print(F(" -> "));
-
-            if (morphWaveformIndex == 0) {
-              Serial.print(F("TRI"));
-              complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
-            } else if (morphWaveformIndex == 1) {
-              Serial.print(F("SAW"));
-              complexOscMorph.SetWaveform(complexOscMorph.WAVE_SAW);
-            } else if (morphWaveformIndex == 2) {
-              Serial.print(F("SQUARE"));
-              complexOscMorph.SetWaveform(complexOscMorph.WAVE_SQUARE);
-            }
-          }
-        }
-        // -- SEQUENCER STEP TOGGLE SWITCHES (SPDT) --
-        // Set state directly based on switch position, don't toggle
-        else if (col == 3 && row == 3) {
-          Serial.print(F("SEQ_STEP_1_TOGGLE"));
-          // Directly set step state to switch position (HIGH = DISABLED, LOW = ENABLED)
-          seqStepEnabled[0] = !matrix2CurrentStates[col][row];  // When switch is ON (HIGH), step is DISABLED (false)
-          Serial.print(F(" -> "));
-          Serial.print(seqStepEnabled[0] ? F("ENABLED") : F("DISABLED"));
-        } else if (col == 0 && row == 4) {
-          Serial.print(F("SEQ_STEP_2_TOGGLE"));
-          seqStepEnabled[1] = !matrix2CurrentStates[col][row];
-          Serial.print(F(" -> "));
-          Serial.print(seqStepEnabled[1] ? F("ENABLED") : F("DISABLED"));
-        } else if (col == 1 && row == 4) {
-          Serial.print(F("SEQ_STEP_3_TOGGLE"));
-          seqStepEnabled[2] = !matrix2CurrentStates[col][row];
-          Serial.print(F(" -> "));
-          Serial.print(seqStepEnabled[2] ? F("ENABLED") : F("DISABLED"));
-        } else if (col == 2 && row == 4) {
-          Serial.print(F("SEQ_STEP_4_TOGGLE"));
-          seqStepEnabled[3] = !matrix2CurrentStates[col][row];
-          Serial.print(F(" -> "));
-          Serial.print(seqStepEnabled[3] ? F("ENABLED") : F("DISABLED"));
-        } else if (col == 3 && row == 4) {
-          Serial.print(F("SEQ_STEP_5_TOGGLE"));
-          seqStepEnabled[4] = !matrix2CurrentStates[col][row];
-          Serial.print(F(" -> "));
-          Serial.print(seqStepEnabled[4] ? F("ENABLED") : F("DISABLED"));
-        } else if (col == 0 && row == 0) {
-          Serial.print(F("SEQ_LENGTH_CYCLE"));
+          // SEQ_LENGTH_CYCLE - Cycles between 3, 4, and 5 steps
           if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
             if (seqMaxSteps == 5) seqMaxSteps = 4;
             else if (seqMaxSteps == 4) seqMaxSteps = 3;
             else seqMaxSteps = 5;
             seqCurrentStep %= seqMaxSteps;
           }
-        } else if (col == 0 && row == 1) {
-          Serial.print(F("PULSAR_MODE_TOGGLE"));
+        }
+
+        else if (col == 0 && row == 0) {
+          // SEQUENCER_MODE_BUTTON - Cycles trigger mode: CLOCK -> PULSAR -> MIDI
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            currentSeqTriggerMode = static_cast<SeqTriggerMode>((currentSeqTriggerMode + 1) % 3);
+          }
+        }
+
+        else if (col == 2 && row == 0) {
+          // UNASSIGNED BUTTON - Available for future use
+        }
+
+        else if (col == 3 && row == 0) {
+          // UNASSIGNED BUTTON - Available for future use
+        }
+
+        // --- ROW 1 BUTTONS ---
+
+        else if (col == 0 && row == 1) {
+          // PULSAR_MODE_TOGGLE - Cycles: SEQ -> MIDI -> OSC (free running)
           if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
             currentPulsarMode = static_cast<PulsarMode>((currentPulsarMode + 1) % 3);
           }
-        } else {
-          Serial.print(F("BUTTON_UNASSIGNED"));
         }
 
-        Serial.print(F("] Status: "));
-        Serial.println(matrix2CurrentStates[col][row] ? F("PRESSED") : F("RELEASED"));
+        else if (col == 1 && row == 1) {
+          // PULSER MANUAL TRIGGER
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            manualPulsarTrigger = true;  // Set flag to trigger on next audio callback
+          }
+        }
+
+        else if (col == 2 && row == 1) {
+          // MOD_WAVE_CYCLE - Cycles modulation oscillator waveform: SIN -> TRI -> SAW -> SQUARE
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            modWaveformIndex = (modWaveformIndex + 1) % 4;
+            if (modWaveformIndex == 0) {
+              modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
+            } else if (modWaveformIndex == 1) {
+              modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
+            } else if (modWaveformIndex == 2) {
+              modulationOsc.SetWaveform(modulationOsc.WAVE_SAW);
+            } else if (modWaveformIndex == 3) {
+              modulationOsc.SetWaveform(modulationOsc.WAVE_SQUARE);
+            }
+          }
+        }
+
+        else if (col == 3 && row == 1) {
+          // FM/AM_TOGGLE - Switches between Frequency Modulation and Amplitude Modulation
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            useAmplitudeMod = !useAmplitudeMod;
+          }
+        }
+
+        // --- ROW 2 BUTTONS ---
+
+        else if (col == 0 && row == 2) {
+          // OSC_POLARITY_INVERT - Inverts the complex oscillator output
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            complexOscInverted = !complexOscInverted;
+          }
+        }
+
+        else if (col == 1 && row == 2) {
+          // QUANTIZE_TO_MIDI - Enables MIDI note following (C4 reference mode)
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            quantizeToMidi = !quantizeToMidi;
+            if (quantizeToMidi) {
+              // When enabling, reset the "note received" flag
+              midiNoteReceived = false;
+            }
+          }
+        }
+
+        else if (col == 2 && row == 2) {
+          // COMPLEX_WAVE_CYCLE - Cycles complex oscillator morph waveform: TRI -> SAW -> SQUARE
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            morphWaveformIndex = (morphWaveformIndex + 1) % 3;
+            if (morphWaveformIndex == 0) {
+              complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
+            } else if (morphWaveformIndex == 1) {
+              complexOscMorph.SetWaveform(complexOscMorph.WAVE_SAW);
+            } else if (morphWaveformIndex == 2) {
+              complexOscMorph.SetWaveform(complexOscMorph.WAVE_SQUARE);
+            }
+          }
+        }
+
+        else if (col == 3 && row == 2) {
+          // LPG_MODE_TOGGLE - Cycles LPG mode: VCA -> LP -> COMBI
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            foldedLpgMode = static_cast<LpgMode>((foldedLpgMode + 1) % 3);
+          }
+        }
+
+        // --- ROW 3 BUTTONS ---
+
+        else if (col == 0 && row == 3) {
+          // MODOSC_LPG_MODE - Cycles modulation oscillator LPG mode: VCA -> LP -> COMBI
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            modOscLpgMode = static_cast<LpgMode>((modOscLpgMode + 1) % 3);
+          }
+        }
+
+        else if (col == 1 && row == 3) {
+          // RANDOM_TRIGGER_MODE_TOGGLE - Cycles random source: SEQ -> PULSAR -> MIDI
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            currentRandomMode = static_cast<RandomMode>((currentRandomMode + 1) % 3);
+          }
+        }
+
+        else if (col == 2 && row == 3) {
+          // UNASSIGNED BUTTON - Available for future use
+        }
+
+        else if (col == 3 && row == 3) {
+          // SEQ_STEP_1_TOGGLE - Enables/disables sequencer step 1
+          seqStepEnabled[0] = !matrix2CurrentStates[col][row];
+        }
+
+        // --- ROW 4 BUTTONS ---
+
+        else if (col == 0 && row == 4) {
+          // SEQ_STEP_2_TOGGLE - Enables/disables sequencer step 2
+          seqStepEnabled[1] = !matrix2CurrentStates[col][row];
+        }
+
+        else if (col == 1 && row == 4) {
+          // SEQ_STEP_3_TOGGLE - Enables/disables sequencer step 3
+          seqStepEnabled[2] = !matrix2CurrentStates[col][row];
+        }
+
+        else if (col == 2 && row == 4) {
+          // SEQ_STEP_4_TOGGLE - Enables/disables sequencer step 4
+          seqStepEnabled[3] = !matrix2CurrentStates[col][row];
+        }
+
+        else if (col == 3 && row == 4) {
+          // SEQ_STEP_5_TOGGLE - Enables/disables sequencer step 5
+          seqStepEnabled[4] = !matrix2CurrentStates[col][row];
+        }
       }
     }
-  }
-
-  if (anyChange) {
-    Serial.println();
   }
 }
 
@@ -728,6 +764,7 @@ void printButtonChanges() {
 void AudioCallback(float** in, float** out, size_t size) {
 
   for (size_t i = 0; i < size; i++) {
+
     // --- 1. TRIGGERS & SEQUENCER (optimized) ---
     bool seqStepTriggered = false;
 
@@ -744,8 +781,10 @@ void AudioCallback(float** in, float** out, size_t size) {
       }
       lastPulsarEnvActive = isPulsarActive;
     } else if (currentSeqTriggerMode == SEQ_TRIGGER_MIDI) {
+      // MIDI trigger mode - step on each MIDI note
       if (midiTriggerPending) {
         seqStepTriggered = true;
+        midiTriggerPending = false;  // Clear immediately so next note can trigger
       }
     }
 
@@ -761,15 +800,24 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // --- 2. PULSAR TRIGGER LOGIC ---
     bool pulsarTrigger = false;
-    if (currentPulsarMode == PULSAR_MODE_SEQ) {
+
+    // Check for manual trigger first (highest priority)
+    if (manualPulsarTrigger) {
+      pulsarTrigger = true;
+      manualPulsarTrigger = false;  // Clear the flag
+    }
+    // Then check mode-based triggers
+    else if (currentPulsarMode == PULSAR_MODE_SEQ) {
       pulsarTrigger = seqStepTriggered;
     } else if (currentPulsarMode == PULSAR_MODE_OSC) {
       if (!pulsar.IsRunning()) {
         pulsarTrigger = true;
       }
     } else if (currentPulsarMode == PULSAR_MODE_MIDI) {
-      if (midiTriggerPending) {
+      // Use separate flag that gets cleared immediately
+      if (pulsarMidiTrigger) {
         pulsarTrigger = true;
+        pulsarMidiTrigger = false;  // Clear immediately so it only triggers once per note
       }
     }
 
@@ -790,12 +838,6 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentRandomMode == RANDOM_MODE_MIDI) {
       if (midiTriggerPending) {
         randomTrigger = true;
-      }
-    }
-
-    if (midiTriggerPending) {
-      if (--midiTriggerCounter == 0) {
-        midiTriggerPending = false;
       }
     }
 
@@ -835,15 +877,33 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // MODULATION OSCILLATOR
     float modFinalFreq;
-    if (modulationMidiEnabled) {
-      float rawNote = 24.0f + (potValues[27] * (72.0f / 65535.0f));
-      int quantizedNote = (int)(rawNote + 0.5f);
-      modFinalFreq = mtof(quantizedNote) * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
+
+    if (quantizeToMidi) {
+      // QUANTIZE MODE: Only transpose if a MIDI note has been received
+      if (midiNoteReceived) {
+        // Use the pot frequency as C4 reference and transpose by MIDI note
+        float baseFromPot = modulationOscFreq;
+        float transposedFreq = baseFromPot * lastMidiNoteFreq;
+        modFinalFreq = transposedFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
+      } else {
+        // No MIDI note received yet - use pot frequency directly (no transpose)
+        modFinalFreq = modulationOscFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
+      }
     } else {
+      // FREE RUNNING MODE
       modFinalFreq = modulationOscFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
     }
     modulationOsc.SetFreq(modFinalFreq);
     float modOscSig = modulationOsc.Process();
+
+    // Protect SVF from harsh waveforms (sawtooth and square waves)
+    if (modWaveformIndex == 2 || modWaveformIndex == 3) {  // 2 = SAW, 3 = SQUARE
+      if (modOscSig > 1.2f) modOscSig = 1.2f;
+      if (modOscSig < -1.2f) modOscSig = -1.2f;
+    }
+    // General safety clamp - keep within SVF safe range
+    if (modOscSig > 1.5f) modOscSig = 1.5f;
+    if (modOscSig < -1.5f) modOscSig = -1.5f;
 
     float totalModDepth = modulationOscMod + (modulationOscModCoeff * 2.0f);
     if (totalModDepth < 0.0f) totalModDepth = 0.0f;
@@ -856,12 +916,28 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // COMPLEX OSCILLATOR
     float compFinalFreq;
-    if (complexOscMidiEnabled) {
+
+    if (quantizeToMidi) {
+      // QUANTIZE MODE: Only transpose if a MIDI note has been received
+      if (midiNoteReceived) {
+        // Use the pot frequency as C4 reference and transpose by MIDI note
+        float baseFromPot = complexOscFreq;
+        float transposedFreq = baseFromPot * lastMidiNoteFreq;
+        float totalFreqMod = complexOscFreqCoeff + fmSignal;
+        compFinalFreq = transposedFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
+      } else {
+        // No MIDI note received yet - use pot frequency directly (no transpose)
+        float totalFreqMod = complexOscFreqCoeff + fmSignal;
+        compFinalFreq = complexOscFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
+      }
+    } else if (complexOscMidiEnabled) {
+      // ORIGINAL MIDI MODE: Direct MIDI note control
       float rawNote = 24.0f + (potValues[16] * (72.0f / 65535.0f));
       int quantizedNote = (int)(rawNote + 0.5f);
       float totalFreqMod = complexOscFreqCoeff + fmSignal;
       compFinalFreq = mtof(quantizedNote) * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
     } else {
+      // FREE RUNNING MODE
       float totalFreqMod = complexOscFreqCoeff + fmSignal;
       compFinalFreq = complexOscFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
     }
@@ -897,7 +973,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     float signal0 = foldedSig;
     float ctrl0 = complexOscSigLevel + vcaComplexOsc;
     if (ctrl0 < 0.0f) ctrl0 = 0.0f;
-    if (ctrl0 > 0.95f) ctrl0 = 0.95f;
+    if (ctrl0 > 0.90f) ctrl0 = 0.90f;  // Safer clamping for SVF
 
     float processedSig0 = signal0;
     if (foldedLpgMode == LPG_MODE_VCA) {
@@ -921,8 +997,16 @@ void AudioCallback(float** in, float** out, size_t size) {
 
         lpGateFilter1.Process(processedSig0);
         processedSig0 = lpGateFilter1.Low();
-        if (processedSig0 > 1.0f) processedSig0 = 1.0f;
-        if (processedSig0 < -1.0f) processedSig0 = -1.0f;
+
+        // Check for SVF instability
+        if (isBadFloat(processedSig0)) {
+          lpGateFilter1.Init(sampleRate);
+          processedSig0 = 0.0f;
+          lastCtrl0 = -1.0f;
+        } else {
+          if (processedSig0 > 1.0f) processedSig0 = 1.0f;
+          if (processedSig0 < -1.0f) processedSig0 = -1.0f;
+        }
 
         if (foldedLpgMode == LPG_MODE_COMBI) {
           processedSig0 *= ctrl0;
@@ -933,9 +1017,16 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     // Process modulation oscillator signal (channel 1)
     float signal1 = modOscSig;
+
+    // Extra protection for sawtooth/square waves before SVF
+    if (modWaveformIndex == 2 || modWaveformIndex == 3) {
+      if (signal1 > 1.0f) signal1 = 1.0f;
+      if (signal1 < -1.0f) signal1 = -1.0f;
+    }
+
     float ctrl1 = modOscSigLevel + vcaModulationOsc;
     if (ctrl1 < 0.0f) ctrl1 = 0.0f;
-    if (ctrl1 > 0.95f) ctrl1 = 0.95f;
+    if (ctrl1 > 0.90f) ctrl1 = 0.90f;  // Safer clamping for SVF
 
     float processedSig1 = signal1;
     if (modOscLpgMode == LPG_MODE_VCA) {
@@ -959,8 +1050,16 @@ void AudioCallback(float** in, float** out, size_t size) {
 
         lpGateFilter2.Process(processedSig1);
         processedSig1 = lpGateFilter2.Low();
-        if (processedSig1 > 1.0f) processedSig1 = 1.0f;
-        if (processedSig1 < -1.0f) processedSig1 = -1.0f;
+
+        // Check for SVF instability
+        if (isBadFloat(processedSig1)) {
+          lpGateFilter2.Init(sampleRate);
+          processedSig1 = 0.0f;
+          lastCtrl1 = -1.0f;
+        } else {
+          if (processedSig1 > 1.0f) processedSig1 = 1.0f;
+          if (processedSig1 < -1.0f) processedSig1 = -1.0f;
+        }
 
         if (modOscLpgMode == LPG_MODE_COMBI) {
           processedSig1 *= ctrl1;
@@ -968,6 +1067,13 @@ void AudioCallback(float** in, float** out, size_t size) {
       }
     }
     finalMix += processedSig1;
+
+    // --- 9.5 CLAMP FINAL MIX ---
+    if (isBadFloat(finalMix)) {
+      finalMix = 0.0f;
+    }
+    if (finalMix > 1.0f) finalMix = 1.0f;
+    if (finalMix < -1.0f) finalMix = -1.0f;
 
     // --- 10. OUTPUT ANALOGUE FILTER ---
     finalMix = outputFilter.Process(finalMix);
@@ -980,14 +1086,10 @@ void AudioCallback(float** in, float** out, size_t size) {
     out[0][i] = (finalMix * dryWet + revL * reverbMix) * 0.4f;
     out[1][i] = (finalMix * dryWet + revR * reverbMix) * 0.4f;
   }
-
-  // -- CPU --
-  //cpuMeter.OnBlockEnd();
 }
-
 // -- SETUP --
 void setup() {
-  Serial.begin(115200);
+  //Serial.begin(115200);
   delay(1000);  // Wait for serial to initialize
 
   //Serial.println("=== DaisySeed Button & Potentiometer Monitor ===");
@@ -1011,7 +1113,7 @@ void setup() {
   // -- DAISY SEED INIT AT 48kHz --
   hw = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
   sampleRate = DAISY.get_samplerate();
-  int block_size = 128;  // Get the actual block size
+  int block_size = 64;  // Get the actual block size
   DAISY.SetAudioBlockSize(block_size);
 
   // -- LPG LUT
@@ -1021,7 +1123,7 @@ void setup() {
     if (freq < 30.0f) freq = 30.0f;
     if (freq > 18000.0f) freq = 18000.0f;
     lpgFreqTable[i] = freq;
-}
+  }
 
   // -- START AUDIO
   DAISY.begin(AudioCallback);
@@ -1065,7 +1167,8 @@ void setup() {
   // -- MIDI INIT --
   // Configure Serial1 to use pin D14 for RX
   Serial1.setRx(MIDI_RX_PIN);
-  //Serial1.begin(31250);  // Standard MIDI baud rate
+  Serial1.begin(31250);  // Standard MIDI baud rate
+  Serial1.flush();       // Clear any pending data
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
   MIDI.begin(MIDI_CHANNEL_OMNI);
@@ -1082,13 +1185,8 @@ void setup() {
 void loop() {
 
   // MIDI PROCESSING
-  MIDI.read();  // Call once per loop - the callbacks will handle the events
-
-  static bool lastMidiTriggerState = false;
-  if (midiTriggerPending) {
-    lastMidiTriggerState = true;
-  } else {
-    lastMidiTriggerState = false;
+  while (MIDI.read()) {
+    // MIDI callbacks handle the events
   }
 
   // READ BUTTON MATRICES
@@ -1160,7 +1258,7 @@ void updateParameters() {
 
   // -- MODULATION OSCILLATOR --
   // PITCH
-  modulationOscFreq = fmap(potValues[11] / 65535.0f, 0.1f, 1760.0f, Mapping::LINEAR);
+  modulationOscFreq = fmap(potValues[11] / 65535.0f, 0.1f, 1000.0f, Mapping::EXP);
 
   // Pot 10: Amount of modulation applied to Mod Osc Frequency
   modulationFreqModDepth = potValues[10] / 65535.0f;
@@ -1184,14 +1282,14 @@ void updateParameters() {
 
   // -- ENVELOPE [Buchla ASD config] --
   float minTime = 0.002f;
-  float maxTime = 10.0f;
+  float maxTime = 5.0f;
 
   // Attack Time (Logarithmic)
   attackTime = fmap(potValues[5] / 65535.0f, minTime, maxTime, Mapping::EXP);
   env.SetAttackTime(attackTime);
 
   // Sustain Duration (Logarithmic)
-  sustainDuration = fmap(potValues[6] / 65535.0f, 0.02f, 5.0f, Mapping::EXP);
+  sustainDuration = fmap(potValues[6] / 65535.0f, 0.02f, maxTime, Mapping::EXP);
 
   // Release Time (Logarithmic)
   releaseTime = fmap(potValues[7] / 65535.0f, minTime, maxTime, Mapping::EXP);
@@ -1247,7 +1345,13 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
   if (velocity > 0) {
     currentMidiNote = note;
     midiTriggerPending = true;
-    midiTriggerCounter = MIDI_TRIGGER_HOLDOFF;  // Set holdoff counter
+    midiTriggerCounter = MIDI_TRIGGER_HOLDOFF;
+
+    // Store the frequency ratio for quantization mode
+    lastMidiNoteFreq = getMidiTransposeRatio(note);
+    midiNoteReceived = true;  // Mark that we've received a MIDI note
+
+    pulsarMidiTrigger = true;
   }
 }
 
