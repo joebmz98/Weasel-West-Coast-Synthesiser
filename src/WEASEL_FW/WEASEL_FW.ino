@@ -207,11 +207,14 @@ enum EnvTriggerMode { ENV_TRIGGER_SEQ,                   // Sequencer steps (def
                       ENV_TRIGGER_PULSAR,                // Pulsar trigger
                       ENV_TRIGGER_MIDI };                // MIDI note on
 EnvTriggerMode currentEnvTriggerMode = ENV_TRIGGER_SEQ;  // Default to Sequencer
+bool envTrigger = false;                                 // Separate flag for  triggering
 bool envMidiTrigger = false;                             // Separate flag for MIDI triggering
+static uint32_t oscGateSamples = 0;
+
 
 // -- ENVELOPE STATE --
-bool midiNoteHeld = false;    // True while a MIDI note is physically held
-bool envGateHeld = false;     // Current gate state fed to env.Process()
+bool midiNoteHeld = false;  // True while a MIDI note is physically held
+bool envGateHeld = false;   // Current gate state fed to env.Process()
 
 // -- PULSAR ENV --
 enum PulsarMode { PULSAR_MODE_SEQ,
@@ -968,11 +971,26 @@ void AudioCallback(float** in, float** out, size_t size) {
       }
 
     } else if (currentEnvMode == ENV_MODE_OSCILLATE) {
-      // Self-retriggering, no external triggers
-      if (!env.IsRunning()) {
+      // OSCILLATE MODE: Self-oscillating envelope
+      // Calculate total cycle length once when needed
+      static uint32_t totalCycleSamples = 0;
+      const float SPEED_MULTIPLIER = 0.5f;
+
+      // Retrigger when envelope is completely finished
+      if (!env.IsRunning() && oscGateSamples == 0) {
         env.Retrigger(true);
+        // Include release time in the gate pulse
+        // Attack + Sustain + Release
+        totalCycleSamples = (uint32_t)((attackTime + sustainDuration + releaseTime) * sampleRate * SPEED_MULTIPLIER);
+        oscGateSamples = totalCycleSamples;
       }
-      gate = false;
+
+      if (oscGateSamples > 0) {
+        gate = true;
+        oscGateSamples--;
+      } else {
+        gate = false;
+      }
     }
 
     float envSig = env.Process(gate);
@@ -1432,8 +1450,20 @@ void updateParameters() {
   sustainGateSamples = (uint32_t)(sustainDuration * sampleRate);
   if (sustainGateSamples < minSustainGate) sustainGateSamples = minSustainGate;
 
-  // Release Time (Logarithmic)
-  releaseTime = fmap(potValues[7] / 65535.0f, minTime, maxTime, Mapping::EXP);
+    // Release Time (Logarithmic)
+  // When in oscillate mode, reduce the range to 50%
+  float releasePotNorm = potValues[7] / 65535.0f;
+  
+  if (currentEnvMode == ENV_MODE_OSCILLATE) {
+    // OSCILLATE MODE: 50% of normal range
+    // Map pot (0-1) to range (minTime to maxTime/2)
+    float oscillateMaxTime = maxTime * 0.2f;
+    releaseTime = fmap(releasePotNorm, minTime, oscillateMaxTime, Mapping::EXP);
+  } else {
+    // Normal mode: full range
+    releaseTime = fmap(releasePotNorm, minTime, maxTime, Mapping::EXP);
+  }
+  
   env.SetReleaseTime(releaseTime);
   env.SetDecayTime(0.0f);
   env.SetSustainLevel(1.0f);
@@ -1500,6 +1530,7 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
     pulsarMidiTrigger = true;
     randomMidiTrigger = true;
     envMidiTrigger = true;
+    //envTrigger = true;
   }
 }
 
