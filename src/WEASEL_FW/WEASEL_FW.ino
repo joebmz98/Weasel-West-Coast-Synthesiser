@@ -190,10 +190,28 @@ float lpgFreqTable[LPG_TABLE_SIZE];
 
 
 // -- ENVELOPE [BUCHLA ASD/ASR] --
+enum EnvelopeMode { ENV_MODE_TRANSIENT,            // One-shot, cannot sustain
+                    ENV_MODE_SUSTAIN,              // Can sustain with gate
+                    ENV_MODE_OSCILLATE };          // Looping envelope
+EnvelopeMode currentEnvMode = ENV_MODE_TRANSIENT;  // Default to Transient
 float attackTime = 0.0f;
 float releaseTime = 0.0f;
 float sustainDuration = 0.0f;
 uint32_t gateRemainingSamples = 0;
+uint32_t transientGateSamples = 0;
+uint32_t sustainGateSamples = 0;
+bool envRetriggerFlag = false;  // For oscillating mode
+
+// -- ENVELOPE TRIGGER SELECT --
+enum EnvTriggerMode { ENV_TRIGGER_SEQ,                   // Sequencer steps (default)
+                      ENV_TRIGGER_PULSAR,                // Pulsar trigger
+                      ENV_TRIGGER_MIDI };                // MIDI note on
+EnvTriggerMode currentEnvTriggerMode = ENV_TRIGGER_SEQ;  // Default to Sequencer
+bool envMidiTrigger = false;                             // Separate flag for MIDI triggering
+
+// -- ENVELOPE STATE --
+bool midiNoteHeld = false;    // True while a MIDI note is physically held
+bool envGateHeld = false;     // Current gate state fed to env.Process()
 
 // -- PULSAR ENV --
 enum PulsarMode { PULSAR_MODE_SEQ,
@@ -204,7 +222,8 @@ float pulsarReleaseTime = 0.02f;
 bool lastPulsarEnvActive = false;
 float pulsarPeriodModCoeff = 0.0f;
 bool manualPulsarTrigger = false;
-bool pulsarMidiTrigger = false;  
+bool pulsarMidiTrigger = false;
+
 
 // -- SAMPLE&HOLD / RANDOM VOLTAGE --
 enum RandomMode { RANDOM_MODE_SEQ,
@@ -212,6 +231,7 @@ enum RandomMode { RANDOM_MODE_SEQ,
                   RANDOM_MODE_MIDI };
 RandomMode currentRandomMode = RANDOM_MODE_SEQ;
 float currentRandomValue = 0.0f;
+bool randomMidiTrigger = false;
 
 // -- REVERB --
 float reverbMix;  // REVERB MIX COEFF
@@ -226,6 +246,22 @@ float baseFreqComplex = 261.63f;   // Base frequency for complex osc (C4 = 261.6
 float baseFreqMod = 261.63f;       // Base frequency for mod osc (C4 = 261.63Hz)
 float lastMidiNoteFreq = 261.63f;  // Last received MIDI note frequency
 bool midiNoteReceived = false;     // Track if we've received a MIDI note in quantize mode
+
+// -- MIDI CLOCK SYNC --
+bool midiClockSync = false;               // Enable/disable MIDI clock sync
+bool midiClockActive = false;             // Whether MIDI clock is currently being received
+uint32_t midiClockTicks = 0;              // Counter for MIDI clock ticks
+uint32_t midiClockSamplesPerTick = 0;     // Samples between MIDI clock ticks (calculated from tempo)
+float midiTempo = 120.0f;                 // Current MIDI tempo in BPM
+uint32_t lastMidiClockTime = 0;           // Last time we received a MIDI clock message
+const uint32_t MIDI_CLOCK_TIMEOUT = 500;  // Timeout in milliseconds (0.5 seconds)
+
+
+// -- CLOCK DIVISIONS (for MIDI sync mode) --
+const float clockDivisions[] = { 1.0f, 2.0f, 4.0f, 8.0f, 12.0f, 16.0f, 24.0f, 32.0f };
+const int NUM_DIVISIONS = 8;
+int currentDivisionIndex = 0;  // 0 = 1/1, 1 = 1/2, etc.
+float currentDivision = 1.0f;  // Current clock division multiplier
 
 
 // -- SEQUENCER --
@@ -622,11 +658,21 @@ void printButtonChanges() {
         }
 
         else if (col == 2 && row == 0) {
-          // UNASSIGNED BUTTON - Available for future use
+          // ENVELOPE_TRIGGER_SELECT - Cycles: SEQ -> MIDI -> PULSAR
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            currentEnvTriggerMode = static_cast<EnvTriggerMode>((currentEnvTriggerMode + 1) % 3);
+          }
         }
 
         else if (col == 3 && row == 0) {
-          // UNASSIGNED BUTTON - Available for future use
+          // ENVELOPE_MODE - Cycles: TRANSIENT -> SUSTAIN -> OSCILLATE
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            currentEnvMode = static_cast<EnvelopeMode>((currentEnvMode + 1) % 3);
+            // When switching to oscillate mode, ensure the envelope can restart
+            if (currentEnvMode == ENV_MODE_OSCILLATE) {
+              envRetriggerFlag = false;
+            }
+          }
         }
 
         // --- ROW 1 BUTTONS ---
@@ -726,7 +772,18 @@ void printButtonChanges() {
         }
 
         else if (col == 2 && row == 3) {
-          // UNASSIGNED BUTTON - Available for future use
+          // CLOCK SYNC MODE - Toggles between free-running and MIDI clock sync
+          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
+            midiClockSync = !midiClockSync;
+            if (midiClockSync) {
+              // Reset sequencer position when enabling sync
+              seqCurrentStep = 0;
+              seqSampleCounter = 0;
+              midiClockTicks = 0;
+              // Initialize division from current pot position
+              updateClockDivision();
+            }
+          }
         }
 
         else if (col == 3 && row == 3) {
@@ -769,10 +826,25 @@ void AudioCallback(float** in, float** out, size_t size) {
     bool seqStepTriggered = false;
 
     if (currentSeqTriggerMode == SEQ_TRIGGER_CLOCK) {
-      seqSampleCounter++;
-      if (seqSampleCounter >= samplesPerTick) {
-        seqStepTriggered = true;
-        seqSampleCounter = 0;
+      // Check if we're using MIDI clock sync or free-running clock
+      if (midiClockSync && midiClockActive && midiClockSamplesPerTick > 0) {
+        // MIDI Clock Sync Mode - step on MIDI clock ticks (only if clock is active)
+        static uint32_t midiSampleCounter = 0;
+        midiSampleCounter++;
+        if (midiSampleCounter >= midiClockSamplesPerTick) {
+          seqStepTriggered = true;
+          midiSampleCounter = 0;
+        }
+      } else if (midiClockSync && !midiClockActive) {
+        // MIDI sync mode enabled but no clock - DO NOTHING (sequencer stops)
+        // seqStepTriggered remains false
+      } else {
+        // Free-running clock mode (original behavior)
+        seqSampleCounter++;
+        if (seqSampleCounter >= samplesPerTick) {
+          seqStepTriggered = true;
+          seqSampleCounter = 0;
+        }
       }
     } else if (currentSeqTriggerMode == SEQ_TRIGGER_PULSAR) {
       bool isPulsarActive = pulsar.IsRunning();
@@ -792,7 +864,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps;
       if (seqStepEnabled[seqCurrentStep]) {
         activeSeqCV = seqStepCV[seqCurrentStep];
-        gateRemainingSamples = (uint32_t)(sustainDuration * sampleRate);
+
       } else {
         gateRemainingSamples = 0;
       }
@@ -836,8 +908,10 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentRandomMode == RANDOM_MODE_PULSAR) {
       randomTrigger = pulsarTrigger;
     } else if (currentRandomMode == RANDOM_MODE_MIDI) {
-      if (midiTriggerPending) {
+      // Use separate flag that gets cleared immediately
+      if (randomMidiTrigger) {
         randomTrigger = true;
+        randomMidiTrigger = false;  // Clear immediately so it only triggers once per note
       }
     }
 
@@ -847,10 +921,58 @@ void AudioCallback(float** in, float** out, size_t size) {
     }
 
     // --- 4. ENVELOPE GENERATION ---
+    bool envTrigger = false;
+
+    if (currentEnvTriggerMode == ENV_TRIGGER_SEQ) {
+      if (seqStepTriggered) envTrigger = true;
+    } else if (currentEnvTriggerMode == ENV_TRIGGER_MIDI) {
+      if (envMidiTrigger) {
+        envTrigger = true;
+        envMidiTrigger = false;
+      }
+    } else if (currentEnvTriggerMode == ENV_TRIGGER_PULSAR) {
+      if (pulsarTrigger) envTrigger = true;
+    }
+
     bool gate = false;
-    if (gateRemainingSamples > 0) {
-      gate = true;
-      gateRemainingSamples--;
+
+    if (currentEnvMode == ENV_MODE_TRANSIENT) {
+      // TRANSIENT MODE: Use transientGateSamples (pot value only, 20ms min)
+      if (envTrigger) {
+        gateRemainingSamples = transientGateSamples;
+        env.Retrigger(true);
+      }
+      if (gateRemainingSamples > 0) {
+        gate = true;
+        gateRemainingSamples--;
+      }
+
+    } else if (currentEnvMode == ENV_MODE_SUSTAIN) {
+      if (envTrigger) {
+        env.Retrigger(true);
+        // SUSTAIN MODE: Use sustainGateSamples (pot value + 300ms min)
+        gateRemainingSamples = sustainGateSamples;
+      }
+
+      if (currentEnvTriggerMode == ENV_TRIGGER_MIDI) {
+        // MIDI mode: Gate stays open as long as MIDI note is physically held
+        gate = midiNoteHeld;
+        // Don't use the sample counter in MIDI mode
+        gateRemainingSamples = 0;
+      } else {
+        // SEQ or PULSAR mode: Gate lasts for sustainGateSamples duration
+        if (gateRemainingSamples > 0) {
+          gate = true;
+          gateRemainingSamples--;
+        }
+      }
+
+    } else if (currentEnvMode == ENV_MODE_OSCILLATE) {
+      // Self-retriggering, no external triggers
+      if (!env.IsRunning()) {
+        env.Retrigger(true);
+      }
+      gate = false;
     }
 
     float envSig = env.Process(gate);
@@ -1150,6 +1272,7 @@ void setup() {
   lpGateFilter2.Init(sampleRate);
   // -- ENVELOPE --
   env.Init(sampleRate);
+  gateRemainingSamples = 0;
   // -- PULSAR ENV --
   pulsar.Init(sampleRate);
   pulsar.SetAttackTime(0.02f);
@@ -1169,8 +1292,13 @@ void setup() {
   Serial1.setRx(MIDI_RX_PIN);
   Serial1.begin(31250);  // Standard MIDI baud rate
   Serial1.flush();       // Clear any pending data
+
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
+  MIDI.setHandleClock(handleMidiClock);
+  MIDI.setHandleStart(handleMidiStart);
+  MIDI.setHandleStop(handleMidiStop);
+
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.turnThruOff();
   currentMidiNote = 60;
@@ -1188,6 +1316,9 @@ void loop() {
   while (MIDI.read()) {
     // MIDI callbacks handle the events
   }
+
+  checkMidiClockActivity();  // ADD THIS LINE
+
 
   // READ BUTTON MATRICES
   if (millis() - lastMatrixRead > MATRIX_READ_INTERVAL) {
@@ -1291,9 +1422,18 @@ void updateParameters() {
   // Sustain Duration (Logarithmic)
   sustainDuration = fmap(potValues[6] / 65535.0f, 0.02f, maxTime, Mapping::EXP);
 
+  // TRANSIENT mode: gate pulse length = sustain pot value (minimum 20ms)
+  transientGateSamples = (uint32_t)(sustainDuration * sampleRate);
+  uint32_t minTransientSamples = (uint32_t)(0.02f * sampleRate);  // 20ms minimum
+  if (transientGateSamples < minTransientSamples) transientGateSamples = minTransientSamples;
+
+  // SUSTAIN mode: gate length = sustain pot value + 300ms minimum
+  uint32_t minSustainGate = (uint32_t)(0.1f * sampleRate);  // 300ms minimum
+  sustainGateSamples = (uint32_t)(sustainDuration * sampleRate);
+  if (sustainGateSamples < minSustainGate) sustainGateSamples = minSustainGate;
+
   // Release Time (Logarithmic)
   releaseTime = fmap(potValues[7] / 65535.0f, minTime, maxTime, Mapping::EXP);
-
   env.SetReleaseTime(releaseTime);
   env.SetDecayTime(0.0f);
   env.SetSustainLevel(1.0f);
@@ -1324,16 +1464,24 @@ void updateParameters() {
     // Store normalized 0.0 to 1.0 values
     seqStepCV[i] = fmap(potValues[i] / 65535.0f, 0.0f, 1.0f, Mapping::EXP);
   }
-
   // -- CLOCK --
-  float clockPot = potValues[25] / 65535.0f;
-  seqClockSpeed = 0.1f * powf(40000.0f, (1.0f - clockPot));
+  if (midiClockSync) {
+    // When in MIDI sync mode, the pot controls clock division
+    updateClockDivision();
+    // Don't update seqClockSpeed or samplesPerTick in this mode
+    // The sequencer timing is handled by MIDI clock
+  } else {
+    // Free-running clock mode - original behavior
+    float clockPot = potValues[25] / 65535.0f;
+    seqClockSpeed = 0.1f * powf(40000.0f, (1.0f - clockPot));
 
-  // CLOCK CLAMPING
-  if (seqClockSpeed < 0.1f) seqClockSpeed = 0.1f;
-  if (seqClockSpeed > 4000.0f) seqClockSpeed = 4000.0f;
+    // CLOCK CLAMPING
+    if (seqClockSpeed < 0.1f) seqClockSpeed = 0.1f;
+    if (seqClockSpeed > 4000.0f) seqClockSpeed = 4000.0f;
 
-  samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * DAISY.get_samplerate());
+    samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * DAISY.get_samplerate());
+    if (samplesPerTick < 1) samplesPerTick = 1;
+  }
 
 
   // -- REVERB --
@@ -1346,17 +1494,88 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
     currentMidiNote = note;
     midiTriggerPending = true;
     midiTriggerCounter = MIDI_TRIGGER_HOLDOFF;
-
-    // Store the frequency ratio for quantization mode
     lastMidiNoteFreq = getMidiTransposeRatio(note);
-    midiNoteReceived = true;  // Mark that we've received a MIDI note
-
+    midiNoteReceived = true;
+    midiNoteHeld = true;
     pulsarMidiTrigger = true;
+    randomMidiTrigger = true;
+    envMidiTrigger = true;
   }
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
-  // You can handle note off if needed
-  // Serial.print("MIDI Note OFF: ");
-  // Serial.println(note);
+  midiNoteHeld = false;
+}
+
+// -- MIDI CLOCK HANDLING --
+void handleMidiClock() {
+  // Called on each MIDI clock tick (24 ticks per quarter note)
+  uint32_t now = millis();
+
+  // Mark that MIDI clock is active
+  midiClockActive = true;
+
+  // Calculate tempo from tick interval (only when sync is enabled)
+  if (midiClockSync) {
+    if (lastMidiClockTime > 0) {
+      uint32_t tickInterval = now - lastMidiClockTime;
+      // 24 ticks per quarter note, so quarter note interval = tickInterval * 24
+      float quarterNoteInterval = tickInterval * 24.0f;
+      if (quarterNoteInterval > 0) {
+        midiTempo = 60000.0f / quarterNoteInterval;
+        // Clamp tempo to reasonable range
+        if (midiTempo < 40.0f) midiTempo = 40.0f;
+        if (midiTempo > 240.0f) midiTempo = 240.0f;
+
+        // Calculate samples per MIDI clock tick based on current division
+        // One tick = 1/24 of a quarter note, then multiply by division
+        float secondsPerTick = 60.0f / (midiTempo * 24.0f);
+        // Apply division: larger division = longer interval between steps
+        midiClockSamplesPerTick = (uint32_t)(secondsPerTick * sampleRate * currentDivision);
+        if (midiClockSamplesPerTick < 1) midiClockSamplesPerTick = 1;
+      }
+    }
+  }
+  lastMidiClockTime = now;
+  midiClockTicks++;
+}
+
+// -- CHECK MIDI CLOCK ACTIVITY --
+void checkMidiClockActivity() {
+  // If MIDI clock sync is enabled, check if we've received a clock message recently
+  if (midiClockSync) {
+    uint32_t now = millis();
+    if (now - lastMidiClockTime > MIDI_CLOCK_TIMEOUT) {
+      midiClockActive = false;
+      midiClockSamplesPerTick = 0;  // Invalidate the samples per tick
+    }
+  }
+}
+
+// -- UPDATE CLOCK DIVISION FROM POT --
+void updateClockDivision() {
+  // Map pot value (0-65535) to division index (0 to NUM_DIVISIONS-1)
+  // REVERSED: 0% = fastest (1/32), 100% = slowest (1/1)
+  float potNorm = potValues[25] / 65535.0f;
+  // Reverse the pot direction: 1.0 - potNorm
+  currentDivisionIndex = (int)((1.0f - potNorm) * NUM_DIVISIONS);
+  if (currentDivisionIndex >= NUM_DIVISIONS) currentDivisionIndex = NUM_DIVISIONS - 1;
+  if (currentDivisionIndex < 0) currentDivisionIndex = 0;
+
+  currentDivision = clockDivisions[currentDivisionIndex];
+}
+
+// -- MIDI START HANDLING --
+void handleMidiStart() {
+  // Reset sequencer to step 0 when MIDI start received
+  seqCurrentStep = 0;
+  seqSampleCounter = 0;
+  midiClockTicks = 0;
+}
+
+// -- MIDI STOP HANDLING --
+void handleMidiStop() {
+  // Stop the sequencer
+  seqSampleCounter = 0;
+  midiClockTicks = 0;
 }
