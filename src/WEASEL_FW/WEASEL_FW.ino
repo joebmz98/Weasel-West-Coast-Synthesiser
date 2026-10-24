@@ -2,15 +2,21 @@
 // ==== WEASEL ========== //
 // Buchla Music Easel     //
 // Inspired Digital Synth //
-// firmware version 0.1   //
-// Hardware Version: 1.0  //
+// firmware version 1.0   //
 // ********************** //
 // designed by            //
 // .axs instruments       //
 // ********************** //
-// Description: Buchla Music Easel nspired digital synth
-//              Virtual patch bay simulating modular
-//              experience.
+// Description: Buchla Music Easel inspired digital synth
+//              Patch bay simulating modular experience.
+//
+// v1.0 hardware changes vs v0.9:
+//  - Button matrices replaced by 4x 74HC165 shift registers (32-bit chain)
+//      SR1..SR3 = panel buttons, SR4 = patch bay destinations
+//  - Patch bay sources driven from D17..D20, destinations read on SR4
+//  - Mode LEDs driven by 4x AW9523 (0x58..0x5B) over I2C
+//  - MUX2_S3 moved from D7 to D10 (D7 is now the 74HC165 SH/LD line)
+//  - Master volume pot on MUX2 C11
 // ********************** //
 
 // ********************** //
@@ -42,82 +48,212 @@
 #include "DaisyDuino.h"
 
 // EXTRA INCLUSIONS
+#include <Wire.h>          // I2C (AW9523 LED drivers)
 #include <MIDI.h>          // MIDI
-#include <CpuLoadMeter.h>  // CPU LOAD METER
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
 #include <math.h>
 
 using namespace daisysp;
 
-// DEBUG
+// -- FIRMWARE VERSION --
+const char* FIRMWARE_VERSION = "1.0";
+
 #pragma GCC optimize("O2")
 
+// -- DEBUG --
+// 1 = print button presses / patch changes over USB serial
+#define WEASEL_DEBUG 0
+
+// ============================================
+// PIN MAP  (Daisy D-number = physical pin - 1)
+// ============================================
 // -- MUX PINS - FIRST MUX
 #define MUX1_S0 D0
 #define MUX1_S1 D1
 #define MUX1_S2 D2
 #define MUX1_S3 D3
-#define MUX1_SIG A0  // MUX signal pin
+#define MUX1_SIG A0  // MUX1 signal pin
 
 // -- MUX PINS - SECOND MUX
 #define MUX2_S0 D4
 #define MUX2_S1 D5
 #define MUX2_S2 D6
-#define MUX2_S3 D7
-#define MUX2_SIG A1  // Second MUX signal pin
+#define MUX2_S3 D10  // MOVED from D7 (physical pin 11 / SPI1_MOSI)
+#define MUX2_SIG A1  // MUX2 signal pin
 
-// -- 4x7 BUTTON MATRIX PINS // VIRTUAL PATCH BAY
-#define MATRIX_COL0 19  // Column 0 (B0) // SEQUENCER CV OUT
-#define MATRIX_COL1 20  // Column 1 (B1) // EG CV OUT
-#define MATRIX_COL2 21  // Column 2 (B2) // PULSAR CV OUT
-#define MATRIX_COL3 22  // Column 3 (B3) // RANDOM VOLTAGE CV OUT
-#define MATRIX_ROW0 23  // Row 0 (A0) // PULSAR PERIOD MODULATION
-#define MATRIX_ROW1 24  // Row 1 (A1) // MOD OSC FREQ
-#define MATRIX_ROW2 25  // Row 2 (A2) // MOD OSC MOD AMOUNT
-#define MATRIX_ROW3 26  // Row 3 (A3) // COMPLEX OSC PITCH
-#define MATRIX_ROW4 27  // Row 4 (A4) // COMPLEX OSC WAVEFOLDER AMOUNT
-#define MATRIX_ROW5 28  // Row 5 (A5) // LPG CH1 LEVEL MODULATION
-#define MATRIX_ROW6 29  // Row 6 (A6) // LPG CH2 LEVEL MODULATION
+// -- 74HC165 SHIFT REGISTER CHAIN
+#define SH_LD_PIN D7  // physical pin 8
+#define CLK_PIN D8    // physical pin 9
+#define QH_PIN D9     // physical pin 10
 
-// -- SECOND BUTTON MATRIX PINS
-#define MATRIX2_COL0 12  // X0
-#define MATRIX2_COL1 13  // X1
-#define MATRIX2_COL2 17  // X2
-#define MATRIX2_COL3 18  // X3
-#define MATRIX2_ROW0 8   // Y0
-#define MATRIX2_ROW1 9   // Y1
-#define MATRIX2_ROW2 10  // Y2
-#define MATRIX2_ROW3 11  // Y3
-#define MATRIX2_ROW4 30  // Y4
+// -- PATCH BAY SOURCE DRIVE PINS
+#define SEQ_OUT_PIN D17   // physical pin 24
+#define EG_OUT_PIN D18    // physical pin 25
+#define PLSR_OUT_PIN D19  // physical pin 26
+#define RNDM_OUT_PIN D20  // physical pin 27
 
-// -- BUTTON MATRIX 1 VARIABLES --
-bool matrixStates[4][7] = { { false } };
-bool lastMatrixStates[4][7] = { { false } };
-unsigned long lastMatrixRead = 0;
-const unsigned long MATRIX_READ_INTERVAL = 20;
+// -- MIDI
+#define MIDI_RX_PIN 14  // D14 / USART1 Rx (physical pin 15)
 
-const char* matrix1Functions[4][7] = {
-  { "Seq CV -> Pulsar Decay", "Seq CV -> ModOsc Pitch", "Seq CV -> Mod Amount", "Seq CV -> CompOsc Pitch", "Seq CV -> WF Mod", "Seq CV -> LPG1", "Seq CV -> LPG2" },
-  { "Env -> Pulsar Decay", "Env -> ModOsc Pitch", "Env -> Mod Amount", "Env -> CompOsc Pitch", "Env -> WF Mod", "Env -> LPG1", "Env -> LPG2" },
-  { "Pulsar -> Pulsar Decay", "Pulsar -> ModOsc Pitch", "Pulsar -> Mod Amount", "Pulsar -> CompOsc Pitch", "Pulsar -> WF Mod", "Pulsar -> LPG1", "Pulsar -> LPG2" },
-  { "S&H -> Pulsar Decay", "S&H -> ModOsc Pitch", "S&H -> Mod Amount", "S&H -> CompOsc Pitch", "S&H -> WF Mod", "S&H -> LPG1", "S&H -> LPG2" }
+// I2C uses the default Wire pins: D11 (SCL) / D12 (SDA)
+
+// ============================================
+// POT INDEX MAP  (potValues[] index: MUX1 = 0..15, MUX2 = 16..31)
+// ============================================
+enum PotIndex {
+  // MUX1
+  POT_SEQ_STEP1 = 0,
+  POT_SEQ_STEP2 = 1,
+  POT_SEQ_STEP3 = 2,
+  POT_SEQ_STEP4 = 3,
+  POT_SEQ_STEP5 = 4,
+  POT_ENV_ATTACK = 5,
+  POT_ENV_SUSTAIN = 6,
+  POT_ENV_DECAY = 7,
+  POT_PULSAR_CTRL = 8,
+  POT_PULSAR_PERIOD = 9,
+  POT_MODOSC_FREQ_CTRL = 10,
+  POT_MODOSC_FREQ = 11,
+  POT_MODOSC_FINE = 12,
+  POT_MODOSC_MOD_CTRL = 13,
+  POT_MODOSC_MOD = 14,
+  POT_COMPOSC_FREQ_CTRL = 15,
+  // MUX2
+  POT_COMPOSC_FREQ = 16,
+  POT_COMPOSC_FINE = 17,
+  POT_COMPOSC_WF_CTRL = 18,
+  POT_COMPOSC_WF = 19,
+  POT_COMPOSC_TIMBRE = 20,
+  POT_LPG1_CTRL = 21,
+  POT_LPG1_LEVEL = 22,
+  POT_LPG2_CTRL = 23,
+  POT_LPG2_LEVEL = 24,
+  POT_CLOCK = 25,
+  POT_REVERB_MIX = 26,
+  POT_MASTER_VOLUME = 27
 };
 
-// -- BUTTON MATRIX 2 --
-bool matrix2CurrentStates[4][5] = { { false } };
-bool matrix2PreviousStates[4][5] = { { false } };
-bool matrix2DebouncedStates[4][5] = { { false } };
-unsigned long lastMatrix2Read = 0;
+// ============================================
+// SHIFT REGISTER BUTTON MAP
+// 32-bit read: SR1 = bits 31..24, SR2 = 23..16, SR3 = 15..8, SR4 = 7..0
+// SRn Dk -> bit (32 - 8n + k)
+// ============================================
+#define SR_BIT(sr, d) (32 - 8 * (sr) + (d))
+
+enum ButtonBit {
+  // SR1
+  BTN_SEQ_TRIG_MODE = SR_BIT(1, 0),
+  BTN_SEQ_STAGES = SR_BIT(1, 1),
+  BTN_SEQ_STEP1 = SR_BIT(1, 2),
+  BTN_SEQ_STEP2 = SR_BIT(1, 3),
+  BTN_SEQ_STEP3 = SR_BIT(1, 4),
+  BTN_SEQ_STEP4 = SR_BIT(1, 5),
+  BTN_SEQ_STEP5 = SR_BIT(1, 6),
+  BTN_ENV_TRIG_MODE = SR_BIT(1, 7),
+  // SR2
+  BTN_ENV_MODE = SR_BIT(2, 0),
+  BTN_PULSAR_MANUAL = SR_BIT(2, 1),
+  BTN_PULSAR_MODE = SR_BIT(2, 2),
+  BTN_MODOSC_AM_FM = SR_BIT(2, 3),
+  BTN_MODOSC_WAVE = SR_BIT(2, 4),
+  BTN_COMPOSC_POLARITY = SR_BIT(2, 5),
+  BTN_COMPOSC_WAVE = SR_BIT(2, 6),
+  BTN_QUANTIZE_MIDI = SR_BIT(2, 7),
+  // SR3
+  BTN_LPG1_MODE = SR_BIT(3, 0),
+  BTN_LPG2_MODE = SR_BIT(3, 1),
+  BTN_RANDOM_MODE = SR_BIT(3, 2),
+  BTN_CLOCK_SYNC = SR_BIT(3, 3)
+};
+
+// Only the button bits (SR1..SR3, SR3 D0-D3) are considered for edge detection
+const uint32_t BUTTON_MASK = 0xFFFF0F00UL;
+
+// Sequencer step buttons:
+// 1 = latching switches, step is ENABLED while the switch reads LOW (v0.9 behaviour)
+// 0 = momentary buttons, each press toggles the step on/off
+#define SEQ_STEP_SWITCHES_LATCHING 1
+
+const uint8_t SEQ_STEP_BITS[5] = { BTN_SEQ_STEP1, BTN_SEQ_STEP2, BTN_SEQ_STEP3, BTN_SEQ_STEP4, BTN_SEQ_STEP5 };
+
+uint32_t buttonRawPrev = 0;      // previous raw read (for 2-read debounce)
+uint32_t buttonDebounced = 0;    // stable button state
+uint32_t buttonLastHandled = 0;  // state at last edge-processing pass
+unsigned long lastButtonRead = 0;
+const unsigned long BUTTON_READ_INTERVAL = 10;  // ms -> 10-20ms effective debounce
+
+// ============================================
+// PATCH BAY (4 sources x 7 destinations, read on SR4 D0-D6)
+// ============================================
+#define NUM_SOURCES 4
+#define NUM_DESTINATIONS 7
+#define PATCH_DEBOUNCE_READS 3
+
+const int sourcePins[NUM_SOURCES] = { SEQ_OUT_PIN, EG_OUT_PIN, PLSR_OUT_PIN, RNDM_OUT_PIN };
+
+// patchMatrix[source][destination]
+// Sources:      0 SEQ, 1 EG, 2 PLSR, 3 RNDM
+// Destinations: 0 PLSR_PERIOD, 1 MODOSC_FREQ, 2 MODOSC_MOD, 3 COMP_PITCH,
+//               4 COMP_WAVE, 5 LPG_LVL1, 6 LPG_LVL2
+volatile bool patchMatrix[NUM_SOURCES][NUM_DESTINATIONS] = {};
+uint8_t patchCounter[NUM_SOURCES][NUM_DESTINATIONS] = {};
+unsigned long lastPatchScan = 0;
+const unsigned long PATCH_SCAN_INTERVAL = 20;  // ms
+
+#if WEASEL_DEBUG
+bool lastPatchMatrix[NUM_SOURCES][NUM_DESTINATIONS] = {};
+const char* sourceNames[NUM_SOURCES] = { "SEQ", "EG", "PLSR", "RNDM" };
+const char* destNames[NUM_DESTINATIONS] = { "PLSR_PERIOD", "MODOSC_FREQ", "MODOSC_MOD",
+                                            "COMP_PITCH", "COMP_WAVE", "LPG_LVL1", "LPG_LVL2" };
+#endif
+
+// ============================================
+// AW9523 LED DRIVERS
+// ============================================
+#define AW9523_REG_OUTPUT 0x02
+#define AW9523_REG_CONFIG 0x04
+#define AW9523_REG_GLOBAL_CTRL 0x11
+#define AW9523_REG_SOFTWARE_RESET 0x7F
+
+const uint8_t aw9523_addresses[] = { 0x58, 0x59, 0x5A, 0x5B };
+const int NUM_CHIPS = 4;
+bool chipPresent[NUM_CHIPS] = { false };
+
+struct LedLocation {
+  uint8_t chip;
+  uint8_t port;
+  uint8_t bit;
+};
+
+// LED groups - entry N lights when the function is in state N.
+// Reorder entries here if the panel order differs from the firmware state order.
+const LedLocation LED_SEQ_TRIG[] = { { 0, 0, 0 }, { 0, 0, 1 }, { 0, 0, 2 } };    // CLOCK, PULSAR, MIDI
+const LedLocation LED_SEQ_STAGES[] = { { 0, 0, 3 }, { 0, 0, 4 }, { 0, 0, 5 } };  // 3, 4, 5 steps
+const LedLocation LED_ENV_TRIG[] = { { 0, 1, 3 }, { 0, 1, 4 }, { 0, 1, 5 } };    // SEQ, PULSAR, MIDI
+const LedLocation LED_ENV_MODE[] = { { 0, 1, 6 }, { 0, 1, 7 }, { 1, 0, 0 } };    // TRANSIENT, SUSTAIN, OSCILLATE
+const LedLocation LED_PULSAR_MODE[] = { { 1, 0, 2 }, { 1, 0, 3 }, { 1, 0, 4 } };  // SEQ, MIDI, OSC
+const LedLocation LED_PULSAR_ACT[] = { { 1, 0, 5 }, { 1, 0, 6 } };               // idle, firing
+const LedLocation LED_MODOSC_AMFM[] = { { 2, 0, 4 }, { 2, 0, 5 } };              // FM, AM
+const LedLocation LED_MODOSC_WAVE[] = { { 2, 0, 0 }, { 2, 0, 1 }, { 2, 0, 2 }, { 2, 0, 3 } };  // SIN, TRI, SAW, SQUARE
+const LedLocation LED_COMP_POL[] = { { 2, 0, 6 }, { 2, 0, 7 } };                 // NORMAL, INVERTED
+const LedLocation LED_COMP_WAVE[] = { { 2, 1, 0 }, { 2, 1, 1 }, { 2, 1, 2 } };   // TRI, SAW, SQUARE
+const LedLocation LED_QUANTIZE[] = { { 2, 1, 3 }, { 2, 1, 4 } };                 // OFF, ON
+const LedLocation LED_RANDOM_MODE[] = { { 2, 1, 5 }, { 2, 1, 6 }, { 2, 1, 7 } };  // SEQ, PULSAR, MIDI
+const LedLocation LED_CLOCK_SYNC[] = { { 3, 0, 1 }, { 3, 0, 2 } };               // FREE, MIDI SYNC
+// LPG mode LEDs not yet assigned - add groups here and in buildLedFrame() when known
+
+uint8_t ledFrame[NUM_CHIPS][2] = { { 0 } };     // desired state [chip][port]
+uint8_t ledWritten[NUM_CHIPS][2] = { { 0 } };   // last state sent to the chip
+bool ledForceWrite = true;
+unsigned long lastLedUpdate = 0;
+const unsigned long LED_UPDATE_INTERVAL = 10;  // ms
 
 // -- POT VARIABLES --
 const int NUM_POTS_PER_MUX = 16;
 const int TOTAL_POTS = 32;  // 2 muxes * 16 channels each
 int potValues[TOTAL_POTS] = { 0 };
-int lastPotValues[TOTAL_POTS] = { 0 };
 unsigned long lastPotRead = 0;
 const unsigned long POT_READ_INTERVAL = 5;  // Read pots every Xms
-String potNames[TOTAL_POTS];                // Array to store pot names
-const int POT_THRESHOLD = 2;                //
 
 
 // -- DAISY DUINO OBJECTS --
@@ -125,7 +261,7 @@ DaisyHardware hw;  // DAISY SEED
 // -- OSCILLATORS
 Oscillator complexOsc;       // COMPLEX OSCILLATOR
 Oscillator complexOscMorph;  // COMPLEX MORPH OSCILLATOR
-Oscillator modulationOsc;    // COMPLEX OSCILLATOR
+Oscillator modulationOsc;    // MODULATION OSCILLATOR
 // -- ENVELOPE GENERATOR
 Adsr env;  // ENV GENERATOR
 // -- PULSAR GENERATOR
@@ -147,28 +283,28 @@ float sampleRate;
 // -- COMPLEX
 float complexOscFreq;                 // CONTROLS FREQUENCY
 float complexOscFine;                 // CONTROLS FINE TUNE
-float complexOscFreqCoeff;            // COEFF FOR FREQUENCY MODULATION USING MATRIX
+float complexOscFreqCoeff;            // COEFF FOR FREQUENCY MODULATION USING PATCH BAY
 float complexOscWF;                   // CONTROLS WF AMOUNT
-float complexOscWFCoeff;              // COEFF FOR WF MODULATION USING MATRIX
+float complexOscWFCoeff;              // COEFF FOR WF MODULATION USING PATCH BAY
 float complexOscWFModDepth = 0.0f;    // WAVEFOLDER MOD DEPTH
 float complexOscFreqModDepth = 0.0f;  // FREQ MOD DEPTH
 bool complexOscInverted = false;      // TOGGLE POLARITY
 bool complexOscMidiEnabled = false;   // TOGGLE MIDI
 float complexOscMorphMix;             // COMPLEX OSC TIMBRE AMOUNT
-int morphWaveformIndex = 0;           // 0 = SAW, 1 = SQUARE, 2 = TRIANGLE
+int morphWaveformIndex = 1;           // 0 = TRI, 1 = SAW, 2 = SQUARE (boots on SAW)
 float complexOscSigLevel = 0.0f;      // LPG CONTROL
 
 // -- MODULATION
 float modulationOscFreq = 0.0f;           // CONTROLS FREQUENCY
 float modulationFine = 0.0f;              // CONTROLS FINE TUNE
-float modulationFreqCoeff = 0.0f;         // COEFF FOR FREQUENCY MODULATION USING MATRIX
+float modulationFreqCoeff = 0.0f;         // COEFF FOR FREQUENCY MODULATION USING PATCH BAY
 float modulationOscMod = 0.0f;            // CONTROLS MOD AMOUNT APPLIED TO COMPLEXOSC
-float modulationOscModCoeff;              // COEFF FOR MOD AMOUNT MODULATION USING MATRIX
+float modulationOscModCoeff;              // COEFF FOR MOD AMOUNT MODULATION USING PATCH BAY
 float modulationFreqModDepth = 0.0f;      // FREQ MOD DEPTH
 float modulationOscModCoeffDepth = 0.0f;  // MODULATION MOD DEPTH
 bool useAmplitudeMod = false;             // False = FM, True = AM
 bool modulationMidiEnabled = false;       // TOGGLE MIDI
-int modWaveformIndex = 0;                 // 0: SIN, 1: TRI, 2: SQUARE, 3: SAW
+int modWaveformIndex = 0;                 // 0: SIN, 1: TRI, 2: SAW, 3: SQUARE
 float modOscSigLevel = 0.0f;              // LPG CONTROL
 
 // -- LPG --
@@ -207,14 +343,12 @@ enum EnvTriggerMode { ENV_TRIGGER_SEQ,                   // Sequencer steps (def
                       ENV_TRIGGER_PULSAR,                // Pulsar trigger
                       ENV_TRIGGER_MIDI };                // MIDI note on
 EnvTriggerMode currentEnvTriggerMode = ENV_TRIGGER_SEQ;  // Default to Sequencer
-bool envTrigger = false;                                 // Separate flag for  triggering
-bool envMidiTrigger = false;                             // Separate flag for MIDI triggering
+volatile bool envMidiTrigger = false;                    // Separate flag for MIDI triggering
 static uint32_t oscGateSamples = 0;
 
 
 // -- ENVELOPE STATE --
-bool midiNoteHeld = false;  // True while a MIDI note is physically held
-bool envGateHeld = false;   // Current gate state fed to env.Process()
+volatile bool midiNoteHeld = false;  // True while a MIDI note is physically held
 
 // -- PULSAR ENV --
 enum PulsarMode { PULSAR_MODE_SEQ,
@@ -224,8 +358,9 @@ PulsarMode currentPulsarMode = PULSAR_MODE_SEQ;
 float pulsarReleaseTime = 0.02f;
 bool lastPulsarEnvActive = false;
 float pulsarPeriodModCoeff = 0.0f;
-bool manualPulsarTrigger = false;
-bool pulsarMidiTrigger = false;
+volatile bool manualPulsarTrigger = false;
+volatile bool pulsarMidiTrigger = false;
+volatile bool pulsarRunning = false;  // mirrored from the audio callback for the activity LED
 
 
 // -- SAMPLE&HOLD / RANDOM VOLTAGE --
@@ -234,27 +369,28 @@ enum RandomMode { RANDOM_MODE_SEQ,
                   RANDOM_MODE_MIDI };
 RandomMode currentRandomMode = RANDOM_MODE_SEQ;
 float currentRandomValue = 0.0f;
-bool randomMidiTrigger = false;
+volatile bool randomMidiTrigger = false;
 
 // -- REVERB --
 float reverbMix;  // REVERB MIX COEFF
 
+// -- MASTER VOLUME --
+float masterVolume = 0.0f;          // target, set from pot (0..1)
+float masterVolumeSmoothed = 0.0f;  // per-sample smoothed value (boots silent, fades in)
+const float OUTPUT_HEADROOM = 0.4f;  // v0.9 fixed output gain, now the ceiling at full volume
+
 // -- MIDI --
-#define MIDI_RX_PIN 14  // USART1 Rx (Digital pin 30)
-  // MIDI OBJECT
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 // --
 bool quantizeToMidi = false;       // Enable/disable MIDI quantization mode
-float baseFreqComplex = 261.63f;   // Base frequency for complex osc (C4 = 261.63Hz)
-float baseFreqMod = 261.63f;       // Base frequency for mod osc (C4 = 261.63Hz)
-float lastMidiNoteFreq = 261.63f;  // Last received MIDI note frequency
+float lastMidiNoteFreq = 261.63f;  // Last received MIDI note transpose ratio
 bool midiNoteReceived = false;     // Track if we've received a MIDI note in quantize mode
 
 // -- MIDI CLOCK SYNC --
 bool midiClockSync = false;               // Enable/disable MIDI clock sync
 bool midiClockActive = false;             // Whether MIDI clock is currently being received
 uint32_t midiClockTicks = 0;              // Counter for MIDI clock ticks
-uint32_t midiClockSamplesPerTick = 0;     // Samples between MIDI clock ticks (calculated from tempo)
+uint32_t midiClockSamplesPerTick = 0;     // Samples between steps (calculated from tempo)
 float midiTempo = 120.0f;                 // Current MIDI tempo in BPM
 uint32_t lastMidiClockTime = 0;           // Last time we received a MIDI clock message
 const uint32_t MIDI_CLOCK_TIMEOUT = 500;  // Timeout in milliseconds (0.5 seconds)
@@ -284,16 +420,24 @@ enum SeqTriggerMode { SEQ_TRIGGER_CLOCK,
                       SEQ_TRIGGER_PULSAR,
                       SEQ_TRIGGER_MIDI };
 SeqTriggerMode currentSeqTriggerMode = SEQ_TRIGGER_CLOCK;  // Default Mode
-bool midiTriggerPending = false;                           // Flag to catch MIDI notes for the sequencer
+volatile bool midiTriggerPending = false;                  // Flag to catch MIDI notes for the sequencer
 int currentMidiNote = 60;                                  // Default to Middle C when no midi is detected
-uint8_t midiTriggerCounter = 0;
-const uint8_t MIDI_TRIGGER_HOLDOFF = 10;  // Adjust as needed (5-20 is good)
 
 // -- OPTIMIZATION VARIABLES --
 float rawModulationValues[7] = { 0 };  // Pre-calculated modulation values
 float ln2 = 0.69314718056f;            // ln(2) for fast exp approximations
-uint32_t modUpdateCounter = 0;         // REMOVE THE DUPLICATE IN AudioCallback
-const uint32_t MOD_UPDATE_RATE = 16;   //
+uint32_t modUpdateCounter = 0;
+const uint32_t MOD_UPDATE_RATE = 16;
+
+// -- FORWARD DECLARATIONS --
+void updateClockDivision();
+void updateParameters();
+void checkMidiClockActivity();
+void handleNoteOn(byte channel, byte note, byte velocity);
+void handleNoteOff(byte channel, byte note, byte velocity);
+void handleMidiClock();
+void handleMidiStart();
+void handleMidiStop();
 
 // -- FAST MATH APPROXIMATIONS --
 inline float fast_exp2_approx(float x) {
@@ -303,18 +447,10 @@ inline float fast_exp2_approx(float x) {
   return x * (1.0f + (x - 1.0f) * 0.5f);
 }
 
-inline float fast_pow_approx(float base, float exponent) {
-  // Simple pow approximation for audio use
-  // Works well for exponent in range 0-1
-  return 1.0f + (base - 1.0f) * exponent;
-}
-
 inline float fast_lpg_freq(float ctrl) {
-  // Clamp ctrl to [0,1]
   if (ctrl < 0.0f) ctrl = 0.0f;
   if (ctrl > 1.0f) ctrl = 1.0f;
 
-  // Linear interpolation between table values
   float idx = ctrl * (LPG_TABLE_SIZE - 1);
   int i = (int)idx;
   if (i >= LPG_TABLE_SIZE - 1) return lpgFreqTable[LPG_TABLE_SIZE - 1];
@@ -322,45 +458,24 @@ inline float fast_lpg_freq(float ctrl) {
   return lpgFreqTable[i] + frac * (lpgFreqTable[i + 1] - lpgFreqTable[i]);
 }
 
-// Soft clipper for SVF input protection
-inline float svf_input_protect(float x) {
-  // Prevent extreme values that cause SVF instability
-  if (x > 1.5f) return 1.5f;
-  if (x < -1.5f) return -1.5f;
-  // Soft clip near the edges to prevent harsh edges
-  if (x > 1.0f) return 1.0f + (x - 1.0f) * 0.25f;
-  if (x < -1.0f) return -1.0f + (x + 1.0f) * 0.25f;
-  return x;
-}
-
 // NaN and bad float detection
 inline bool isBadFloat(float x) {
-  // Check for NaN (x != x) and infinity
   return (x != x) || (x > 1e10f) || (x < -1e10f);
 }
 
 // Get frequency ratio from MIDI note relative to C4 (note 60)
 inline float getMidiTransposeRatio(int midiNote) {
-  // C4 = note 60, ratio = 2^((note - 60)/12)
   float semitones = (float)(midiNote - 60);
   return powf(2.0f, semitones / 12.0f);
 }
 
-// SVF state reset function
-void resetSvfFilters() {
-  lpGateFilter1.Init(sampleRate);
-  lpGateFilter2.Init(sampleRate);
-  // Reset cached values to force parameter updates
-  lastCtrl0 = -1.0f;
-  lastCtrl1 = -1.0f;
-  lastMode0 = -1;
-  lastMode1 = -1;
-
-  // Reset the cached processed signals to avoid residual DC
-  // (Add these as static variables in AudioCallback if needed)
+inline float potNorm(int index) {
+  return potValues[index] * (1.0f / 65535.0f);
 }
 
-// -- MUX INIT --
+// ============================================
+// POTENTIOMETERS (2x 16-ch MUX)
+// ============================================
 void selectMuxChannel(int channel, int s0, int s1, int s2, int s3) {
   digitalWrite(s0, bitRead(channel, 0));
   digitalWrite(s1, bitRead(channel, 1));
@@ -368,470 +483,399 @@ void selectMuxChannel(int channel, int s0, int s1, int s2, int s3) {
   digitalWrite(s3, bitRead(channel, 3));
 }
 
-// -- INIT POTS --
 void initPotentiometers() {
-  // Initialize MUX control pins as outputs
-  pinMode(MUX1_S0, OUTPUT);
-  pinMode(MUX1_S1, OUTPUT);
-  pinMode(MUX1_S2, OUTPUT);
-  pinMode(MUX1_S3, OUTPUT);
-
-  pinMode(MUX2_S0, OUTPUT);
-  pinMode(MUX2_S1, OUTPUT);
-  pinMode(MUX2_S2, OUTPUT);
-  pinMode(MUX2_S3, OUTPUT);
-
-  // Set initial states
-  digitalWrite(MUX1_S0, LOW);
-  digitalWrite(MUX1_S1, LOW);
-  digitalWrite(MUX1_S2, LOW);
-  digitalWrite(MUX1_S3, LOW);
-
-  digitalWrite(MUX2_S0, LOW);
-  digitalWrite(MUX2_S1, LOW);
-  digitalWrite(MUX2_S2, LOW);
-  digitalWrite(MUX2_S3, LOW);
-
-  // Initialize analog pins
+  const int muxPins[] = { MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3, MUX2_S0, MUX2_S1, MUX2_S2, MUX2_S3 };
+  for (int i = 0; i < 8; i++) {
+    pinMode(muxPins[i], OUTPUT);
+    digitalWrite(muxPins[i], LOW);
+  }
   pinMode(MUX1_SIG, INPUT);
   pinMode(MUX2_SIG, INPUT);
-
-  // Initialize pot names
-  for (int i = 0; i < TOTAL_POTS; i++) {
-    if (i < NUM_POTS_PER_MUX) {
-      // Pots on MUX1
-      if (i == 0) potNames[i] = "MUX1-CH0: Sequencer Step 1 CV";
-      else if (i == 1) potNames[i] = "MUX1-CH1: Sequencer Step 2 CV";
-      else if (i == 2) potNames[i] = "MUX1-CH2: Sequencer Step 3 CV";
-      else if (i == 3) potNames[i] = "MUX1-CH3: Sequencer Step 4 CV";
-      else if (i == 4) potNames[i] = "MUX1-CH4: Sequencer Step 5 CV";
-      else if (i == 5) potNames[i] = "MUX1-CH5: Attack";
-      else if (i == 6) potNames[i] = "MUX1-CH6: Sustain";
-      else if (i == 7) potNames[i] = "MUX1-CH7: Decay/Release";
-      else if (i == 8) potNames[i] = "MUX1-CH8: Pulsar Period Modulation Control";
-      else if (i == 9) potNames[i] = "MUX1-CH9: Pulsar Period";
-      else if (i == 10) potNames[i] = "MUX1-CH10: Modulation Oscillator Frequency Control";
-      else if (i == 11) potNames[i] = "MUX1-CH11: Modulation Oscillator Frequency";
-      else if (i == 12) potNames[i] = "MUX1-CH12: Modulation Oscillator Fine Tune +/-3";
-      else if (i == 13) potNames[i] = "MUX1-CH13: Modulation Oscillator Modulation Control";
-      else if (i == 14) potNames[i] = "MUX1-CH14: Modulation Oscillator Modulation Control";
-      else if (i == 15) potNames[i] = "MUX1-CH15: Complex Oscillator Frequency Control";
-    } else {
-      // Pots on MUX2 (indices 16-31)
-      int mux2Index = i - NUM_POTS_PER_MUX;
-      if (mux2Index == 0) potNames[i] = "MUX2-CH0: Complex Oscillator Frequency";
-      else if (mux2Index == 1) potNames[i] = "MUX2-CH1: Complex Oscillator Fine Tune";
-      else if (mux2Index == 2) potNames[i] = "MUX2-CH2: Complex Oscillator Wavefolder Control";
-      else if (mux2Index == 3) potNames[i] = "MUX2-CH3: Complex Oscillator Wavefolder";
-      else if (mux2Index == 4) potNames[i] = "MUX2-CH4: Complex Oscillator Timbre";
-      else if (mux2Index == 5) potNames[i] = "MUX2-CH5: LPG1 Control";
-      else if (mux2Index == 6) potNames[i] = "MUX2-CH6: LPG1 Level";
-      else if (mux2Index == 7) potNames[i] = "MUX2-CH7: LPG2 Control";
-      else if (mux2Index == 8) potNames[i] = "MUX2-CH8: LPG2 Level";
-      else if (mux2Index == 9) potNames[i] = "MUX2-CH9: Clock Speed";
-      else if (mux2Index == 10) potNames[i] = "MUX2-CH10: Reverb Mix";
-      else if (mux2Index == 11) potNames[i] = "MUX2-CH11: N/C";
-      else if (mux2Index == 12) potNames[i] = "MUX2-CH12: N/C";
-      else if (mux2Index == 13) potNames[i] = "MUX2-CH13: N/C";
-      else if (mux2Index == 14) potNames[i] = "MUX2-CH14: N/C";
-      else if (mux2Index == 15) potNames[i] = "MUX2-CH15: N/C";
-    }
-  }
-
-  // Read initial pot values
-  //readPotentiometers();
-  // Copy to last values to avoid initial spurious changes
-  for (int i = 0; i < TOTAL_POTS; i++) {
-    lastPotValues[i] = potValues[i];
-  }
 }
 
-// -- READ POTS --
 void readPotentiometers() {
   for (int i = 0; i < TOTAL_POTS; i++) {
     if (i < NUM_POTS_PER_MUX) {
       selectMuxChannel(i, MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3);
-      delayMicroseconds(10);  // Use the stable delay from your test
+      delayMicroseconds(10);
       potValues[i] = analogRead(MUX1_SIG);
     } else {
-      int mux2Channel = i - NUM_POTS_PER_MUX;
-      selectMuxChannel(mux2Channel, MUX2_S0, MUX2_S1, MUX2_S2, MUX2_S3);
+      selectMuxChannel(i - NUM_POTS_PER_MUX, MUX2_S0, MUX2_S1, MUX2_S2, MUX2_S3);
       delayMicroseconds(10);
       potValues[i] = analogRead(MUX2_SIG);
     }
   }
 }
 
-// -- INIT BUTTON MATRICES --
-// -- MATRIX 1
-void initButtonMatrix() {
-  // Initialize column pins as outputs
-  pinMode(MATRIX_COL0, OUTPUT);
-  pinMode(MATRIX_COL1, OUTPUT);
-  pinMode(MATRIX_COL2, OUTPUT);
-  pinMode(MATRIX_COL3, OUTPUT);
-
-  // Initialize row pins as inputs with pulldown
-  pinMode(MATRIX_ROW0, INPUT_PULLDOWN);
-  pinMode(MATRIX_ROW1, INPUT_PULLDOWN);
-  pinMode(MATRIX_ROW2, INPUT_PULLDOWN);
-  pinMode(MATRIX_ROW3, INPUT_PULLDOWN);
-  pinMode(MATRIX_ROW4, INPUT_PULLDOWN);
-  pinMode(MATRIX_ROW5, INPUT_PULLDOWN);
-  pinMode(MATRIX_ROW6, INPUT_PULLDOWN);
-
-  // Start with all columns LOW
-  digitalWrite(MATRIX_COL0, LOW);
-  digitalWrite(MATRIX_COL1, LOW);
-  digitalWrite(MATRIX_COL2, LOW);
-  digitalWrite(MATRIX_COL3, LOW);
+// ============================================
+// 74HC165 SHIFT REGISTERS
+// ============================================
+void initShiftRegisters() {
+  pinMode(SH_LD_PIN, OUTPUT);
+  pinMode(CLK_PIN, OUTPUT);
+  pinMode(QH_PIN, INPUT);
+  digitalWrite(CLK_PIN, LOW);
+  digitalWrite(SH_LD_PIN, HIGH);
 }
-// -- MATRIX 2
-void initButtonMatrix2() {
-  // Initialize column pins as outputs
-  pinMode(MATRIX2_COL0, OUTPUT);
-  pinMode(MATRIX2_COL1, OUTPUT);
-  pinMode(MATRIX2_COL2, OUTPUT);
-  pinMode(MATRIX2_COL3, OUTPUT);
 
-  // Initialize row pins as inputs with pulldown
-  pinMode(MATRIX2_ROW0, INPUT_PULLDOWN);
-  pinMode(MATRIX2_ROW1, INPUT_PULLDOWN);
-  pinMode(MATRIX2_ROW2, INPUT_PULLDOWN);
-  pinMode(MATRIX2_ROW3, INPUT_PULLDOWN);
-  pinMode(MATRIX2_ROW4, INPUT_PULLDOWN);
+// Reads all 32 bits. QH is sampled before each clock pulse.
+uint32_t readAllShiftRegisters() {
+  digitalWrite(SH_LD_PIN, LOW);
+  delayMicroseconds(10);
+  digitalWrite(SH_LD_PIN, HIGH);
+  delayMicroseconds(10);
 
-  // Start with all columns LOW
-  digitalWrite(MATRIX2_COL0, LOW);
-  digitalWrite(MATRIX2_COL1, LOW);
-  digitalWrite(MATRIX2_COL2, LOW);
-  digitalWrite(MATRIX2_COL3, LOW);
+  uint32_t allData = 0;
+  for (int i = 31; i >= 0; i--) {
+    if (digitalRead(QH_PIN) == HIGH) {
+      allData |= (1UL << i);
+    }
+    digitalWrite(CLK_PIN, HIGH);
+    delayMicroseconds(5);
+    digitalWrite(CLK_PIN, LOW);
+    delayMicroseconds(5);
+  }
+  return allData;
 }
-// -- READ BUTTON MATRICES --
-// -- MATRIX 1
-void readButtonMatrix() {
-  for (int col = 0; col < 4; col++) {
-    // Activate current column
-    switch (col) {
-      case 0:
-        digitalWrite(MATRIX_COL0, HIGH);
-        digitalWrite(MATRIX_COL1, LOW);
-        digitalWrite(MATRIX_COL2, LOW);
-        digitalWrite(MATRIX_COL3, LOW);
-        break;
-      case 1:
-        digitalWrite(MATRIX_COL0, LOW);
-        digitalWrite(MATRIX_COL1, HIGH);
-        digitalWrite(MATRIX_COL2, LOW);
-        digitalWrite(MATRIX_COL3, LOW);
-        break;
-      case 2:
-        digitalWrite(MATRIX_COL0, LOW);
-        digitalWrite(MATRIX_COL1, LOW);
-        digitalWrite(MATRIX_COL2, HIGH);
-        digitalWrite(MATRIX_COL3, LOW);
-        break;
-      case 3:
-        digitalWrite(MATRIX_COL0, LOW);
-        digitalWrite(MATRIX_COL1, LOW);
-        digitalWrite(MATRIX_COL2, LOW);
-        digitalWrite(MATRIX_COL3, HIGH);
-        break;
+
+inline bool buttonIsDown(uint8_t bit) {
+  return (buttonDebounced >> bit) & 1UL;
+}
+
+// ============================================
+// PATCH BAY
+// ============================================
+void initPatchBay() {
+  for (int s = 0; s < NUM_SOURCES; s++) {
+    pinMode(sourcePins[s], OUTPUT);
+    digitalWrite(sourcePins[s], LOW);
+  }
+}
+
+void scanPatchMatrix() {
+  for (int s = 0; s < NUM_SOURCES; s++) {
+    digitalWrite(sourcePins[s], LOW);
+  }
+
+  for (int s = 0; s < NUM_SOURCES; s++) {
+    digitalWrite(sourcePins[s], HIGH);
+    delayMicroseconds(100);
+
+    uint8_t sr4 = readAllShiftRegisters() & 0xFF;
+
+    for (int d = 0; d < NUM_DESTINATIONS; d++) {
+      bool reading = (sr4 & (1 << d)) != 0;
+      if (reading) {
+        if (patchCounter[s][d] < PATCH_DEBOUNCE_READS) patchCounter[s][d]++;
+      } else {
+        if (patchCounter[s][d] > 0) patchCounter[s][d]--;
+      }
+      patchMatrix[s][d] = (patchCounter[s][d] >= PATCH_DEBOUNCE_READS);
     }
 
-    delayMicroseconds(10);
+    digitalWrite(sourcePins[s], LOW);
+    delayMicroseconds(50);
 
-    // Read all rows for this column
-    for (int row = 0; row < 7; row++) {
-      lastMatrixStates[col][row] = matrixStates[col][row];
+    // Keep the MIDI input drained between source scans
+    while (MIDI.read()) {}
+  }
 
-      switch (row) {
-        case 0: matrixStates[col][row] = (digitalRead(MATRIX_ROW0) == HIGH); break;
-        case 1: matrixStates[col][row] = (digitalRead(MATRIX_ROW1) == HIGH); break;
-        case 2: matrixStates[col][row] = (digitalRead(MATRIX_ROW2) == HIGH); break;
-        case 3: matrixStates[col][row] = (digitalRead(MATRIX_ROW3) == HIGH); break;
-        case 4: matrixStates[col][row] = (digitalRead(MATRIX_ROW4) == HIGH); break;
-        case 5: matrixStates[col][row] = (digitalRead(MATRIX_ROW5) == HIGH); break;
-        case 6: matrixStates[col][row] = (digitalRead(MATRIX_ROW6) == HIGH); break;
+#if WEASEL_DEBUG
+  for (int s = 0; s < NUM_SOURCES; s++) {
+    for (int d = 0; d < NUM_DESTINATIONS; d++) {
+      if (patchMatrix[s][d] != lastPatchMatrix[s][d]) {
+        Serial.print(sourceNames[s]);
+        Serial.print(patchMatrix[s][d] ? " -> " : " -x ");
+        Serial.println(destNames[d]);
+        lastPatchMatrix[s][d] = patchMatrix[s][d];
       }
     }
   }
-
-  // Deactivate all columns
-  digitalWrite(MATRIX_COL0, LOW);
-  digitalWrite(MATRIX_COL1, LOW);
-  digitalWrite(MATRIX_COL2, LOW);
-  digitalWrite(MATRIX_COL3, LOW);
+#endif
 }
-// -- MATRIX 2
-void readButtonMatrix2() {
-  int colPins[] = { MATRIX2_COL0, MATRIX2_COL1, MATRIX2_COL2, MATRIX2_COL3 };  // FIXED: Use COL3
-  int rowPins[] = { MATRIX2_ROW0, MATRIX2_ROW1, MATRIX2_ROW2, MATRIX2_ROW3, MATRIX2_ROW4 };
 
-  for (int col = 0; col < 4; col++) {
-    // 1. ACTIVATE: Set column to OUTPUT and HIGH to source current
-    pinMode(colPins[col], OUTPUT);
-    digitalWrite(colPins[col], HIGH);
+// ============================================
+// AW9523 LED DRIVERS
+// ============================================
+bool initializeAW9523(uint8_t address) {
+  Wire.beginTransmission(address);
+  Wire.write(AW9523_REG_SOFTWARE_RESET);
+  Wire.write(0x00);
+  if (Wire.endTransmission() != 0) return false;
 
-    delayMicroseconds(10);
+  delay(10);
 
-    for (int row = 0; row < 5; row++) {
-      matrix2PreviousStates[col][row] = matrix2CurrentStates[col][row];
-      // Reading HIGH means button is pressed
-      matrix2CurrentStates[col][row] = (digitalRead(rowPins[row]) == HIGH);
+  // All pins as outputs
+  Wire.beginTransmission(address);
+  Wire.write(AW9523_REG_CONFIG);
+  Wire.write(0x00);
+  Wire.write(0x00);
+  if (Wire.endTransmission() != 0) return false;
+
+  // All outputs low
+  Wire.beginTransmission(address);
+  Wire.write(AW9523_REG_OUTPUT);
+  Wire.write(0x00);
+  Wire.write(0x00);
+  if (Wire.endTransmission() != 0) return false;
+
+  return true;
+}
+
+void configurePushPull(uint8_t address) {
+  Wire.beginTransmission(address);
+  Wire.write(AW9523_REG_GLOBAL_CTRL);
+  Wire.endTransmission(false);
+
+  Wire.requestFrom(address, (uint8_t)1);
+  uint8_t gcrValue = 0x00;
+  if (Wire.available()) gcrValue = Wire.read();
+
+  gcrValue |= (1 << 4);  // Port 0 push-pull
+
+  Wire.beginTransmission(address);
+  Wire.write(AW9523_REG_GLOBAL_CTRL);
+  Wire.write(gcrValue);
+  Wire.endTransmission();
+}
+
+void initLeds() {
+  Wire.setClock(100000);
+  Wire.begin();
+  for (int chip = 0; chip < NUM_CHIPS; chip++) {
+    chipPresent[chip] = initializeAW9523(aw9523_addresses[chip]);
+    if (chipPresent[chip]) configurePushPull(aw9523_addresses[chip]);
+#if WEASEL_DEBUG
+    if (!chipPresent[chip]) {
+      Serial.print("AW9523 not found at 0x");
+      Serial.println(aw9523_addresses[chip], HEX);
     }
-
-    // 2. DEACTIVATE: Instead of digitalWrite(LOW), set to INPUT
-    pinMode(colPins[col], INPUT);
+#endif
   }
+  ledForceWrite = true;
 }
 
-// -- UPDATE MATRIX MODULATION VALUES --
+inline void setLed(const LedLocation* group, int size, int index) {
+  if (index < 0 || index >= size) return;
+  const LedLocation& l = group[index];
+  ledFrame[l.chip][l.port] |= (1 << l.bit);
+}
+#define SET_LED(group, index) setLed(group, sizeof(group) / sizeof(group[0]), (int)(index))
+
+// Builds the LED frame from the real synth state, so LEDs always reflect firmware state
+void buildLedFrame() {
+  memset(ledFrame, 0, sizeof(ledFrame));
+
+  SET_LED(LED_SEQ_TRIG, currentSeqTriggerMode);
+  SET_LED(LED_SEQ_STAGES, seqMaxSteps - 3);
+  SET_LED(LED_ENV_TRIG, currentEnvTriggerMode);
+  SET_LED(LED_ENV_MODE, currentEnvMode);
+  SET_LED(LED_PULSAR_MODE, currentPulsarMode);
+  SET_LED(LED_PULSAR_ACT, pulsarRunning ? 1 : 0);
+  SET_LED(LED_MODOSC_AMFM, useAmplitudeMod ? 1 : 0);
+  SET_LED(LED_MODOSC_WAVE, modWaveformIndex);
+  SET_LED(LED_COMP_POL, complexOscInverted ? 1 : 0);
+  SET_LED(LED_COMP_WAVE, morphWaveformIndex);
+  SET_LED(LED_QUANTIZE, quantizeToMidi ? 1 : 0);
+  SET_LED(LED_RANDOM_MODE, currentRandomMode);
+  SET_LED(LED_CLOCK_SYNC, midiClockSync ? 1 : 0);
+}
+
+// Only writes chips whose outputs changed
+void updateLeds() {
+  buildLedFrame();
+  for (int chip = 0; chip < NUM_CHIPS; chip++) {
+    if (!chipPresent[chip]) continue;
+    if (!ledForceWrite && ledFrame[chip][0] == ledWritten[chip][0] && ledFrame[chip][1] == ledWritten[chip][1]) continue;
+
+    Wire.beginTransmission(aw9523_addresses[chip]);
+    Wire.write(AW9523_REG_OUTPUT);
+    Wire.write(ledFrame[chip][0]);
+    Wire.write(ledFrame[chip][1]);
+    if (Wire.endTransmission() == 0) {
+      ledWritten[chip][0] = ledFrame[chip][0];
+      ledWritten[chip][1] = ledFrame[chip][1];
+    }
+  }
+  ledForceWrite = false;
+}
+
+// ============================================
+// BUTTON FUNCTIONS
+// ============================================
+void handleButtonPress(uint8_t bit) {
+  switch (bit) {
+    // --- SR1 ---
+    case BTN_SEQ_TRIG_MODE:
+      // Cycles trigger mode: CLOCK -> PULSAR -> MIDI
+      currentSeqTriggerMode = static_cast<SeqTriggerMode>((currentSeqTriggerMode + 1) % 3);
+      break;
+
+    case BTN_SEQ_STAGES:
+      // Cycles between 5, 4 and 3 steps
+      if (seqMaxSteps == 5) seqMaxSteps = 4;
+      else if (seqMaxSteps == 4) seqMaxSteps = 3;
+      else seqMaxSteps = 5;
+      seqCurrentStep %= seqMaxSteps;
+      break;
+
+    case BTN_ENV_TRIG_MODE:
+      // Cycles: SEQ -> PULSAR -> MIDI
+      currentEnvTriggerMode = static_cast<EnvTriggerMode>((currentEnvTriggerMode + 1) % 3);
+      break;
+
+    // --- SR2 ---
+    case BTN_ENV_MODE:
+      // Cycles: TRANSIENT -> SUSTAIN -> OSCILLATE
+      currentEnvMode = static_cast<EnvelopeMode>((currentEnvMode + 1) % 3);
+      if (currentEnvMode == ENV_MODE_OSCILLATE) envRetriggerFlag = false;
+      break;
+
+    case BTN_PULSAR_MANUAL:
+      manualPulsarTrigger = true;  // fires on next audio sample
+      break;
+
+    case BTN_PULSAR_MODE:
+      // Cycles: SEQ -> MIDI -> OSC (free running)
+      currentPulsarMode = static_cast<PulsarMode>((currentPulsarMode + 1) % 3);
+      break;
+
+    case BTN_MODOSC_AM_FM:
+      useAmplitudeMod = !useAmplitudeMod;
+      break;
+
+    case BTN_MODOSC_WAVE:
+      // SIN -> TRI -> SAW -> SQUARE
+      modWaveformIndex = (modWaveformIndex + 1) % 4;
+      if (modWaveformIndex == 0) modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
+      else if (modWaveformIndex == 1) modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
+      else if (modWaveformIndex == 2) modulationOsc.SetWaveform(modulationOsc.WAVE_SAW);
+      else modulationOsc.SetWaveform(modulationOsc.WAVE_SQUARE);
+      break;
+
+    case BTN_COMPOSC_POLARITY:
+      complexOscInverted = !complexOscInverted;
+      break;
+
+    case BTN_COMPOSC_WAVE:
+      // TRI -> SAW -> SQUARE
+      morphWaveformIndex = (morphWaveformIndex + 1) % 3;
+      if (morphWaveformIndex == 0) complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
+      else if (morphWaveformIndex == 1) complexOscMorph.SetWaveform(complexOscMorph.WAVE_SAW);
+      else complexOscMorph.SetWaveform(complexOscMorph.WAVE_SQUARE);
+      break;
+
+    case BTN_QUANTIZE_MIDI:
+      quantizeToMidi = !quantizeToMidi;
+      if (quantizeToMidi) midiNoteReceived = false;
+      break;
+
+    // --- SR3 ---
+    case BTN_LPG1_MODE:
+      // VCA -> LP -> COMBI
+      foldedLpgMode = static_cast<LpgMode>((foldedLpgMode + 1) % 3);
+      break;
+
+    case BTN_LPG2_MODE:
+      modOscLpgMode = static_cast<LpgMode>((modOscLpgMode + 1) % 3);
+      break;
+
+    case BTN_RANDOM_MODE:
+      // SEQ -> PULSAR -> MIDI
+      currentRandomMode = static_cast<RandomMode>((currentRandomMode + 1) % 3);
+      break;
+
+    case BTN_CLOCK_SYNC:
+      midiClockSync = !midiClockSync;
+      if (midiClockSync) {
+        seqCurrentStep = 0;
+        seqSampleCounter = 0;
+        midiClockTicks = 0;
+        updateClockDivision();
+      }
+      break;
+
+    default:
+#if !SEQ_STEP_SWITCHES_LATCHING
+      for (int i = 0; i < 5; i++) {
+        if (bit == SEQ_STEP_BITS[i]) seqStepEnabled[i] = !seqStepEnabled[i];
+      }
+#endif
+      break;
+  }
+
+#if WEASEL_DEBUG
+  Serial.print("Button bit ");
+  Serial.println(bit);
+#endif
+}
+
+void readButtons() {
+  uint32_t raw = readAllShiftRegisters() & BUTTON_MASK;
+
+  // Accept a new state only once two consecutive reads agree
+  if (raw == buttonRawPrev) buttonDebounced = raw;
+  buttonRawPrev = raw;
+
+  uint32_t pressed = buttonDebounced & ~buttonLastHandled;  // rising edges
+  buttonLastHandled = buttonDebounced;
+
+  while (pressed) {
+    uint8_t bit = __builtin_ctz(pressed);
+    pressed &= pressed - 1;
+    handleButtonPress(bit);
+  }
+
+#if SEQ_STEP_SWITCHES_LATCHING
+  // Level-based, as in v0.9: step is disabled while its switch reads HIGH
+  for (int i = 0; i < 5; i++) {
+    seqStepEnabled[i] = !buttonIsDown(SEQ_STEP_BITS[i]);
+  }
+#endif
+}
+
+// ============================================
+// PATCH BAY MODULATION
+// ============================================
 void updateMatrixModulation(float envSig, float pulsarEnvSig) {
-  // Reset modulation values
-  for (int i = 0; i < 7; i++) {
-    rawModulationValues[i] = 0.0f;
-  }
+  for (int i = 0; i < 7; i++) rawModulationValues[i] = 0.0f;
 
-  // Calculate modulation from all sources
-  for (int col = 0; col < 4; col++) {
-    float src = 0.0f;
-
-    // Get source value
-    switch (col) {
-      case 0: src = activeSeqCV; break;
-      case 1: src = envSig; break;
-      case 2: src = pulsarEnvSig; break;
-      case 3: src = currentRandomValue; break;
+  for (int src = 0; src < NUM_SOURCES; src++) {
+    float v = 0.0f;
+    switch (src) {
+      case 0: v = activeSeqCV; break;
+      case 1: v = envSig; break;
+      case 2: v = pulsarEnvSig; break;
+      case 3: v = currentRandomValue; break;
     }
 
-    // Apply different scaling for pulsar source
-    float scaleFactor = (col == 2) ? 100.0f : 1.0f;
-    float freqScaleFactor = (col == 2) ? 200.0f : 1.0f;
+    // Different scaling for the pulsar source
+    float scaleFactor = (src == 2) ? 100.0f : 1.0f;
+    float freqScaleFactor = (src == 2) ? 200.0f : 1.0f;
 
-    // Accumulate modulation for each destination
-    // Only process if matrix connection is active
-    if (matrixStates[col][0]) rawModulationValues[0] += src * scaleFactor;
-    if (matrixStates[col][1]) rawModulationValues[1] += src * freqScaleFactor;
-    if (matrixStates[col][2]) rawModulationValues[2] += src * scaleFactor;
-    if (matrixStates[col][3]) rawModulationValues[3] += src * freqScaleFactor;
-    if (matrixStates[col][4]) rawModulationValues[4] += src * scaleFactor;
-    if (matrixStates[col][5]) rawModulationValues[5] += src * freqScaleFactor;
-    if (matrixStates[col][6]) rawModulationValues[6] += src * freqScaleFactor;
+    if (patchMatrix[src][0]) rawModulationValues[0] += v * scaleFactor;
+    if (patchMatrix[src][1]) rawModulationValues[1] += v * freqScaleFactor;
+    if (patchMatrix[src][2]) rawModulationValues[2] += v * scaleFactor;
+    if (patchMatrix[src][3]) rawModulationValues[3] += v * freqScaleFactor;
+    if (patchMatrix[src][4]) rawModulationValues[4] += v * scaleFactor;
+    if (patchMatrix[src][5]) rawModulationValues[5] += v * freqScaleFactor;
+    if (patchMatrix[src][6]) rawModulationValues[6] += v * freqScaleFactor;
   }
 }
 
-// -- PRINT BUTTON PRESSES --
-// -- SERIAL PRINT
-// -- BUTTON FUNCTIONS
-void printButtonChanges() {
-  // Check Matrix 1 (4x7) - Modulation Matrix
-  for (int col = 0; col < 4; col++) {
-    for (int row = 0; row < 7; row++) {
-      if (matrixStates[col][row] != lastMatrixStates[col][row]) {
-        // Matrix 1 buttons don't have state changes to process
-        // They just connect modulation sources to destinations
-        // No action needed on press/release
-      }
-    }
-  }
-
-  // Check Matrix 2 (4x5) - XY Matrix
-  for (int col = 0; col < 4; col++) {
-    for (int row = 0; row < 5; row++) {
-      if (matrix2CurrentStates[col][row] != matrix2PreviousStates[col][row]) {
-
-        // --- ROW 0 BUTTONS ---
-
-        if (col == 1 && row == 0) {
-          // SEQ_LENGTH_CYCLE - Cycles between 3, 4, and 5 steps
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            if (seqMaxSteps == 5) seqMaxSteps = 4;
-            else if (seqMaxSteps == 4) seqMaxSteps = 3;
-            else seqMaxSteps = 5;
-            seqCurrentStep %= seqMaxSteps;
-          }
-        }
-
-        else if (col == 0 && row == 0) {
-          // SEQUENCER_MODE_BUTTON - Cycles trigger mode: CLOCK -> PULSAR -> MIDI
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            currentSeqTriggerMode = static_cast<SeqTriggerMode>((currentSeqTriggerMode + 1) % 3);
-          }
-        }
-
-        else if (col == 2 && row == 0) {
-          // ENVELOPE_TRIGGER_SELECT - Cycles: SEQ -> MIDI -> PULSAR
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            currentEnvTriggerMode = static_cast<EnvTriggerMode>((currentEnvTriggerMode + 1) % 3);
-          }
-        }
-
-        else if (col == 3 && row == 0) {
-          // ENVELOPE_MODE - Cycles: TRANSIENT -> SUSTAIN -> OSCILLATE
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            currentEnvMode = static_cast<EnvelopeMode>((currentEnvMode + 1) % 3);
-            // When switching to oscillate mode, ensure the envelope can restart
-            if (currentEnvMode == ENV_MODE_OSCILLATE) {
-              envRetriggerFlag = false;
-            }
-          }
-        }
-
-        // --- ROW 1 BUTTONS ---
-
-        else if (col == 0 && row == 1) {
-          // PULSAR_MODE_TOGGLE - Cycles: SEQ -> MIDI -> OSC (free running)
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            currentPulsarMode = static_cast<PulsarMode>((currentPulsarMode + 1) % 3);
-          }
-        }
-
-        else if (col == 1 && row == 1) {
-          // PULSER MANUAL TRIGGER
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            manualPulsarTrigger = true;  // Set flag to trigger on next audio callback
-          }
-        }
-
-        else if (col == 2 && row == 1) {
-          // MOD_WAVE_CYCLE - Cycles modulation oscillator waveform: SIN -> TRI -> SAW -> SQUARE
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            modWaveformIndex = (modWaveformIndex + 1) % 4;
-            if (modWaveformIndex == 0) {
-              modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
-            } else if (modWaveformIndex == 1) {
-              modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
-            } else if (modWaveformIndex == 2) {
-              modulationOsc.SetWaveform(modulationOsc.WAVE_SAW);
-            } else if (modWaveformIndex == 3) {
-              modulationOsc.SetWaveform(modulationOsc.WAVE_SQUARE);
-            }
-          }
-        }
-
-        else if (col == 3 && row == 1) {
-          // FM/AM_TOGGLE - Switches between Frequency Modulation and Amplitude Modulation
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            useAmplitudeMod = !useAmplitudeMod;
-          }
-        }
-
-        // --- ROW 2 BUTTONS ---
-
-        else if (col == 0 && row == 2) {
-          // OSC_POLARITY_INVERT - Inverts the complex oscillator output
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            complexOscInverted = !complexOscInverted;
-          }
-        }
-
-        else if (col == 1 && row == 2) {
-          // QUANTIZE_TO_MIDI - Enables MIDI note following (C4 reference mode)
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            quantizeToMidi = !quantizeToMidi;
-            if (quantizeToMidi) {
-              // When enabling, reset the "note received" flag
-              midiNoteReceived = false;
-            }
-          }
-        }
-
-        else if (col == 2 && row == 2) {
-          // COMPLEX_WAVE_CYCLE - Cycles complex oscillator morph waveform: TRI -> SAW -> SQUARE
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            morphWaveformIndex = (morphWaveformIndex + 1) % 3;
-            if (morphWaveformIndex == 0) {
-              complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
-            } else if (morphWaveformIndex == 1) {
-              complexOscMorph.SetWaveform(complexOscMorph.WAVE_SAW);
-            } else if (morphWaveformIndex == 2) {
-              complexOscMorph.SetWaveform(complexOscMorph.WAVE_SQUARE);
-            }
-          }
-        }
-
-        else if (col == 3 && row == 2) {
-          // LPG_MODE_TOGGLE - Cycles LPG mode: VCA -> LP -> COMBI
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            foldedLpgMode = static_cast<LpgMode>((foldedLpgMode + 1) % 3);
-          }
-        }
-
-        // --- ROW 3 BUTTONS ---
-
-        else if (col == 0 && row == 3) {
-          // MODOSC_LPG_MODE - Cycles modulation oscillator LPG mode: VCA -> LP -> COMBI
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            modOscLpgMode = static_cast<LpgMode>((modOscLpgMode + 1) % 3);
-          }
-        }
-
-        else if (col == 1 && row == 3) {
-          // RANDOM_TRIGGER_MODE_TOGGLE - Cycles random source: SEQ -> PULSAR -> MIDI
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            currentRandomMode = static_cast<RandomMode>((currentRandomMode + 1) % 3);
-          }
-        }
-
-        else if (col == 2 && row == 3) {
-          // CLOCK SYNC MODE - Toggles between free-running and MIDI clock sync
-          if (matrix2CurrentStates[col][row] && !matrix2PreviousStates[col][row]) {
-            midiClockSync = !midiClockSync;
-            if (midiClockSync) {
-              // Reset sequencer position when enabling sync
-              seqCurrentStep = 0;
-              seqSampleCounter = 0;
-              midiClockTicks = 0;
-              // Initialize division from current pot position
-              updateClockDivision();
-            }
-          }
-        }
-
-        else if (col == 3 && row == 3) {
-          // SEQ_STEP_1_TOGGLE - Enables/disables sequencer step 1
-          seqStepEnabled[0] = !matrix2CurrentStates[col][row];
-        }
-
-        // --- ROW 4 BUTTONS ---
-
-        else if (col == 0 && row == 4) {
-          // SEQ_STEP_2_TOGGLE - Enables/disables sequencer step 2
-          seqStepEnabled[1] = !matrix2CurrentStates[col][row];
-        }
-
-        else if (col == 1 && row == 4) {
-          // SEQ_STEP_3_TOGGLE - Enables/disables sequencer step 3
-          seqStepEnabled[2] = !matrix2CurrentStates[col][row];
-        }
-
-        else if (col == 2 && row == 4) {
-          // SEQ_STEP_4_TOGGLE - Enables/disables sequencer step 4
-          seqStepEnabled[3] = !matrix2CurrentStates[col][row];
-        }
-
-        else if (col == 3 && row == 4) {
-          // SEQ_STEP_5_TOGGLE - Enables/disables sequencer step 5
-          seqStepEnabled[4] = !matrix2CurrentStates[col][row];
-        }
-      }
-    }
-  }
-}
-
-// -- AUDIO PROCESSING --
+// ============================================
+// AUDIO PROCESSING
+// ============================================
 void AudioCallback(float** in, float** out, size_t size) {
 
   for (size_t i = 0; i < size; i++) {
 
-    // --- 1. TRIGGERS & SEQUENCER (optimized) ---
+    // --- 1. TRIGGERS & SEQUENCER ---
     bool seqStepTriggered = false;
 
     if (currentSeqTriggerMode == SEQ_TRIGGER_CLOCK) {
-      // Check if we're using MIDI clock sync or free-running clock
       if (midiClockSync && midiClockActive && midiClockSamplesPerTick > 0) {
-        // MIDI Clock Sync Mode - step on MIDI clock ticks (only if clock is active)
+        // MIDI clock sync - step on MIDI-derived interval
         static uint32_t midiSampleCounter = 0;
         midiSampleCounter++;
         if (midiSampleCounter >= midiClockSamplesPerTick) {
@@ -839,10 +883,9 @@ void AudioCallback(float** in, float** out, size_t size) {
           midiSampleCounter = 0;
         }
       } else if (midiClockSync && !midiClockActive) {
-        // MIDI sync mode enabled but no clock - DO NOTHING (sequencer stops)
-        // seqStepTriggered remains false
+        // Sync enabled but no clock - sequencer stops
       } else {
-        // Free-running clock mode (original behavior)
+        // Free-running clock
         seqSampleCounter++;
         if (seqSampleCounter >= samplesPerTick) {
           seqStepTriggered = true;
@@ -851,15 +894,12 @@ void AudioCallback(float** in, float** out, size_t size) {
       }
     } else if (currentSeqTriggerMode == SEQ_TRIGGER_PULSAR) {
       bool isPulsarActive = pulsar.IsRunning();
-      if (isPulsarActive && !lastPulsarEnvActive) {
-        seqStepTriggered = true;
-      }
+      if (isPulsarActive && !lastPulsarEnvActive) seqStepTriggered = true;
       lastPulsarEnvActive = isPulsarActive;
     } else if (currentSeqTriggerMode == SEQ_TRIGGER_MIDI) {
-      // MIDI trigger mode - step on each MIDI note
       if (midiTriggerPending) {
         seqStepTriggered = true;
-        midiTriggerPending = false;  // Clear immediately so next note can trigger
+        midiTriggerPending = false;
       }
     }
 
@@ -867,7 +907,6 @@ void AudioCallback(float** in, float** out, size_t size) {
       seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps;
       if (seqStepEnabled[seqCurrentStep]) {
         activeSeqCV = seqStepCV[seqCurrentStep];
-
       } else {
         gateRemainingSamples = 0;
       }
@@ -876,23 +915,17 @@ void AudioCallback(float** in, float** out, size_t size) {
     // --- 2. PULSAR TRIGGER LOGIC ---
     bool pulsarTrigger = false;
 
-    // Check for manual trigger first (highest priority)
     if (manualPulsarTrigger) {
       pulsarTrigger = true;
-      manualPulsarTrigger = false;  // Clear the flag
-    }
-    // Then check mode-based triggers
-    else if (currentPulsarMode == PULSAR_MODE_SEQ) {
+      manualPulsarTrigger = false;
+    } else if (currentPulsarMode == PULSAR_MODE_SEQ) {
       pulsarTrigger = seqStepTriggered;
     } else if (currentPulsarMode == PULSAR_MODE_OSC) {
-      if (!pulsar.IsRunning()) {
-        pulsarTrigger = true;
-      }
+      if (!pulsar.IsRunning()) pulsarTrigger = true;
     } else if (currentPulsarMode == PULSAR_MODE_MIDI) {
-      // Use separate flag that gets cleared immediately
       if (pulsarMidiTrigger) {
         pulsarTrigger = true;
-        pulsarMidiTrigger = false;  // Clear immediately so it only triggers once per note
+        pulsarMidiTrigger = false;
       }
     }
 
@@ -911,15 +944,13 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentRandomMode == RANDOM_MODE_PULSAR) {
       randomTrigger = pulsarTrigger;
     } else if (currentRandomMode == RANDOM_MODE_MIDI) {
-      // Use separate flag that gets cleared immediately
       if (randomMidiTrigger) {
         randomTrigger = true;
-        randomMidiTrigger = false;  // Clear immediately so it only triggers once per note
+        randomMidiTrigger = false;
       }
     }
 
     if (randomTrigger) {
-      // Fast random value generation
       currentRandomValue = (float)rand() * (1.0f / RAND_MAX);
     }
 
@@ -940,7 +971,6 @@ void AudioCallback(float** in, float** out, size_t size) {
     bool gate = false;
 
     if (currentEnvMode == ENV_MODE_TRANSIENT) {
-      // TRANSIENT MODE: Use transientGateSamples (pot value only, 20ms min)
       if (envTrigger) {
         gateRemainingSamples = transientGateSamples;
         env.Retrigger(true);
@@ -953,17 +983,14 @@ void AudioCallback(float** in, float** out, size_t size) {
     } else if (currentEnvMode == ENV_MODE_SUSTAIN) {
       if (envTrigger) {
         env.Retrigger(true);
-        // SUSTAIN MODE: Use sustainGateSamples (pot value + 300ms min)
         gateRemainingSamples = sustainGateSamples;
       }
 
       if (currentEnvTriggerMode == ENV_TRIGGER_MIDI) {
-        // MIDI mode: Gate stays open as long as MIDI note is physically held
+        // Gate stays open while the MIDI note is held
         gate = midiNoteHeld;
-        // Don't use the sample counter in MIDI mode
         gateRemainingSamples = 0;
       } else {
-        // SEQ or PULSAR mode: Gate lasts for sustainGateSamples duration
         if (gateRemainingSamples > 0) {
           gate = true;
           gateRemainingSamples--;
@@ -971,16 +998,11 @@ void AudioCallback(float** in, float** out, size_t size) {
       }
 
     } else if (currentEnvMode == ENV_MODE_OSCILLATE) {
-      // OSCILLATE MODE: Self-oscillating envelope
-      // Calculate total cycle length once when needed
       static uint32_t totalCycleSamples = 0;
       const float SPEED_MULTIPLIER = 0.5f;
 
-      // Retrigger when envelope is completely finished
       if (!env.IsRunning() && oscGateSamples == 0) {
         env.Retrigger(true);
-        // Include release time in the gate pulse
-        // Attack + Sustain + Release
         totalCycleSamples = (uint32_t)((attackTime + sustainDuration + releaseTime) * sampleRate * SPEED_MULTIPLIER);
         oscGateSamples = totalCycleSamples;
       }
@@ -996,16 +1018,15 @@ void AudioCallback(float** in, float** out, size_t size) {
     float envSig = env.Process(gate);
     float pulsarEnvSig = pulsar.Process(pulsarTrigger);
 
-    // --- 5. UPDATE MODULATION MATRIX (less frequently) ---
-    // Use the GLOBAL modUpdateCounter, not a local static one
+    // --- 5. UPDATE PATCH BAY MODULATION (less frequently) ---
     if (++modUpdateCounter >= MOD_UPDATE_RATE) {
       updateMatrixModulation(envSig, pulsarEnvSig);
       modUpdateCounter = 0;
     }
 
-    // --- 6. APPLY ATTENUATORS (using pre-calculated modulation values) ---
-    float pot8Norm = potValues[8] * (1.0f / 65535.0f);
-    pulsarPeriodModCoeff = rawModulationValues[0] * pot8Norm;
+    // --- 6. APPLY ATTENUATORS ---
+    float pulsarModDepth = potNorm(POT_PULSAR_CTRL);
+    pulsarPeriodModCoeff = rawModulationValues[0] * pulsarModDepth;
     modulationFreqCoeff = rawModulationValues[1] * modulationFreqModDepth;
     modulationOscModCoeff = rawModulationValues[2] * modulationOscModCoeffDepth;
     complexOscFreqCoeff = rawModulationValues[3] * complexOscFreqModDepth;
@@ -1013,35 +1034,24 @@ void AudioCallback(float** in, float** out, size_t size) {
     vcaComplexOsc = rawModulationValues[5] * foldedLpgModAmount;
     vcaModulationOsc = rawModulationValues[6] * modOscLpgModAmount;
 
-    // --- 7. OSCILLATORS (optimized with fast approximations) ---
+    // --- 7. OSCILLATORS ---
 
     // MODULATION OSCILLATOR
     float modFinalFreq;
-
-    if (quantizeToMidi) {
-      // QUANTIZE MODE: Only transpose if a MIDI note has been received
-      if (midiNoteReceived) {
-        // Use the pot frequency as C4 reference and transpose by MIDI note
-        float baseFromPot = modulationOscFreq;
-        float transposedFreq = baseFromPot * lastMidiNoteFreq;
-        modFinalFreq = transposedFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
-      } else {
-        // No MIDI note received yet - use pot frequency directly (no transpose)
-        modFinalFreq = modulationOscFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
-      }
+    if (quantizeToMidi && midiNoteReceived) {
+      // Pot frequency is the C4 reference, transposed by the MIDI note
+      modFinalFreq = modulationOscFreq * lastMidiNoteFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
     } else {
-      // FREE RUNNING MODE
       modFinalFreq = modulationOscFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
     }
     modulationOsc.SetFreq(modFinalFreq);
     float modOscSig = modulationOsc.Process();
 
-    // Protect SVF from harsh waveforms (sawtooth and square waves)
-    if (modWaveformIndex == 2 || modWaveformIndex == 3) {  // 2 = SAW, 3 = SQUARE
+    // Protect SVF from harsh waveforms (saw and square)
+    if (modWaveformIndex == 2 || modWaveformIndex == 3) {
       if (modOscSig > 1.2f) modOscSig = 1.2f;
       if (modOscSig < -1.2f) modOscSig = -1.2f;
     }
-    // General safety clamp - keep within SVF safe range
     if (modOscSig > 1.5f) modOscSig = 1.5f;
     if (modOscSig < -1.5f) modOscSig = -1.5f;
 
@@ -1050,35 +1060,19 @@ void AudioCallback(float** in, float** out, size_t size) {
     if (totalModDepth > 2.0f) totalModDepth = 2.0f;
 
     float fmSignal = 0.0f;
-    if (!useAmplitudeMod) {
-      fmSignal = modOscSig * totalModDepth;
-    }
+    if (!useAmplitudeMod) fmSignal = modOscSig * totalModDepth;
 
     // COMPLEX OSCILLATOR
     float compFinalFreq;
+    float totalFreqMod = complexOscFreqCoeff + fmSignal;
 
-    if (quantizeToMidi) {
-      // QUANTIZE MODE: Only transpose if a MIDI note has been received
-      if (midiNoteReceived) {
-        // Use the pot frequency as C4 reference and transpose by MIDI note
-        float baseFromPot = complexOscFreq;
-        float transposedFreq = baseFromPot * lastMidiNoteFreq;
-        float totalFreqMod = complexOscFreqCoeff + fmSignal;
-        compFinalFreq = transposedFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
-      } else {
-        // No MIDI note received yet - use pot frequency directly (no transpose)
-        float totalFreqMod = complexOscFreqCoeff + fmSignal;
-        compFinalFreq = complexOscFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
-      }
-    } else if (complexOscMidiEnabled) {
-      // ORIGINAL MIDI MODE: Direct MIDI note control
-      float rawNote = 24.0f + (potValues[16] * (72.0f / 65535.0f));
+    if (quantizeToMidi && midiNoteReceived) {
+      compFinalFreq = complexOscFreq * lastMidiNoteFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
+    } else if (!quantizeToMidi && complexOscMidiEnabled) {
+      float rawNote = 24.0f + (potNorm(POT_COMPOSC_FREQ) * 72.0f);
       int quantizedNote = (int)(rawNote + 0.5f);
-      float totalFreqMod = complexOscFreqCoeff + fmSignal;
       compFinalFreq = mtof(quantizedNote) * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
     } else {
-      // FREE RUNNING MODE
-      float totalFreqMod = complexOscFreqCoeff + fmSignal;
       compFinalFreq = complexOscFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
     }
 
@@ -1089,10 +1083,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     float morphSig = complexOscMorph.Process();
 
     float mixedSig = complexSig + (morphSig - complexSig) * complexOscMorphMix;
-
-    if (complexOscInverted) {
-      mixedSig = -mixedSig;
-    }
+    if (complexOscInverted) mixedSig = -mixedSig;
 
     // --- 8. WAVEFOLDER & AM ---
     float wfGain = complexOscWF + (complexOscWFCoeff * 20.0f);
@@ -1106,31 +1097,27 @@ void AudioCallback(float** in, float** out, size_t size) {
       foldedSig *= (1.0f + (modOscSig * totalModDepth));
     }
 
-    // --- 9. BUCHLA LPG MIXER (optimized) ---
+    // --- 9. BUCHLA LPG MIXER ---
     float finalMix = 0.0f;
 
-    // Process folded signal (channel 0)
-    float signal0 = foldedSig;
+    // Channel 1: folded complex oscillator
     float ctrl0 = complexOscSigLevel + vcaComplexOsc;
     if (ctrl0 < 0.0f) ctrl0 = 0.0f;
-    if (ctrl0 > 0.90f) ctrl0 = 0.90f;  // Safer clamping for SVF
+    if (ctrl0 > 0.90f) ctrl0 = 0.90f;
 
-    float processedSig0 = signal0;
+    float processedSig0 = foldedSig;
     if (foldedLpgMode == LPG_MODE_VCA) {
       processedSig0 *= ctrl0 * ctrl0;
     } else {
       if (ctrl0 < 0.0005f) {
-        processedSig0 = 0.0f;  // Hard mute below threshold
+        processedSig0 = 0.0f;
       } else {
         int currentMode = (int)foldedLpgMode;
         if (fabsf(ctrl0 - lastCtrl0) > 0.002f || currentMode != lastMode0) {
-          float filterFreq0 = fast_lpg_freq(ctrl0);
-          lpGateFilter1.SetFreq(filterFreq0);
-
+          lpGateFilter1.SetFreq(fast_lpg_freq(ctrl0));
           float res0 = (foldedLpgMode == LPG_MODE_LP) ? ctrl0 * ctrl0 * 0.2f : 0.1f;
           if (res0 > 0.95f) res0 = 0.95f;
           lpGateFilter1.SetRes(res0);
-
           lastCtrl0 = ctrl0;
           lastMode0 = currentMode;
         }
@@ -1138,7 +1125,6 @@ void AudioCallback(float** in, float** out, size_t size) {
         lpGateFilter1.Process(processedSig0);
         processedSig0 = lpGateFilter1.Low();
 
-        // Check for SVF instability
         if (isBadFloat(processedSig0)) {
           lpGateFilter1.Init(sampleRate);
           processedSig0 = 0.0f;
@@ -1148,17 +1134,13 @@ void AudioCallback(float** in, float** out, size_t size) {
           if (processedSig0 < -1.0f) processedSig0 = -1.0f;
         }
 
-        if (foldedLpgMode == LPG_MODE_COMBI) {
-          processedSig0 *= ctrl0;
-        }
+        if (foldedLpgMode == LPG_MODE_COMBI) processedSig0 *= ctrl0;
       }
     }
     finalMix += processedSig0;
 
-    // Process modulation oscillator signal (channel 1)
+    // Channel 2: modulation oscillator
     float signal1 = modOscSig;
-
-    // Extra protection for sawtooth/square waves before SVF
     if (modWaveformIndex == 2 || modWaveformIndex == 3) {
       if (signal1 > 1.0f) signal1 = 1.0f;
       if (signal1 < -1.0f) signal1 = -1.0f;
@@ -1166,24 +1148,21 @@ void AudioCallback(float** in, float** out, size_t size) {
 
     float ctrl1 = modOscSigLevel + vcaModulationOsc;
     if (ctrl1 < 0.0f) ctrl1 = 0.0f;
-    if (ctrl1 > 0.90f) ctrl1 = 0.90f;  // Safer clamping for SVF
+    if (ctrl1 > 0.90f) ctrl1 = 0.90f;
 
     float processedSig1 = signal1;
     if (modOscLpgMode == LPG_MODE_VCA) {
       processedSig1 *= ctrl1;
     } else {
       if (ctrl1 < 0.0001f) {
-        processedSig1 = 0.0f;  // Hard mute below threshold
+        processedSig1 = 0.0f;
       } else {
         int currentMode = (int)modOscLpgMode;
         if (fabsf(ctrl1 - lastCtrl1) > 0.002f || currentMode != lastMode1) {
-          float filterFreq1 = fast_lpg_freq(ctrl1);
-          lpGateFilter2.SetFreq(filterFreq1);
-
+          lpGateFilter2.SetFreq(fast_lpg_freq(ctrl1));
           float res1 = (modOscLpgMode == LPG_MODE_LP) ? ctrl1 * ctrl1 * 0.2f : 0.0f;
           if (res1 > 0.95f) res1 = 0.95f;
           lpGateFilter2.SetRes(res1);
-
           lastCtrl1 = ctrl1;
           lastMode1 = currentMode;
         }
@@ -1191,7 +1170,6 @@ void AudioCallback(float** in, float** out, size_t size) {
         lpGateFilter2.Process(processedSig1);
         processedSig1 = lpGateFilter2.Low();
 
-        // Check for SVF instability
         if (isBadFloat(processedSig1)) {
           lpGateFilter2.Init(sampleRate);
           processedSig1 = 0.0f;
@@ -1201,60 +1179,57 @@ void AudioCallback(float** in, float** out, size_t size) {
           if (processedSig1 < -1.0f) processedSig1 = -1.0f;
         }
 
-        if (modOscLpgMode == LPG_MODE_COMBI) {
-          processedSig1 *= ctrl1;
-        }
+        if (modOscLpgMode == LPG_MODE_COMBI) processedSig1 *= ctrl1;
       }
     }
     finalMix += processedSig1;
 
     // --- 9.5 CLAMP FINAL MIX ---
-    if (isBadFloat(finalMix)) {
-      finalMix = 0.0f;
-    }
+    if (isBadFloat(finalMix)) finalMix = 0.0f;
     if (finalMix > 1.0f) finalMix = 1.0f;
     if (finalMix < -1.0f) finalMix = -1.0f;
 
     // --- 10. OUTPUT ANALOGUE FILTER ---
     finalMix = outputFilter.Process(finalMix);
 
-    // --- 11. REVERB & OUTPUT ---
+    // --- 11. REVERB, MASTER VOLUME & OUTPUT ---
     float revL, revR;
     reverb.Process(finalMix, finalMix, &revL, &revR);
 
+    // One-pole smoothing (~20ms) to avoid zipper noise from the 5ms pot scan
+    masterVolumeSmoothed += (masterVolume - masterVolumeSmoothed) * 0.001f;
+    float outGain = OUTPUT_HEADROOM * masterVolumeSmoothed;
+
     float dryWet = 1.0f - reverbMix;
-    out[0][i] = (finalMix * dryWet + revL * reverbMix) * 0.4f;
-    out[1][i] = (finalMix * dryWet + revR * reverbMix) * 0.4f;
+    out[0][i] = (finalMix * dryWet + revL * reverbMix) * outGain;
+    out[1][i] = (finalMix * dryWet + revR * reverbMix) * outGain;
+
+    pulsarRunning = pulsar.IsRunning();
   }
 }
-// -- SETUP --
+
+// ============================================
+// SETUP
+// ============================================
 void setup() {
-  //Serial.begin(115200);
-  delay(1000);  // Wait for serial to initialize
+#if WEASEL_DEBUG
+  Serial.begin(115200);
+#endif
+  delay(100);
 
-  //Serial.println("=== DaisySeed Button & Potentiometer Monitor ===");
-  //Serial.println("Displaying button state changes and potentiometer values...");
-  //Serial.println();
+  // -- PANEL HARDWARE --
+  initShiftRegisters();
+  initPatchBay();
+  initLeds();
 
-  // -- INIT BUTTON MATRICES --
-  initButtonMatrix();
-  initButtonMatrix2();
-
-  // -- INIT POTS --
+  // -- POTS --
   analogReadResolution(16);  // 16-BIT ADC
   initPotentiometers();
-
-  //Serial.println("Potentiometer Configuration:");
-  //Serial.println("MUX1: Channels 0-15 connected to A0");
-  //Serial.println("MUX2: Channels 0-15 connected to A1");
-  //Serial.println("Threshold for reporting changes: ±50 units");
-  //Serial.println("==============================================");
 
   // -- DAISY SEED INIT AT 48kHz --
   hw = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
   sampleRate = DAISY.get_samplerate();
-  int block_size = 64;  // Get the actual block size
-  DAISY.SetAudioBlockSize(block_size);
+  DAISY.SetAudioBlockSize(64);
 
   // -- LPG LUT
   for (int i = 0; i < LPG_TABLE_SIZE; i++) {
@@ -1265,272 +1240,231 @@ void setup() {
     lpgFreqTable[i] = freq;
   }
 
-  // -- START AUDIO
-  DAISY.begin(AudioCallback);
-
-  // -- DAISY DUINO INIT --
-  // -- COMPLEX OSC // SINE + MORPH --
+  // -- DSP OBJECTS --
+  // COMPLEX OSC // SINE + MORPH
   complexOsc.Init(sampleRate);
   complexOsc.SetWaveform(complexOsc.WAVE_SIN);
   complexOsc.SetFreq(440.0f);
   complexOsc.SetAmp(1.0f);
   complexOscMorph.Init(sampleRate);
-  complexOscMorph.SetWaveform(complexOsc.WAVE_SAW);
+  complexOscMorph.SetWaveform(complexOscMorph.WAVE_SAW);  // matches morphWaveformIndex = 1
   complexOscMorph.SetFreq(440.0f);
   complexOscMorph.SetAmp(1.0f);
-  // -- WAVEFOLDER --
+  // WAVEFOLDER
   waveFolder.Init();
-  // -- MODULATION OSC --
+  // MODULATION OSC
   modulationOsc.Init(sampleRate);
   modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
   modulationOsc.SetFreq(440.0f);
   modulationOsc.SetAmp(1.0f);
-  // -- LPG FILTER --
+  // LPG FILTERS
   lpGateFilter1.Init(sampleRate);
   lpGateFilter2.Init(sampleRate);
-  // -- ENVELOPE --
+  // ENVELOPE
   env.Init(sampleRate);
   gateRemainingSamples = 0;
-  // -- PULSAR ENV --
+  // PULSAR ENV
   pulsar.Init(sampleRate);
   pulsar.SetAttackTime(0.02f);
   pulsar.SetDecayTime(0.02f);
   pulsar.SetSustainLevel(1.0f);
-  // -- ANALOGUE OUTPUT FILTER --
+  // ANALOGUE OUTPUT FILTER
   outputFilter.Init(sampleRate);
   outputFilter.SetFreq(8000.0f);
   outputFilter.SetRes(0.2f);
-  // -- REVERB --
+  // REVERB
   reverb.Init(sampleRate);
   reverb.SetFeedback(0.85f);
   reverb.SetLpFreq(17000.0f);
 
   // -- MIDI INIT --
-  // Configure Serial1 to use pin D14 for RX
   Serial1.setRx(MIDI_RX_PIN);
-  Serial1.begin(31250);  // Standard MIDI baud rate
-  Serial1.flush();       // Clear any pending data
+  Serial1.begin(31250);
+  Serial1.flush();
 
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
   MIDI.setHandleClock(handleMidiClock);
   MIDI.setHandleStart(handleMidiStart);
   MIDI.setHandleStop(handleMidiStop);
-
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.turnThruOff();
   currentMidiNote = 60;
   midiTriggerPending = false;
 
-  //Serial.println("=============================================");
-  //Serial.println("MIDI initialized with pin 30 (Digital pin 30)");
-  //Serial.println("=============================================");
+  // -- INITIAL PANEL STATE (before audio starts) --
+  readPotentiometers();
+  updateParameters();
+  for (int i = 0; i < PATCH_DEBOUNCE_READS + 2; i++) {
+    scanPatchMatrix();
+  }
+  readButtons();
+  readButtons();
+  buttonLastHandled = buttonDebounced;  // don't treat buttons held at boot as presses
+  updateLeds();
+
+  // -- START AUDIO (last, so every DSP object is initialised first) --
+  DAISY.begin(AudioCallback);
+
+#if WEASEL_DEBUG
+  Serial.print("WEASEL firmware ");
+  Serial.println(FIRMWARE_VERSION);
+#endif
 }
 
-// -- LOOP --
+// ============================================
+// LOOP
+// ============================================
 void loop() {
+  unsigned long now = millis();
 
-  // MIDI PROCESSING
-  while (MIDI.read()) {
-    // MIDI callbacks handle the events
+  // MIDI
+  while (MIDI.read()) {}
+  checkMidiClockActivity();
+
+  // BUTTONS
+  if (now - lastButtonRead >= BUTTON_READ_INTERVAL) {
+    readButtons();
+    lastButtonRead = now;
   }
 
-  checkMidiClockActivity();  // ADD THIS LINE
-
-
-  // READ BUTTON MATRICES
-  if (millis() - lastMatrixRead > MATRIX_READ_INTERVAL) {
-    readButtonMatrix();
-    readButtonMatrix2();
-    printButtonChanges();  //BUTTON FNCs
-    lastMatrixRead = millis();
+  // PATCH BAY
+  if (now - lastPatchScan >= PATCH_SCAN_INTERVAL) {
+    scanPatchMatrix();
+    lastPatchScan = now;
   }
 
-  // READ POTENTIOMETERS AND UPDATE PARAMETERS
-  if (millis() - lastPotRead > POT_READ_INTERVAL) {
+  // POTS
+  if (now - lastPotRead >= POT_READ_INTERVAL) {
     readPotentiometers();
-    updateParameters();  // UPDATE PARAMS
-    lastPotRead = millis();
+    updateParameters();
+    lastPotRead = now;
   }
 
-  // CPU & DEBUG PRINTING (Runs every 0.5 seconds)
-  /*
-  if (millis() - lastCpuPrint >= 500) {
-    lastCpuPrint = millis();
-
-    // CPU LOAD REPORTING
-    float avgLoad = cpuMeter.GetAvgCpuLoad();
-    float maxLoad = cpuMeter.GetMaxCpuLoad();
-
-    Serial.print("CPU Load: ");
-    Serial.print(avgLoad * 100.0f);
-    Serial.print("% | Max: ");
-    Serial.print(maxLoad * 100.0f);
-    Serial.println("%");
-  }*/
+  // LEDS
+  if (now - lastLedUpdate >= LED_UPDATE_INTERVAL) {
+    updateLeds();
+    lastLedUpdate = now;
+  }
 }
 
-// -- UPDATE PARAMETERS --
+// ============================================
+// UPDATE PARAMETERS (from pots)
+// ============================================
 void updateParameters() {
-  // -- OSCILLATORS --
-
-  // FINE TUNE
-  // 3 cents is 3/1200 of an octave.
+  // FINE TUNE range
   float fineRange = 3.0f / 12.0f;
 
   // -- COMPLEX OSCILLATOR --
-  // PITCH
-  complexOscFreq = fmap(potValues[16] / 65535.0f, 25.0f, 1760.0f, Mapping::EXP);
+  complexOscFreq = fmap(potNorm(POT_COMPOSC_FREQ), 25.0f, 1760.0f, Mapping::EXP);
+  complexOscFreqModDepth = potNorm(POT_COMPOSC_FREQ_CTRL);
+  complexOscFine = (potNorm(POT_COMPOSC_FINE) * 2.0f - 1.0f) * fineRange;
+  complexOscMorphMix = potNorm(POT_COMPOSC_TIMBRE);
+  complexOscWF = 1.0f + (19.0f * potNorm(POT_COMPOSC_WF));
+  complexOscWFModDepth = potNorm(POT_COMPOSC_WF_CTRL);
 
-  // Pot 15: Complex Osc Frequency Modulation Amount
-  complexOscFreqModDepth = potValues[15] / 65535.0f;
-
-  // Pot 17: Fine Tune Complex Oscillator (+/- 3 cents)
-  complexOscFine = ((potValues[17] / 65535.0f) * 2.0f - 1.0f) * fineRange;
-
-  // TIMBRE/MORPH CONTROL
-  complexOscMorphMix = potValues[20] / 65535.0f;
-
-  // WAVEFOLDER (0.0 to 1.0f)
-  float complexOscWFPot = potValues[19] / 65535.0f;
-  complexOscWF = 1.0f + (19.0f * complexOscWFPot);
-
-  // Pot 18: Wavefolder Modulation Amount
-  complexOscWFModDepth = potValues[18] / 65535.0f;
-
-  // LPG
-  // Pot 21: Amount of modulation for Folded Signal LPG
-  foldedLpgModAmount = fmap(potValues[21] / 65535.0f, 0.0f, 0.98f, Mapping::LINEAR);
-
-  // Pot 22: Channel 1 Sig Level
-  complexOscSigLevel = fmap(potValues[22] / 65535.0f, 0.0f, 0.98f, Mapping::EXP);
+  // LPG 1
+  foldedLpgModAmount = fmap(potNorm(POT_LPG1_CTRL), 0.0f, 0.98f, Mapping::LINEAR);
+  complexOscSigLevel = fmap(potNorm(POT_LPG1_LEVEL), 0.0f, 0.98f, Mapping::EXP);
 
   // -- MODULATION OSCILLATOR --
-  // PITCH
-  modulationOscFreq = fmap(potValues[11] / 65535.0f, 0.1f, 1000.0f, Mapping::EXP);
+  modulationOscFreq = fmap(potNorm(POT_MODOSC_FREQ), 0.1f, 1000.0f, Mapping::EXP);
+  modulationFreqModDepth = potNorm(POT_MODOSC_FREQ_CTRL);
+  modulationFine = (potNorm(POT_MODOSC_FINE) * 2.0f - 1.0f) * fineRange;
+  modulationOscMod = potNorm(POT_MODOSC_MOD);
+  modulationOscModCoeffDepth = potNorm(POT_MODOSC_MOD_CTRL);
 
-  // Pot 10: Amount of modulation applied to Mod Osc Frequency
-  modulationFreqModDepth = potValues[10] / 65535.0f;
-
-  // Pot 12: Fine Tune Modulation Oscillator (+/- 3 cents)
-  modulationFine = ((potValues[12] / 65535.0f) * 2.0f - 1.0f) * fineRange;
-
-  // MODULATION (FM/AM)
-  // Pot 14: Modulation Depth (FM or AM depth)
-  modulationOscMod = potValues[14] / 65535.0f;
-
-  // Pot 13: Amount of modulation applied to Mod Osc Modulation Depth (FM/AM amount)
-  modulationOscModCoeffDepth = potValues[13] / 65535.0f;
-
-  // LPG
-  // Pot 23: Amount of modulation for Mod Osc Signal LPG
-  modOscLpgModAmount = fmap(potValues[23] / 65535.0f, 0.0f, 0.98f, Mapping::LINEAR);
-
-  // Pot 24: Channel 2 Sig Level
-  modOscSigLevel = fmap(potValues[24] / 65535.0f, 0.0f, 0.98f, Mapping::EXP);
+  // LPG 2
+  modOscLpgModAmount = fmap(potNorm(POT_LPG2_CTRL), 0.0f, 0.98f, Mapping::LINEAR);
+  modOscSigLevel = fmap(potNorm(POT_LPG2_LEVEL), 0.0f, 0.98f, Mapping::EXP);
 
   // -- ENVELOPE [Buchla ASD config] --
   float minTime = 0.002f;
   float maxTime = 5.0f;
 
-  // Attack Time (Logarithmic)
-  attackTime = fmap(potValues[5] / 65535.0f, minTime, maxTime, Mapping::EXP);
+  attackTime = fmap(potNorm(POT_ENV_ATTACK), minTime, maxTime, Mapping::EXP);
   env.SetAttackTime(attackTime);
 
-  // Sustain Duration (Logarithmic)
-  sustainDuration = fmap(potValues[6] / 65535.0f, 0.02f, maxTime, Mapping::EXP);
+  sustainDuration = fmap(potNorm(POT_ENV_SUSTAIN), 0.02f, maxTime, Mapping::EXP);
 
   // TRANSIENT mode: gate pulse length = sustain pot value (minimum 20ms)
   transientGateSamples = (uint32_t)(sustainDuration * sampleRate);
-  uint32_t minTransientSamples = (uint32_t)(0.02f * sampleRate);  // 20ms minimum
+  uint32_t minTransientSamples = (uint32_t)(0.02f * sampleRate);
   if (transientGateSamples < minTransientSamples) transientGateSamples = minTransientSamples;
 
-  // SUSTAIN mode: gate length = sustain pot value + 300ms minimum
-  uint32_t minSustainGate = (uint32_t)(0.1f * sampleRate);  // 300ms minimum
+  // SUSTAIN mode: gate length = sustain pot value (minimum 100ms)
+  uint32_t minSustainGate = (uint32_t)(0.1f * sampleRate);
   sustainGateSamples = (uint32_t)(sustainDuration * sampleRate);
   if (sustainGateSamples < minSustainGate) sustainGateSamples = minSustainGate;
 
-    // Release Time (Logarithmic)
-  // When in oscillate mode, reduce the range to 50%
-  float releasePotNorm = potValues[7] / 65535.0f;
-  
+  // Release Time - reduced range in oscillate mode
+  float releasePotNorm = potNorm(POT_ENV_DECAY);
   if (currentEnvMode == ENV_MODE_OSCILLATE) {
-    // OSCILLATE MODE: 50% of normal range
-    // Map pot (0-1) to range (minTime to maxTime/2)
-    float oscillateMaxTime = maxTime * 0.2f;
-    releaseTime = fmap(releasePotNorm, minTime, oscillateMaxTime, Mapping::EXP);
+    releaseTime = fmap(releasePotNorm, minTime, maxTime * 0.2f, Mapping::EXP);
   } else {
-    // Normal mode: full range
     releaseTime = fmap(releasePotNorm, minTime, maxTime, Mapping::EXP);
   }
-  
   env.SetReleaseTime(releaseTime);
   env.SetDecayTime(0.0f);
   env.SetSustainLevel(1.0f);
 
   // -- PULSAR --
-  // Pot 9: Base Pulsar Release Time
-  float pulsarReleasePot = potValues[9] / 65535.0f;
+  float pulsarReleasePot = potNorm(POT_PULSAR_PERIOD);
+  float pulsarMinTime = 0.02f;
+  float pulsarMaxTime = 5.0f;
+  float basePulsarRelease = pulsarMinTime * powf(pulsarMaxTime / pulsarMinTime, pulsarReleasePot);
 
-  // Logarithmic mapping: 20ms to 5000ms (0.02s to 5.0s)
-  float pulsarMinTime = 0.02f;  // 20ms - very short decay
-  float pulsarMaxTime = 5.0f;   // 5000ms - long decay
-  float pulsarTimeRatio = pulsarMaxTime / pulsarMinTime;
-
-  // Base release time from pot (logarithmic)
-  float basePulsarRelease = pulsarMinTime * powf(pulsarTimeRatio, pulsarReleasePot);
-
-  // Subtract modulation (clamped) to ensure time decreases
-  float adjustedPulsarTime = basePulsarRelease - (2.0f * pulsarPeriodModCoeff);  // Scale modulation appropriately
+  float adjustedPulsarTime = basePulsarRelease - (2.0f * pulsarPeriodModCoeff);
   if (adjustedPulsarTime < pulsarMinTime) adjustedPulsarTime = pulsarMinTime;
   if (adjustedPulsarTime > pulsarMaxTime) adjustedPulsarTime = pulsarMaxTime;
 
   pulsarReleaseTime = adjustedPulsarTime;
   pulsar.SetReleaseTime(pulsarReleaseTime);
 
-  // -- SEQUENCER --
-  // Update Sequencer CV steps from MUX1 Channels 0-4
+  // -- SEQUENCER STEPS --
   for (int i = 0; i < 5; i++) {
-    // Store normalized 0.0 to 1.0 values
-    seqStepCV[i] = fmap(potValues[i] / 65535.0f, 0.0f, 1.0f, Mapping::EXP);
+    seqStepCV[i] = fmap(potNorm(POT_SEQ_STEP1 + i), 0.0f, 1.0f, Mapping::EXP);
   }
+
   // -- CLOCK --
   if (midiClockSync) {
-    // When in MIDI sync mode, the pot controls clock division
+    // Pot selects clock division in MIDI sync mode
     updateClockDivision();
-    // Don't update seqClockSpeed or samplesPerTick in this mode
-    // The sequencer timing is handled by MIDI clock
   } else {
-    // Free-running clock mode - original behavior
-    float clockPot = potValues[25] / 65535.0f;
+    float clockPot = potNorm(POT_CLOCK);
     seqClockSpeed = 0.1f * powf(40000.0f, (1.0f - clockPot));
-
-    // CLOCK CLAMPING
     if (seqClockSpeed < 0.1f) seqClockSpeed = 0.1f;
     if (seqClockSpeed > 4000.0f) seqClockSpeed = 4000.0f;
 
-    samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * DAISY.get_samplerate());
+    samplesPerTick = (uint32_t)((seqClockSpeed / 1000.0f) * sampleRate);
     if (samplesPerTick < 1) samplesPerTick = 1;
   }
 
-
   // -- REVERB --
-  reverbMix = potValues[26] / 65535.0f;  // REVERB MIX CONTROL
+  reverbMix = potNorm(POT_REVERB_MIX);
+
+  // -- MASTER VOLUME --
+  // Squared for an audio-taper feel on a linear pot; dead zone at the bottom for true silence
+  float vol = potNorm(POT_MASTER_VOLUME);
+  if (vol < 0.01f) vol = 0.0f;
+  masterVolume = vol * vol;
 }
 
-// -- MIDI NOTE HANDLING
+// ============================================
+// MIDI
+// ============================================
 void handleNoteOn(byte channel, byte note, byte velocity) {
   if (velocity > 0) {
     currentMidiNote = note;
     midiTriggerPending = true;
-    midiTriggerCounter = MIDI_TRIGGER_HOLDOFF;
     lastMidiNoteFreq = getMidiTransposeRatio(note);
     midiNoteReceived = true;
     midiNoteHeld = true;
     pulsarMidiTrigger = true;
     randomMidiTrigger = true;
     envMidiTrigger = true;
-    //envTrigger = true;
+  } else {
+    midiNoteHeld = false;  // Note-on with velocity 0 = note-off
   }
 }
 
@@ -1538,75 +1472,51 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
   midiNoteHeld = false;
 }
 
-// -- MIDI CLOCK HANDLING --
 void handleMidiClock() {
-  // Called on each MIDI clock tick (24 ticks per quarter note)
+  // 24 ticks per quarter note
   uint32_t now = millis();
-
-  // Mark that MIDI clock is active
   midiClockActive = true;
 
-  // Calculate tempo from tick interval (only when sync is enabled)
-  if (midiClockSync) {
-    if (lastMidiClockTime > 0) {
-      uint32_t tickInterval = now - lastMidiClockTime;
-      // 24 ticks per quarter note, so quarter note interval = tickInterval * 24
-      float quarterNoteInterval = tickInterval * 24.0f;
-      if (quarterNoteInterval > 0) {
-        midiTempo = 60000.0f / quarterNoteInterval;
-        // Clamp tempo to reasonable range
-        if (midiTempo < 40.0f) midiTempo = 40.0f;
-        if (midiTempo > 240.0f) midiTempo = 240.0f;
+  if (midiClockSync && lastMidiClockTime > 0) {
+    uint32_t tickInterval = now - lastMidiClockTime;
+    float quarterNoteInterval = tickInterval * 24.0f;
+    if (quarterNoteInterval > 0) {
+      midiTempo = 60000.0f / quarterNoteInterval;
+      if (midiTempo < 40.0f) midiTempo = 40.0f;
+      if (midiTempo > 240.0f) midiTempo = 240.0f;
 
-        // Calculate samples per MIDI clock tick based on current division
-        // One tick = 1/24 of a quarter note, then multiply by division
-        float secondsPerTick = 60.0f / (midiTempo * 24.0f);
-        // Apply division: larger division = longer interval between steps
-        midiClockSamplesPerTick = (uint32_t)(secondsPerTick * sampleRate * currentDivision);
-        if (midiClockSamplesPerTick < 1) midiClockSamplesPerTick = 1;
-      }
+      float secondsPerTick = 60.0f / (midiTempo * 24.0f);
+      midiClockSamplesPerTick = (uint32_t)(secondsPerTick * sampleRate * currentDivision);
+      if (midiClockSamplesPerTick < 1) midiClockSamplesPerTick = 1;
     }
   }
   lastMidiClockTime = now;
   midiClockTicks++;
 }
 
-// -- CHECK MIDI CLOCK ACTIVITY --
 void checkMidiClockActivity() {
-  // If MIDI clock sync is enabled, check if we've received a clock message recently
-  if (midiClockSync) {
-    uint32_t now = millis();
-    if (now - lastMidiClockTime > MIDI_CLOCK_TIMEOUT) {
-      midiClockActive = false;
-      midiClockSamplesPerTick = 0;  // Invalidate the samples per tick
-    }
+  if (midiClockSync && (millis() - lastMidiClockTime > MIDI_CLOCK_TIMEOUT)) {
+    midiClockActive = false;
+    midiClockSamplesPerTick = 0;
   }
 }
 
-// -- UPDATE CLOCK DIVISION FROM POT --
 void updateClockDivision() {
-  // Map pot value (0-65535) to division index (0 to NUM_DIVISIONS-1)
-  // REVERSED: 0% = fastest (1/32), 100% = slowest (1/1)
-  float potNorm = potValues[25] / 65535.0f;
-  // Reverse the pot direction: 1.0 - potNorm
-  currentDivisionIndex = (int)((1.0f - potNorm) * NUM_DIVISIONS);
+  // REVERSED: 0% = fastest, 100% = slowest
+  float p = potNorm(POT_CLOCK);
+  currentDivisionIndex = (int)((1.0f - p) * NUM_DIVISIONS);
   if (currentDivisionIndex >= NUM_DIVISIONS) currentDivisionIndex = NUM_DIVISIONS - 1;
   if (currentDivisionIndex < 0) currentDivisionIndex = 0;
-
   currentDivision = clockDivisions[currentDivisionIndex];
 }
 
-// -- MIDI START HANDLING --
 void handleMidiStart() {
-  // Reset sequencer to step 0 when MIDI start received
   seqCurrentStep = 0;
   seqSampleCounter = 0;
   midiClockTicks = 0;
 }
 
-// -- MIDI STOP HANDLING --
 void handleMidiStop() {
-  // Stop the sequencer
   seqSampleCounter = 0;
   midiClockTicks = 0;
 }
