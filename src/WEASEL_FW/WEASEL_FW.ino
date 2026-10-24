@@ -152,8 +152,8 @@ enum ButtonBit {
   BTN_ENV_TRIG_MODE = SR_BIT(1, 7),
   // SR2
   BTN_ENV_MODE = SR_BIT(2, 0),
-  BTN_PULSAR_MANUAL = SR_BIT(2, 1),
-  BTN_PULSAR_MODE = SR_BIT(2, 2),
+  BTN_PULSAR_MODE = SR_BIT(2, 1),
+  BTN_PULSAR_MANUAL = SR_BIT(2, 2),
   BTN_MODOSC_AM_FM = SR_BIT(2, 3),
   BTN_MODOSC_WAVE = SR_BIT(2, 4),
   BTN_COMPOSC_POLARITY = SR_BIT(2, 5),
@@ -170,9 +170,13 @@ enum ButtonBit {
 const uint32_t BUTTON_MASK = 0xFFFF0F00UL;
 
 // Sequencer step buttons:
-// 1 = latching switches, step is ENABLED while the switch reads LOW (v0.9 behaviour)
+// 1 = latching switches, step enabled/disabled by switch level (see below)
 // 0 = momentary buttons, each press toggles the step on/off
 #define SEQ_STEP_SWITCHES_LATCHING 1
+
+// Latching mode only: 1 = step ENABLED while its switch reads HIGH, disabled when LOW
+//                     0 = step ENABLED while its switch reads LOW (v0.9 behaviour)
+#define SEQ_STEP_ENABLED_WHEN_HIGH 0
 
 const uint8_t SEQ_STEP_BITS[5] = { BTN_SEQ_STEP1, BTN_SEQ_STEP2, BTN_SEQ_STEP3, BTN_SEQ_STEP4, BTN_SEQ_STEP5 };
 
@@ -240,6 +244,8 @@ const LedLocation LED_COMP_WAVE[] = { { 2, 1, 0 }, { 2, 1, 1 }, { 2, 1, 2 } };  
 const LedLocation LED_QUANTIZE[] = { { 2, 1, 3 }, { 2, 1, 4 } };                 // OFF, ON
 const LedLocation LED_RANDOM_MODE[] = { { 2, 1, 5 }, { 2, 1, 6 }, { 2, 1, 7 } };  // SEQ, PULSAR, MIDI
 const LedLocation LED_CLOCK_SYNC[] = { { 3, 0, 1 }, { 3, 0, 2 } };               // FREE, MIDI SYNC
+// Sequencer step LEDs (U1 @ 0x58): D9 = P0_6, D14 = P0_7, D15 = P1_0, D16 = P1_1, D17 = P1_2
+const LedLocation LED_SEQ_STEP[] = { { 0, 0, 6 }, { 0, 0, 7 }, { 0, 1, 0 }, { 0, 1, 1 }, { 0, 1, 2 } };  // STEP 1..5
 // LPG mode LEDs not yet assigned - add groups here and in buildLedFrame() when known
 
 uint8_t ledFrame[NUM_CHIPS][2] = { { 0 } };     // desired state [chip][port]
@@ -405,6 +411,7 @@ float currentDivision = 1.0f;  // Current clock division multiplier
 
 // -- SEQUENCER --
 int seqCurrentStep = 0;
+volatile int activeSeqStep = 0;  // last ENABLED step reached - the step whose CV is output (drives step LEDs)
 bool seqStepEnabled[5] = { true, true, true, true, true };  // All steps ON by default
 float seqStepCV[5] = { 0.0f };                              // Stores current CV from MUX1 0-4
 float seqClockSpeed = 100.0f;
@@ -679,6 +686,7 @@ void buildLedFrame() {
   SET_LED(LED_QUANTIZE, quantizeToMidi ? 1 : 0);
   SET_LED(LED_RANDOM_MODE, currentRandomMode);
   SET_LED(LED_CLOCK_SYNC, midiClockSync ? 1 : 0);
+  SET_LED(LED_SEQ_STEP, activeSeqStep);
 }
 
 // Only writes chips whose outputs changed
@@ -827,9 +835,13 @@ void readButtons() {
   }
 
 #if SEQ_STEP_SWITCHES_LATCHING
-  // Level-based, as in v0.9: step is disabled while its switch reads HIGH
+  // Level-based step enable
   for (int i = 0; i < 5; i++) {
+#if SEQ_STEP_ENABLED_WHEN_HIGH
+    seqStepEnabled[i] = buttonIsDown(SEQ_STEP_BITS[i]);
+#else
     seqStepEnabled[i] = !buttonIsDown(SEQ_STEP_BITS[i]);
+#endif
   }
 #endif
 }
@@ -907,6 +919,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps;
       if (seqStepEnabled[seqCurrentStep]) {
         activeSeqCV = seqStepCV[seqCurrentStep];
+        activeSeqStep = seqCurrentStep;  // disabled steps leave the previous step lit
       } else {
         gateRemainingSamples = 0;
       }
