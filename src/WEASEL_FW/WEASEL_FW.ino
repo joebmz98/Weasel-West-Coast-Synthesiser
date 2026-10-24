@@ -221,6 +221,9 @@ const char* destNames[NUM_DESTINATIONS] = { "PLSR_PERIOD", "MODOSC_FREQ", "MODOS
 
 const uint8_t aw9523_addresses[] = { 0x58, 0x59, 0x5A, 0x5B };
 const int NUM_CHIPS = 4;
+// 400kHz cuts the time LED updates block the main loop by 4x. AW9523 supports 400kHz;
+// drop back to 100000 if the LEDs misbehave (long wires / weak pull-ups).
+const uint32_t I2C_CLOCK_HZ = 400000;
 bool chipPresent[NUM_CHIPS] = { false };
 
 struct LedLocation {
@@ -323,10 +326,6 @@ enum LpgMode { LPG_MODE_VCA,
                LPG_MODE_COMBI };
 LpgMode foldedLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
 LpgMode modOscLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
-float lastCtrl0 = -1.0f;
-float lastCtrl1 = -1.0f;
-int lastMode0 = -1;
-int lastMode1 = -1;
 #define LPG_TABLE_SIZE 64
 float lpgFreqTable[LPG_TABLE_SIZE];
 
@@ -383,7 +382,7 @@ float reverbMix;  // REVERB MIX COEFF
 // -- MASTER VOLUME --
 float masterVolume = 0.0f;          // target, set from pot (0..1)
 float masterVolumeSmoothed = 0.0f;  // per-sample smoothed value (boots silent, fades in)
-const float OUTPUT_HEADROOM = 0.4f;  // v0.9 fixed output gain, now the ceiling at full volume
+const float OUTPUT_HEADROOM = 0.8f;  // doubled from 0.4 to make up for MIX_HEADROOM - same loudness as before
 
 // -- MIDI --
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
@@ -433,8 +432,142 @@ int currentMidiNote = 60;                                  // Default to Middle 
 // -- OPTIMIZATION VARIABLES --
 float rawModulationValues[7] = { 0 };  // Pre-calculated modulation values
 float ln2 = 0.69314718056f;            // ln(2) for fast exp approximations
-uint32_t modUpdateCounter = 0;
-const uint32_t MOD_UPDATE_RATE = 16;
+
+// -- PARAMETER SMOOTHING (audio-rate copies of pot-driven values) --
+// -- LPG STATE --
+// Vactrol-style response on the LPG control: fast rise, slower fall. Smooths the
+// patch-bay modulation so the gate no longer chatters or steps.
+const float LPG_RISE_COEFF = 0.04f;   // ~0.5ms
+const float LPG_FALL_COEFF = 0.004f;  // ~5ms
+const float LPG_CTRL_MAX = 0.90f;
+const uint8_t LPG_PARAM_INTERVAL = 4;  // recompute SVF coefficients every 4 samples
+// SVF cubic drive. DaisySP defaults this to 0.5, which audibly saturates near full level.
+// 0 = clean. Raise a little (e.g. 0.05-0.1) if you want some grit back.
+const float LPG_SVF_DRIVE = 0.0f;
+
+struct LpgChannel {
+  Svf* filter;
+  float ctrl;
+  uint8_t paramCounter;
+};
+LpgChannel lpg1 = { &lpGateFilter1, 0.0f, 0 };
+LpgChannel lpg2 = { &lpGateFilter2, 0.0f, 0 };
+
+// POT SMOOTHING, two stages per parameter, run at audio rate:
+//  1. Linear ramp from the previous pot reading to the new one, spread over the time
+//     the last pot scan actually took. This removes the scan-rate (~200Hz) ripple a
+//     plain one-pole leaves behind - the main cause of audible stepping.
+//  2. A short one-pole (PARAM_SMOOTH_MS) that rounds off the corners between ramps.
+// Shorter PARAM_SMOOTH_MS = snappier response. 1-3ms is a good range now.
+const float PARAM_SMOOTH_MS = 2.0f;
+float paramSmoothCoeff = 0.01f;  // computed from PARAM_SMOOTH_MS in setup()
+
+// Pitch pots are smoothed in octaves (log2 Hz) so glides are even across the range
+float complexOscPitchOct = 8.0f;
+float modulationOscPitchOct = 5.0f;
+
+struct SmoothedParam {
+  const float* source;  // pot-derived value written by updateParameters()
+  float ramp;           // linearly ramped value
+  float inc;            // ramp increment per sample
+  float target;         // value this ramp is heading to (latched at ramp start)
+  float out;            // final smoothed value used by the DSP
+};
+
+enum SmoothedIndex {
+  SM_COMP_PITCH, SM_COMP_FINE, SM_MOD_PITCH, SM_MOD_FINE,
+  SM_MORPH, SM_WF, SM_MOD_DEPTH, SM_REVERB,
+  SM_LPG1_LEVEL, SM_LPG2_LEVEL, SM_LPG1_MOD, SM_LPG2_MOD,
+  SM_COMP_FREQ_DEPTH, SM_COMP_WF_DEPTH, SM_MOD_FREQ_DEPTH, SM_MOD_MOD_DEPTH,
+  SM_COUNT
+};
+
+SmoothedParam smoothed[SM_COUNT] = {
+  { &complexOscPitchOct, 0, 0, 0, 0 },
+  { &complexOscFine, 0, 0, 0, 0 },
+  { &modulationOscPitchOct, 0, 0, 0, 0 },
+  { &modulationFine, 0, 0, 0, 0 },
+  { &complexOscMorphMix, 0, 0, 0, 0 },
+  { &complexOscWF, 0, 0, 0, 0 },
+  { &modulationOscMod, 0, 0, 0, 0 },
+  { &reverbMix, 0, 0, 0, 0 },
+  { &complexOscSigLevel, 0, 0, 0, 0 },
+  { &modOscSigLevel, 0, 0, 0, 0 },
+  { &foldedLpgModAmount, 0, 0, 0, 0 },
+  { &modOscLpgModAmount, 0, 0, 0, 0 },
+  { &complexOscFreqModDepth, 0, 0, 0, 0 },
+  { &complexOscWFModDepth, 0, 0, 0, 0 },
+  { &modulationFreqModDepth, 0, 0, 0, 0 },
+  { &modulationOscModCoeffDepth, 0, 0, 0, 0 },
+};
+
+// Named views of the smoothed outputs used in the audio callback
+float& smComplexOscPitchOct = smoothed[SM_COMP_PITCH].out;
+float& smComplexOscFine = smoothed[SM_COMP_FINE].out;
+float& smModulationOscPitchOct = smoothed[SM_MOD_PITCH].out;
+float& smModulationFine = smoothed[SM_MOD_FINE].out;
+float& smComplexOscMorphMix = smoothed[SM_MORPH].out;
+float& smComplexOscWF = smoothed[SM_WF].out;
+float& smModulationOscMod = smoothed[SM_MOD_DEPTH].out;
+float& smReverbMix = smoothed[SM_REVERB].out;
+float& smComplexOscSigLevel = smoothed[SM_LPG1_LEVEL].out;
+float& smModOscSigLevel = smoothed[SM_LPG2_LEVEL].out;
+float& smFoldedLpgModAmount = smoothed[SM_LPG1_MOD].out;
+float& smModOscLpgModAmount = smoothed[SM_LPG2_MOD].out;
+float& smComplexOscFreqModDepth = smoothed[SM_COMP_FREQ_DEPTH].out;
+float& smComplexOscWFModDepth = smoothed[SM_COMP_WF_DEPTH].out;
+float& smModulationFreqModDepth = smoothed[SM_MOD_FREQ_DEPTH].out;
+float& smModulationOscModCoeffDepth = smoothed[SM_MOD_MOD_DEPTH].out;
+
+// Handshake between the pot scan (loop) and the audio callback
+volatile uint32_t paramVersion = 0;        // bumped after each updateParameters()
+uint32_t paramVersionSeen = 0;             // last version the callback ramped towards
+volatile uint32_t paramRampSamples = 240;  // measured pot-scan interval, in samples
+unsigned long lastPotScanMicros = 0;
+
+// Start every smoothed parameter exactly at its pot position (no glide at power-up)
+void snapSmoothedParams() {
+  for (int i = 0; i < SM_COUNT; i++) {
+    smoothed[i].ramp = *smoothed[i].source;
+    smoothed[i].out = smoothed[i].ramp;
+    smoothed[i].inc = 0.0f;
+    smoothed[i].target = smoothed[i].ramp;
+  }
+  paramVersionSeen = paramVersion;
+}
+
+// Called at the start of each audio block: if new pot values arrived, set up ramps to them
+inline void startParamRamps() {
+  uint32_t v = paramVersion;
+  if (v == paramVersionSeen) return;
+  paramVersionSeen = v;
+  float invLen = 1.0f / (float)paramRampSamples;
+  for (int i = 0; i < SM_COUNT; i++) {
+    smoothed[i].target = *smoothed[i].source;
+    smoothed[i].inc = (smoothed[i].target - smoothed[i].ramp) * invLen;
+  }
+}
+
+// Called every sample
+inline void tickSmoothedParams() {
+  const float k = paramSmoothCoeff;
+  for (int i = 0; i < SM_COUNT; i++) {
+    SmoothedParam& p = smoothed[i];
+    if (p.inc != 0.0f) {
+      p.ramp += p.inc;
+      // stop exactly at the target instead of overshooting
+      if ((p.inc > 0.0f && p.ramp >= p.target) || (p.inc < 0.0f && p.ramp <= p.target)) {
+        p.ramp = p.target;
+        p.inc = 0.0f;
+      }
+    }
+    p.out += k * (p.ramp - p.out);
+  }
+}
+
+
+// -- MIX --
+const float MIX_HEADROOM = 0.5f;  // the two LPG channels are summed at half level
 
 // -- FORWARD DECLARATIONS --
 void updateClockDivision();
@@ -446,12 +579,35 @@ void handleMidiClock();
 void handleMidiStart();
 void handleMidiStop();
 
-// -- FAST MATH APPROXIMATIONS --
-inline float fast_exp2_approx(float x) {
-  // Fast 2^x approximation using Taylor series expansion
-  x = 1.0f + x * ln2;  // First-order approximation
-  // Second-order improvement for better accuracy
-  return x * (1.0f + (x - 1.0f) * 0.5f);
+// -- MATH HELPERS --
+// Exponential pitch scaling. The old Taylor approximation went NEGATIVE for exponents
+// between about -1.4 and -2.9 (and grew again below that), so deep FM produced negative
+// frequencies. DaisySP oscillators never wrap a negative phase, so the phase ran away:
+// saw/tri outputs went out of range and the sine lost precision over time (noise/flutter).
+// exp2f is exact and cheap on the M7 FPU. Takes absolute pitch in octaves (log2 Hz).
+inline float pitchExp2(float octaves) {
+  if (octaves > 15.0f) octaves = 15.0f;    // 32kHz - clampOscFreq() trims to below Nyquist
+  if (octaves < -10.0f) octaves = -10.0f;
+  return exp2f(octaves);
+}
+
+// Keeps oscillator frequency positive and below Nyquist
+inline float clampOscFreq(float f) {
+  if (f < 0.0f) return 0.0f;
+  float maxF = sampleRate * 0.45f;
+  return (f > maxF) ? maxF : f;
+}
+
+// Transparent below 0.8, then a smooth knee that approaches +/-1.
+// Replaces the hard +/-1 clamp on the mix, which squared off peaks whenever
+// both LPG channels were loud at once.
+inline float softKnee(float x) {
+  const float t = 0.8f;
+  float a = fabsf(x);
+  if (a <= t) return x;
+  float over = (a - t) / (1.0f - t);
+  float y = t + (1.0f - t) * (over / (1.0f + over));
+  return (x < 0.0f) ? -y : y;
 }
 
 inline float fast_lpg_freq(float ctrl) {
@@ -500,18 +656,53 @@ void initPotentiometers() {
   pinMode(MUX2_SIG, INPUT);
 }
 
+// Pot noise filtering: one-pole low-pass on the raw ADC value, then hysteresis so a pot
+// at rest stops twitching, and snapping at both ends so minimum/maximum are exact
+// (e.g. wavefolder gain sits at exactly 1.0 and morph mix at exactly 0 with the pot down).
+// POT_FILTER_COEFF: noise filter on the raw ADC, per 5ms scan. Higher = less lag, more noise.
+//   0.5 settles in ~15ms. (Total glide = this + PARAM_SMOOTH_MS.)
+// Hysteresis only applies to a pot at rest: once a pot moves past POT_HYSTERESIS it tracks
+// every scan (no stepping) until it has been still for POT_ACTIVE_MS, then freezes again.
+const float POT_FILTER_COEFF = 0.5f;
+const int POT_HYSTERESIS = 48;            // in 16-bit LSBs (~0.07% of travel)
+const unsigned long POT_ACTIVE_MS = 300;  // keep tracking this long after the last movement
+unsigned long potActiveUntil[TOTAL_POTS] = { 0 };
+const int POT_END_SNAP = 200;          // dead zone at each end of travel
+float potFiltered[TOTAL_POTS] = { 0 };
+bool potFilterPrimed = false;
+
+inline void filterPot(int i, int raw) {
+  if (!potFilterPrimed) potFiltered[i] = (float)raw;
+  else potFiltered[i] += POT_FILTER_COEFF * ((float)raw - potFiltered[i]);
+
+  int v = (int)(potFiltered[i] + 0.5f);
+  if (v < POT_END_SNAP) v = 0;
+  else if (v > 65535 - POT_END_SNAP) v = 65535;
+
+  unsigned long now = millis();
+  if (abs(v - potValues[i]) >= POT_HYSTERESIS) {
+    potActiveUntil[i] = now + POT_ACTIVE_MS;  // pot is being turned
+  }
+  if (v == 0 || v == 65535 || (long)(potActiveUntil[i] - now) > 0) {
+    potValues[i] = v;  // track continuously while moving
+  }
+}
+
 void readPotentiometers() {
   for (int i = 0; i < TOTAL_POTS; i++) {
+    int raw;
     if (i < NUM_POTS_PER_MUX) {
       selectMuxChannel(i, MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3);
-      delayMicroseconds(10);
-      potValues[i] = analogRead(MUX1_SIG);
+      delayMicroseconds(20);  // longer settle after switching the mux
+      raw = analogRead(MUX1_SIG);
     } else {
       selectMuxChannel(i - NUM_POTS_PER_MUX, MUX2_S0, MUX2_S1, MUX2_S2, MUX2_S3);
-      delayMicroseconds(10);
-      potValues[i] = analogRead(MUX2_SIG);
+      delayMicroseconds(20);
+      raw = analogRead(MUX2_SIG);
     }
+    filterPot(i, raw);
   }
+  potFilterPrimed = true;
 }
 
 // ============================================
@@ -647,8 +838,8 @@ void configurePushPull(uint8_t address) {
 }
 
 void initLeds() {
-  Wire.setClock(100000);
   Wire.begin();
+  Wire.setClock(I2C_CLOCK_HZ);  // must come after begin() - begin() resets it to 100kHz
   for (int chip = 0; chip < NUM_CHIPS; chip++) {
     chipPresent[chip] = initializeAW9523(aw9523_addresses[chip]);
     if (chipPresent[chip]) configurePushPull(aw9523_addresses[chip]);
@@ -757,8 +948,8 @@ void handleButtonPress(uint8_t bit) {
       modWaveformIndex = (modWaveformIndex + 1) % 4;
       if (modWaveformIndex == 0) modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
       else if (modWaveformIndex == 1) modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
-      else if (modWaveformIndex == 2) modulationOsc.SetWaveform(modulationOsc.WAVE_SAW);
-      else modulationOsc.SetWaveform(modulationOsc.WAVE_SQUARE);
+      else if (modWaveformIndex == 2) modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SAW);
+      else modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SQUARE);
       break;
 
     case BTN_COMPOSC_POLARITY:
@@ -769,8 +960,8 @@ void handleButtonPress(uint8_t bit) {
       // TRI -> SAW -> SQUARE
       morphWaveformIndex = (morphWaveformIndex + 1) % 3;
       if (morphWaveformIndex == 0) complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
-      else if (morphWaveformIndex == 1) complexOscMorph.SetWaveform(complexOscMorph.WAVE_SAW);
-      else complexOscMorph.SetWaveform(complexOscMorph.WAVE_SQUARE);
+      else if (morphWaveformIndex == 1) complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SAW);
+      else complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SQUARE);
       break;
 
     case BTN_QUANTIZE_MIDI:
@@ -878,7 +1069,54 @@ void updateMatrixModulation(float envSig, float pulsarEnvSig) {
 // ============================================
 // AUDIO PROCESSING
 // ============================================
+// One Buchla-style LPG channel. Replaces the old per-channel code, which:
+//  - hard-muted below a tiny threshold (chattering on/off as modulation hovered near zero),
+//  - only retuned the filter when the control moved by > 0.002 (audible steps),
+//  - and ran the SVF at its default drive of 0.5 (distortion).
+float processLpg(LpgChannel& ch, float in, float ctrlTarget, LpgMode mode,
+                 bool squaredVca, float combiRes) {
+  if (ctrlTarget < 0.0f) ctrlTarget = 0.0f;
+  if (ctrlTarget > LPG_CTRL_MAX) ctrlTarget = LPG_CTRL_MAX;
+
+  // Vactrol-style smoothing
+  float coeff = (ctrlTarget > ch.ctrl) ? LPG_RISE_COEFF : LPG_FALL_COEFF;
+  ch.ctrl += coeff * (ctrlTarget - ch.ctrl);
+  float ctrl = ch.ctrl;
+
+  if (mode == LPG_MODE_VCA) {
+    return in * (squaredVca ? ctrl * ctrl : ctrl);
+  }
+
+  if (++ch.paramCounter >= LPG_PARAM_INTERVAL) {
+    ch.paramCounter = 0;
+    float res = (mode == LPG_MODE_LP) ? ctrl * ctrl * 0.2f : combiRes;
+    ch.filter->SetRes(res);
+    ch.filter->SetFreq(fast_lpg_freq(ctrl));
+  }
+
+  ch.filter->Process(in);
+  float out = ch.filter->Low();
+
+  if (isBadFloat(out)) {
+    ch.filter->Init(sampleRate);
+    ch.filter->SetDrive(LPG_SVF_DRIVE);
+    ch.paramCounter = LPG_PARAM_INTERVAL;  // force a coefficient update next sample
+    return 0.0f;
+  }
+
+  if (mode == LPG_MODE_COMBI) {
+    out *= ctrl;
+  } else {
+    // LP mode: short fade to silence at the very bottom instead of a hard mute
+    float fade = ctrl * 50.0f;
+    if (fade < 1.0f) out *= fade;
+  }
+  return out;
+}
+
 void AudioCallback(float** in, float** out, size_t size) {
+  startParamRamps();  // pick up any new pot values for this block
+
 
   for (size_t i = 0; i < size; i++) {
 
@@ -1031,44 +1269,39 @@ void AudioCallback(float** in, float** out, size_t size) {
     float envSig = env.Process(gate);
     float pulsarEnvSig = pulsar.Process(pulsarTrigger);
 
-    // --- 5. UPDATE PATCH BAY MODULATION (less frequently) ---
-    if (++modUpdateCounter >= MOD_UPDATE_RATE) {
-      updateMatrixModulation(envSig, pulsarEnvSig);
-      modUpdateCounter = 0;
-    }
+    // --- 5. UPDATE PATCH BAY MODULATION (every sample - no 16-sample staircase) ---
+    updateMatrixModulation(envSig, pulsarEnvSig);
+
+    // --- 5.5 SMOOTH POT-DRIVEN PARAMETERS ---
+    tickSmoothedParams();
 
     // --- 6. APPLY ATTENUATORS ---
     float pulsarModDepth = potNorm(POT_PULSAR_CTRL);
     pulsarPeriodModCoeff = rawModulationValues[0] * pulsarModDepth;
-    modulationFreqCoeff = rawModulationValues[1] * modulationFreqModDepth;
-    modulationOscModCoeff = rawModulationValues[2] * modulationOscModCoeffDepth;
-    complexOscFreqCoeff = rawModulationValues[3] * complexOscFreqModDepth;
-    complexOscWFCoeff = rawModulationValues[4] * complexOscWFModDepth;
-    vcaComplexOsc = rawModulationValues[5] * foldedLpgModAmount;
-    vcaModulationOsc = rawModulationValues[6] * modOscLpgModAmount;
+    modulationFreqCoeff = rawModulationValues[1] * smModulationFreqModDepth;
+    modulationOscModCoeff = rawModulationValues[2] * smModulationOscModCoeffDepth;
+    complexOscFreqCoeff = rawModulationValues[3] * smComplexOscFreqModDepth;
+    complexOscWFCoeff = rawModulationValues[4] * smComplexOscWFModDepth;
+    vcaComplexOsc = rawModulationValues[5] * smFoldedLpgModAmount;
+    vcaModulationOsc = rawModulationValues[6] * smModOscLpgModAmount;
 
     // --- 7. OSCILLATORS ---
 
     // MODULATION OSCILLATOR
-    float modFinalFreq;
+    float modExp = (modulationFreqCoeff * 5.0f) + smModulationFine;
+    float modFinalFreq = pitchExp2(smModulationOscPitchOct + modExp);
     if (quantizeToMidi && midiNoteReceived) {
       // Pot frequency is the C4 reference, transposed by the MIDI note
-      modFinalFreq = modulationOscFreq * lastMidiNoteFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
-    } else {
-      modFinalFreq = modulationOscFreq * fast_exp2_approx((modulationFreqCoeff * 5.0f) + modulationFine);
+      modFinalFreq *= lastMidiNoteFreq;
     }
-    modulationOsc.SetFreq(modFinalFreq);
+    modulationOsc.SetFreq(clampOscFreq(modFinalFreq));
     float modOscSig = modulationOsc.Process();
 
-    // Protect SVF from harsh waveforms (saw and square)
-    if (modWaveformIndex == 2 || modWaveformIndex == 3) {
-      if (modOscSig > 1.2f) modOscSig = 1.2f;
-      if (modOscSig < -1.2f) modOscSig = -1.2f;
-    }
-    if (modOscSig > 1.5f) modOscSig = 1.5f;
-    if (modOscSig < -1.5f) modOscSig = -1.5f;
+    // Safety clamp (band-limited saw/square overshoot slightly)
+    if (modOscSig > 1.2f) modOscSig = 1.2f;
+    if (modOscSig < -1.2f) modOscSig = -1.2f;
 
-    float totalModDepth = modulationOscMod + (modulationOscModCoeff * 2.0f);
+    float totalModDepth = smModulationOscMod + (modulationOscModCoeff * 2.0f);
     if (totalModDepth < 0.0f) totalModDepth = 0.0f;
     if (totalModDepth > 2.0f) totalModDepth = 2.0f;
 
@@ -1076,18 +1309,19 @@ void AudioCallback(float** in, float** out, size_t size) {
     if (!useAmplitudeMod) fmSignal = modOscSig * totalModDepth;
 
     // COMPLEX OSCILLATOR
+    float compExp = (complexOscFreqCoeff + fmSignal) * 5.0f + smComplexOscFine;
     float compFinalFreq;
-    float totalFreqMod = complexOscFreqCoeff + fmSignal;
 
     if (quantizeToMidi && midiNoteReceived) {
-      compFinalFreq = complexOscFreq * lastMidiNoteFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
+      compFinalFreq = pitchExp2(smComplexOscPitchOct + compExp) * lastMidiNoteFreq;
     } else if (!quantizeToMidi && complexOscMidiEnabled) {
       float rawNote = 24.0f + (potNorm(POT_COMPOSC_FREQ) * 72.0f);
       int quantizedNote = (int)(rawNote + 0.5f);
-      compFinalFreq = mtof(quantizedNote) * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
+      compFinalFreq = mtof(quantizedNote) * pitchExp2(compExp);
     } else {
-      compFinalFreq = complexOscFreq * fast_exp2_approx(totalFreqMod * 5.0f + complexOscFine);
+      compFinalFreq = pitchExp2(smComplexOscPitchOct + compExp);
     }
+    compFinalFreq = clampOscFreq(compFinalFreq);
 
     complexOsc.SetFreq(compFinalFreq);
     complexOscMorph.SetFreq(compFinalFreq);
@@ -1095,11 +1329,11 @@ void AudioCallback(float** in, float** out, size_t size) {
     float complexSig = complexOsc.Process();
     float morphSig = complexOscMorph.Process();
 
-    float mixedSig = complexSig + (morphSig - complexSig) * complexOscMorphMix;
+    float mixedSig = complexSig + (morphSig - complexSig) * smComplexOscMorphMix;
     if (complexOscInverted) mixedSig = -mixedSig;
 
     // --- 8. WAVEFOLDER & AM ---
-    float wfGain = complexOscWF + (complexOscWFCoeff * 20.0f);
+    float wfGain = smComplexOscWF + (complexOscWFCoeff * 20.0f);
     if (wfGain < 1.0f) wfGain = 1.0f;
     if (wfGain > 20.0f) wfGain = 20.0f;
 
@@ -1107,100 +1341,27 @@ void AudioCallback(float** in, float** out, size_t size) {
     float foldedSig = waveFolder.Process(mixedSig);
 
     if (useAmplitudeMod) {
-      foldedSig *= (1.0f + (modOscSig * totalModDepth));
+      // Normalised so full AM depth no longer drives the LPG up to 3x over level
+      foldedSig *= (1.0f + (modOscSig * totalModDepth)) / (1.0f + totalModDepth);
     }
 
     // --- 9. BUCHLA LPG MIXER ---
-    float finalMix = 0.0f;
+    // Channel 1: folded complex oscillator (squared VCA law, light resonance in COMBI)
+    float processedSig0 = processLpg(lpg1, foldedSig, smComplexOscSigLevel + vcaComplexOsc,
+                                     foldedLpgMode, true, 0.1f);
 
-    // Channel 1: folded complex oscillator
-    float ctrl0 = complexOscSigLevel + vcaComplexOsc;
-    if (ctrl0 < 0.0f) ctrl0 = 0.0f;
-    if (ctrl0 > 0.90f) ctrl0 = 0.90f;
-
-    float processedSig0 = foldedSig;
-    if (foldedLpgMode == LPG_MODE_VCA) {
-      processedSig0 *= ctrl0 * ctrl0;
-    } else {
-      if (ctrl0 < 0.0005f) {
-        processedSig0 = 0.0f;
-      } else {
-        int currentMode = (int)foldedLpgMode;
-        if (fabsf(ctrl0 - lastCtrl0) > 0.002f || currentMode != lastMode0) {
-          lpGateFilter1.SetFreq(fast_lpg_freq(ctrl0));
-          float res0 = (foldedLpgMode == LPG_MODE_LP) ? ctrl0 * ctrl0 * 0.2f : 0.1f;
-          if (res0 > 0.95f) res0 = 0.95f;
-          lpGateFilter1.SetRes(res0);
-          lastCtrl0 = ctrl0;
-          lastMode0 = currentMode;
-        }
-
-        lpGateFilter1.Process(processedSig0);
-        processedSig0 = lpGateFilter1.Low();
-
-        if (isBadFloat(processedSig0)) {
-          lpGateFilter1.Init(sampleRate);
-          processedSig0 = 0.0f;
-          lastCtrl0 = -1.0f;
-        } else {
-          if (processedSig0 > 1.0f) processedSig0 = 1.0f;
-          if (processedSig0 < -1.0f) processedSig0 = -1.0f;
-        }
-
-        if (foldedLpgMode == LPG_MODE_COMBI) processedSig0 *= ctrl0;
-      }
-    }
-    finalMix += processedSig0;
-
-    // Channel 2: modulation oscillator
+    // Channel 2: modulation oscillator (linear VCA law, no resonance in COMBI)
     float signal1 = modOscSig;
-    if (modWaveformIndex == 2 || modWaveformIndex == 3) {
-      if (signal1 > 1.0f) signal1 = 1.0f;
-      if (signal1 < -1.0f) signal1 = -1.0f;
-    }
+    if (signal1 > 1.0f) signal1 = 1.0f;
+    if (signal1 < -1.0f) signal1 = -1.0f;
+    float processedSig1 = processLpg(lpg2, signal1, smModOscSigLevel + vcaModulationOsc,
+                                     modOscLpgMode, false, 0.0f);
 
-    float ctrl1 = modOscSigLevel + vcaModulationOsc;
-    if (ctrl1 < 0.0f) ctrl1 = 0.0f;
-    if (ctrl1 > 0.90f) ctrl1 = 0.90f;
-
-    float processedSig1 = signal1;
-    if (modOscLpgMode == LPG_MODE_VCA) {
-      processedSig1 *= ctrl1;
-    } else {
-      if (ctrl1 < 0.0001f) {
-        processedSig1 = 0.0f;
-      } else {
-        int currentMode = (int)modOscLpgMode;
-        if (fabsf(ctrl1 - lastCtrl1) > 0.002f || currentMode != lastMode1) {
-          lpGateFilter2.SetFreq(fast_lpg_freq(ctrl1));
-          float res1 = (modOscLpgMode == LPG_MODE_LP) ? ctrl1 * ctrl1 * 0.2f : 0.0f;
-          if (res1 > 0.95f) res1 = 0.95f;
-          lpGateFilter2.SetRes(res1);
-          lastCtrl1 = ctrl1;
-          lastMode1 = currentMode;
-        }
-
-        lpGateFilter2.Process(processedSig1);
-        processedSig1 = lpGateFilter2.Low();
-
-        if (isBadFloat(processedSig1)) {
-          lpGateFilter2.Init(sampleRate);
-          processedSig1 = 0.0f;
-          lastCtrl1 = -1.0f;
-        } else {
-          if (processedSig1 > 1.0f) processedSig1 = 1.0f;
-          if (processedSig1 < -1.0f) processedSig1 = -1.0f;
-        }
-
-        if (modOscLpgMode == LPG_MODE_COMBI) processedSig1 *= ctrl1;
-      }
-    }
-    finalMix += processedSig1;
-
-    // --- 9.5 CLAMP FINAL MIX ---
+    // --- 9.5 MIX WITH HEADROOM ---
+    // Sum at half level so two full channels don't clip, then a soft knee as a safety net
+    float finalMix = (processedSig0 + processedSig1) * MIX_HEADROOM;
     if (isBadFloat(finalMix)) finalMix = 0.0f;
-    if (finalMix > 1.0f) finalMix = 1.0f;
-    if (finalMix < -1.0f) finalMix = -1.0f;
+    finalMix = softKnee(finalMix);
 
     // --- 10. OUTPUT ANALOGUE FILTER ---
     finalMix = outputFilter.Process(finalMix);
@@ -1213,9 +1374,9 @@ void AudioCallback(float** in, float** out, size_t size) {
     masterVolumeSmoothed += (masterVolume - masterVolumeSmoothed) * 0.001f;
     float outGain = OUTPUT_HEADROOM * masterVolumeSmoothed;
 
-    float dryWet = 1.0f - reverbMix;
-    out[0][i] = (finalMix * dryWet + revL * reverbMix) * outGain;
-    out[1][i] = (finalMix * dryWet + revR * reverbMix) * outGain;
+    float dryWet = 1.0f - smReverbMix;
+    out[0][i] = (finalMix * dryWet + revL * smReverbMix) * outGain;
+    out[1][i] = (finalMix * dryWet + revR * smReverbMix) * outGain;
 
     pulsarRunning = pulsar.IsRunning();
   }
@@ -1244,6 +1405,9 @@ void setup() {
   sampleRate = DAISY.get_samplerate();
   DAISY.SetAudioBlockSize(64);
 
+  // One-pole coefficient for the requested glide time (time constant = PARAM_SMOOTH_MS)
+  paramSmoothCoeff = 1.0f - expf(-1.0f / (PARAM_SMOOTH_MS * 0.001f * sampleRate));
+
   // -- LPG LUT
   for (int i = 0; i < LPG_TABLE_SIZE; i++) {
     float ctrl = (float)i / (float)(LPG_TABLE_SIZE - 1);
@@ -1260,7 +1424,7 @@ void setup() {
   complexOsc.SetFreq(440.0f);
   complexOsc.SetAmp(1.0f);
   complexOscMorph.Init(sampleRate);
-  complexOscMorph.SetWaveform(complexOscMorph.WAVE_SAW);  // matches morphWaveformIndex = 1
+  complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SAW);  // matches morphWaveformIndex = 1
   complexOscMorph.SetFreq(440.0f);
   complexOscMorph.SetAmp(1.0f);
   // WAVEFOLDER
@@ -1273,6 +1437,8 @@ void setup() {
   // LPG FILTERS
   lpGateFilter1.Init(sampleRate);
   lpGateFilter2.Init(sampleRate);
+  lpGateFilter1.SetDrive(LPG_SVF_DRIVE);
+  lpGateFilter2.SetDrive(LPG_SVF_DRIVE);
   // ENVELOPE
   env.Init(sampleRate);
   gateRemainingSamples = 0;
@@ -1308,6 +1474,10 @@ void setup() {
   // -- INITIAL PANEL STATE (before audio starts) --
   readPotentiometers();
   updateParameters();
+
+  // Start the smoothed parameters at the pot positions so nothing glides at power-up
+  snapSmoothedParams();
+
   for (int i = 0; i < PATCH_DEBOUNCE_READS + 2; i++) {
     scanPatchMatrix();
   }
@@ -1352,6 +1522,16 @@ void loop() {
     readPotentiometers();
     updateParameters();
     lastPotRead = now;
+
+    // Ramp the audio-rate parameters over the time this scan actually took to come round,
+    // so the ramps join up end to end even when the loop is held up by other work
+    unsigned long nowUs = micros();
+    float intervalSamples = (float)(nowUs - lastPotScanMicros) * 1e-6f * sampleRate;
+    lastPotScanMicros = nowUs;
+    if (intervalSamples < 48.0f) intervalSamples = 48.0f;    // 1ms
+    if (intervalSamples > 960.0f) intervalSamples = 960.0f;  // 20ms
+    paramRampSamples = (uint32_t)intervalSamples;
+    paramVersion = paramVersion + 1;
   }
 
   // LEDS
@@ -1370,6 +1550,7 @@ void updateParameters() {
 
   // -- COMPLEX OSCILLATOR --
   complexOscFreq = fmap(potNorm(POT_COMPOSC_FREQ), 25.0f, 1760.0f, Mapping::EXP);
+  complexOscPitchOct = log2f(complexOscFreq);  // smoothed in octaves in the audio callback
   complexOscFreqModDepth = potNorm(POT_COMPOSC_FREQ_CTRL);
   complexOscFine = (potNorm(POT_COMPOSC_FINE) * 2.0f - 1.0f) * fineRange;
   complexOscMorphMix = potNorm(POT_COMPOSC_TIMBRE);
@@ -1382,6 +1563,7 @@ void updateParameters() {
 
   // -- MODULATION OSCILLATOR --
   modulationOscFreq = fmap(potNorm(POT_MODOSC_FREQ), 0.1f, 1000.0f, Mapping::EXP);
+  modulationOscPitchOct = log2f(modulationOscFreq);
   modulationFreqModDepth = potNorm(POT_MODOSC_FREQ_CTRL);
   modulationFine = (potNorm(POT_MODOSC_FINE) * 2.0f - 1.0f) * fineRange;
   modulationOscMod = potNorm(POT_MODOSC_MOD);
