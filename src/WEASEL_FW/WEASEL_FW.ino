@@ -217,7 +217,17 @@ const char* destNames[NUM_DESTINATIONS] = { "PLSR_PERIOD", "MODOSC_FREQ", "MODOS
 #define AW9523_REG_OUTPUT 0x02
 #define AW9523_REG_CONFIG 0x04
 #define AW9523_REG_GLOBAL_CTRL 0x11
+#define AW9523_REG_LEDMODE_P0 0x12  // 0 = LED (constant-current sink) mode, 1 = GPIO
+#define AW9523_REG_LEDMODE_P1 0x13
+#define AW9523_REG_DIM_BASE 0x20    // 0x20..0x2F, one 0-255 current level per pin
 #define AW9523_REG_SOFTWARE_RESET 0x7F
+
+// LED current. The AW9523 sinks a regulated current in LED mode, so brightness is set here,
+// not by the series resistors. Max per pin = 37mA scaled by ISEL:
+//   0 = 37mA, 1 = 27.75mA, 2 = 18.5mA, 3 = 9.25mA
+// Pin current = Imax * LED_BRIGHTNESS / 256. ISEL 3 + 128 gives ~4.6mA, roughly half brightness.
+const uint8_t AW9523_ISEL = 3;
+uint8_t LED_BRIGHTNESS = 128;  // 0-255, can be changed at runtime (set ledForceWrite = true after)
 
 const uint8_t aw9523_addresses[] = { 0x58, 0x59, 0x5A, 0x5B };
 const int NUM_CHIPS = 4;
@@ -803,38 +813,26 @@ bool initializeAW9523(uint8_t address) {
 
   delay(10);
 
-  // All pins as outputs
+  // Global control: current range (ISEL bits 1:0). GPOMD is irrelevant in LED mode.
   Wire.beginTransmission(address);
-  Wire.write(AW9523_REG_CONFIG);
+  Wire.write(AW9523_REG_GLOBAL_CTRL);
+  Wire.write(AW9523_ISEL & 0x03);
+  if (Wire.endTransmission() != 0) return false;
+
+  // All 16 pins to LED mode (0x12 and 0x13, auto-increment)
+  Wire.beginTransmission(address);
+  Wire.write(AW9523_REG_LEDMODE_P0);
   Wire.write(0x00);
   Wire.write(0x00);
   if (Wire.endTransmission() != 0) return false;
 
-  // All outputs low
+  // All LEDs off
   Wire.beginTransmission(address);
-  Wire.write(AW9523_REG_OUTPUT);
-  Wire.write(0x00);
-  Wire.write(0x00);
+  Wire.write(AW9523_REG_DIM_BASE);
+  for (int i = 0; i < 16; i++) Wire.write(0x00);
   if (Wire.endTransmission() != 0) return false;
 
   return true;
-}
-
-void configurePushPull(uint8_t address) {
-  Wire.beginTransmission(address);
-  Wire.write(AW9523_REG_GLOBAL_CTRL);
-  Wire.endTransmission(false);
-
-  Wire.requestFrom(address, (uint8_t)1);
-  uint8_t gcrValue = 0x00;
-  if (Wire.available()) gcrValue = Wire.read();
-
-  gcrValue |= (1 << 4);  // Port 0 push-pull
-
-  Wire.beginTransmission(address);
-  Wire.write(AW9523_REG_GLOBAL_CTRL);
-  Wire.write(gcrValue);
-  Wire.endTransmission();
 }
 
 void initLeds() {
@@ -842,7 +840,6 @@ void initLeds() {
   Wire.setClock(I2C_CLOCK_HZ);  // must come after begin() - begin() resets it to 100kHz
   for (int chip = 0; chip < NUM_CHIPS; chip++) {
     chipPresent[chip] = initializeAW9523(aw9523_addresses[chip]);
-    if (chipPresent[chip]) configurePushPull(aw9523_addresses[chip]);
 #if WEASEL_DEBUG
     if (!chipPresent[chip]) {
       Serial.print("AW9523 not found at 0x");
@@ -887,10 +884,14 @@ void updateLeds() {
     if (!chipPresent[chip]) continue;
     if (!ledForceWrite && ledFrame[chip][0] == ledWritten[chip][0] && ledFrame[chip][1] == ledWritten[chip][1]) continue;
 
+    // DIM register order: 0x20-0x23 = P1_0..P1_3, 0x24-0x2B = P0_0..P0_7, 0x2C-0x2F = P1_4..P1_7
+    const uint8_t p0 = ledFrame[chip][0];
+    const uint8_t p1 = ledFrame[chip][1];
     Wire.beginTransmission(aw9523_addresses[chip]);
-    Wire.write(AW9523_REG_OUTPUT);
-    Wire.write(ledFrame[chip][0]);
-    Wire.write(ledFrame[chip][1]);
+    Wire.write(AW9523_REG_DIM_BASE);
+    for (int b = 0; b < 4; b++) Wire.write((p1 >> b) & 1 ? LED_BRIGHTNESS : 0);
+    for (int b = 0; b < 8; b++) Wire.write((p0 >> b) & 1 ? LED_BRIGHTNESS : 0);
+    for (int b = 4; b < 8; b++) Wire.write((p1 >> b) & 1 ? LED_BRIGHTNESS : 0);
     if (Wire.endTransmission() == 0) {
       ledWritten[chip][0] = ledFrame[chip][0];
       ledWritten[chip][1] = ledFrame[chip][1];
