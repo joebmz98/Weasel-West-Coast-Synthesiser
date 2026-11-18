@@ -68,14 +68,6 @@
           "inentional"
         ],
         [
-          "invalid_outline|18550000|432000000|5f13fcbd-4361-4e97-aab7-cc8e57556d75|76fbc827-53b5-4448-bfa2-aba93d92bc5d",
-          ""
-        ],
-        [
-          "invalid_outline|345500000|432000000|094cb93e-905b-4588-814c-e20f24d7c186|9116cf2c-4e75-4b9a-8826-dbfda0e2e9ec",
-          ""
-        ],
-        [
           "items_not_allowed|140574515|186750000|68bf3bf8-6c6d-4019-9fa4-ad77e17f068d|00000000-0000-0000-0000-000000000000",
           "Exclusion zone is just for footprint design"
         ],
@@ -102,38 +94,6 @@
         [
           "items_not_allowed|220858323|201750000|8a776f54-3757-4a2f-be1f-d34fe91530c7|00000000-0000-0000-0000-000000000000",
           "Exclusion zone is just for footprint design"
-        ],
-        [
-          "shorting_items|107325000|23500000|229ba9d1-c7c8-41c3-9338-a843100c2511|777c791c-90d8-4cd2-9cfd-f4ccffeab4d0",
-          ""
-        ],
-        [
-          "shorting_items|107325000|23525000|02500df8-7fde-46bf-9928-0003f61ae5c9|229ba9d1-c7c8-41c3-9338-a843100c2511",
-          ""
-        ],
-        [
-          "shorting_items|112325000|23600000|93a1bb6e-b85b-4ed8-865d-801190debec5|f8af97bb-8995-4b97-9107-310dba7d6f4d",
-          ""
-        ],
-        [
-          "shorting_items|112500000|23500000|119b07b7-ddd4-4a7c-9f83-95bc3e4f1ff1|93a1bb6e-b85b-4ed8-865d-801190debec5",
-          ""
-        ],
-        [
-          "solder_mask_bridge|107300000|23500000|777c791c-90d8-4cd2-9cfd-f4ccffeab4d0|229ba9d1-c7c8-41c3-9338-a843100c2511",
-          ""
-        ],
-        [
-          "solder_mask_bridge|107325000|23525000|02500df8-7fde-46bf-9928-0003f61ae5c9|229ba9d1-c7c8-41c3-9338-a843100c2511",
-          ""
-        ],
-        [
-          "solder_mask_bridge|112500000|23500000|119b07b7-ddd4-4a7c-9f83-95bc3e4f1ff1|93a1bb6e-b85b-4ed8-865d-801190debec5",
-          ""
-        ],
-        [
-          "solder_mask_bridge|112600000|23600000|f8af97bb-8995-4b97-9107-310dba7d6f4d|93a1bb6e-b85b-4ed8-865d-801190debec5",
-          ""
         ],
         [
           "unconnected_items|167000000|26130000|F.Cu|4|d6c0adcc-55e2-48c9-9457-dbd5e2dace4b|c75a13da-ec9c-4545-9484-30229df9b9e4",

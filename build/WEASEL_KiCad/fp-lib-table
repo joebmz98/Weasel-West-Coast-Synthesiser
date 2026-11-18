@@ -1,0 +1,13 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "AXS_LOGO_KICAD")(type "KiCad")(uri "${KIPRJMOD}/footprints/AXS_LOGO_KICAD.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "DIYSynthMNL")(type "KiCad")(uri "${KIPRJMOD}/footprints/DIYSynthMNL.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "PCM_4ms_Experimental_FP")(type "KiCad")(uri "${KIPRJMOD}/footprints/PCM_4ms_Experimental_FP.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "PCM_4ms_LED")(type "KiCad")(uri "${KIPRJMOD}/footprints/PCM_4ms_LED.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "PCM_4ms_Resistor")(type "KiCad")(uri "${KIPRJMOD}/footprints/PCM_4ms_Resistor.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "PJ307-TRS")(type "KiCad")(uri "${KIPRJMOD}/footprints/PJ307-TRS.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "SimpleSynthPanel")(type "KiCad")(uri "${KIPRJMOD}/footprints/SimpleSynthPanel.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "WEASEL")(type "KiCad")(uri "${KIPRJMOD}/footprints/WEASEL.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "benjiaomodular")(type "KiCad")(uri "${KIPRJMOD}/footprints/benjiaomodular.pretty")(options "")(descr "Project copy of footprints used on this board"))
+	(lib (name "pcbWayLogo")(type "KiCad")(uri "${KIPRJMOD}/footprints/pcbWayLogo.pretty")(options "")(descr "Project copy of footprints used on this board"))
+)

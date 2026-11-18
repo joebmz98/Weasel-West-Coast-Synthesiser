@@ -1,0 +1,76 @@
+(footprint "Panel Knob 2P"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -0.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "039e10a5-f76c-48fe-aabd-8e3bd3592f4b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "Panel Knob 2P"
+		(at 0.11 5.98 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "71d5c034-181a-4a10-8589-0b5cd5780528")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c3da6f93-e023-41c9-8ec2-dd5f02630a8c")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e1148ee0-4e30-4eb4-9b4b-26921af3e465")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_circle
+		(center 0 0)
+		(end 6.375 0)
+		(stroke
+			(width 0.12)
+			(type dot)
+		)
+		(fill yes)
+		(layer "Cmts.User")
+		(uuid "866f82eb-c6ab-4736-bd8d-c89281a1edd2")
+	)
+	(pad "" thru_hole circle
+		(at 0 0)
+		(size 8 8)
+		(drill 7)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "77dbd3af-7747-4149-bebb-ee191123d2e4")
+	)
+	(embedded_fonts no)
+)

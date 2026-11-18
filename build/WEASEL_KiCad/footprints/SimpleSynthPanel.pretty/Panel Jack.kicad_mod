@@ -1,0 +1,76 @@
+(footprint "Panel Jack"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -0.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "9adad14c-bc4b-41ae-972d-a0190f37bfd6")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "Panel Jack"
+		(at 0.11 4.86 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "31823cc4-dc69-4d93-adcf-afd6dd2e9fdf")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e04af10b-89e5-4ecc-a1e8-85847970de17")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "bffdd50d-b570-4b07-a7fa-487736cf621e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_circle
+		(center 0 0)
+		(end 3.5 0)
+		(stroke
+			(width 0.12)
+			(type dot)
+		)
+		(fill yes)
+		(layer "Cmts.User")
+		(uuid "d0cb8625-f4c8-4a5f-b97c-598813672f29")
+	)
+	(pad "" thru_hole circle
+		(at 0 0)
+		(size 7 7)
+		(drill 6)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "b838407e-6c13-4784-8ced-57964077fbb1")
+	)
+	(embedded_fonts no)
+)

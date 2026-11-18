@@ -1,0 +1,180 @@
+(footprint "ToggleSwitch_MTS-102_SPDT"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -1.8 -7.5 0)
+		(layer "F.SilkS")
+		(uuid "72c71e7e-6a51-43f3-a125-f308b6fc9f2f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SQ_TOGGLESTEP4"
+		(at 5.005627 -1.846289 90)
+		(layer "F.SilkS")
+		(uuid "417605f5-4687-40e5-89a4-71db2a02ba28")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "~"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6b64ced9-553b-4c55-8e6f-f002bc1c142b")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "Switch, single pole double throw"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3cc8f97c-207d-4732-bc64-a1e2b4dfc44e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -3.8 -6.7)
+		(end 4.1 -6.7)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "384708b7-b061-4a19-8144-b8f197cfc17b")
+	)
+	(fp_line
+		(start -3.8 6.5)
+		(end -3.8 -6.7)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "47c57f80-0cff-4b59-ad87-004511ffe1a8")
+	)
+	(fp_line
+		(start 4.1 -6.7)
+		(end 4.1 6.5)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "9f210edf-a5b8-426f-b12b-5aa2a532e506")
+	)
+	(fp_line
+		(start 4.1 6.5)
+		(end -3.8 6.5)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e6702295-3f01-402b-8eee-1d2c4742cf59")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 3 0.05)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "dc457e36-ffd7-491b-93e0-ac3d7407aecd")
+	)
+	(fp_line
+		(start -3.8 -6.7)
+		(end -3.8 6.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "2ea25133-f8ec-40af-9f58-a64d24d3e4ed")
+	)
+	(fp_line
+		(start 4.1 -6.7)
+		(end -3.8 -6.7)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "30a6fc64-5fb6-4d33-a899-eecb12e29da8")
+	)
+	(fp_line
+		(start 4.1 -6.7)
+		(end 4.1 6.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "b2aa5dac-703e-4ba4-954e-54270a0ab501")
+	)
+	(fp_line
+		(start 4.1 6.5)
+		(end -3.8 6.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "354dd575-f5ba-4804-926c-65fc625d3575")
+	)
+	(pad "1" thru_hole oval
+		(at 0 -4.7)
+		(size 3.8 2.4)
+		(drill oval 2.2 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "fb3fefd8-8d12-40b8-be00-abe3cb94be7d")
+	)
+	(pad "2" thru_hole oval
+		(at 0 0)
+		(size 3.8 2.4)
+		(drill oval 2.2 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "b2c59c9b-770c-4ba4-9a7b-400c388c024a")
+	)
+	(pad "3" thru_hole oval
+		(at 0 4.7)
+		(size 3.8 2.4)
+		(drill oval 2.2 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "cf2dfebe-49bf-4dbd-9002-3df6a928ca97")
+	)
+	(embedded_fonts no)
+	(model "C:/Users/Acer/Desktop/Synth DIY/Step 3D Models/6mm SPDT Mini Toggle Switch.step"
+		(offset
+			(xyz 0 0 10.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 90)
+		)
+	)
+)
