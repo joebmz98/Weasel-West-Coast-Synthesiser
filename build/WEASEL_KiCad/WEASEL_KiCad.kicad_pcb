@@ -388,7 +388,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV10"
-			(at 16.5 1.75 90)
+			(at 16.464483 -0.050378 90)
 			(layer "F.SilkS")
 			(uuid "ed4d6929-7f17-42b5-a2c2-a735cbcafae1")
 			(effects
@@ -1807,7 +1807,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV9"
-			(at 16.5 1.75 90)
+			(at 16.401277 -0.015679 90)
 			(layer "F.SilkS")
 			(uuid "8b771abc-d023-42fd-968e-50abfaf245e6")
 			(effects
@@ -2287,7 +2287,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "dbb14010-f4aa-4969-8c7d-cdaadce653ad")
 			(effects
 				(font
@@ -4653,7 +4653,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "b12842ef-247b-4534-814e-1e02c2943149")
 			(effects
 				(font
@@ -6414,7 +6414,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "e9904bd7-f12d-4b0c-ac07-fd651933fe9e")
 			(effects
 				(font
@@ -6639,6 +6639,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "889facad-5fca-433a-8b30-1798ce84ce92")
 			(effects
 				(font
@@ -6820,7 +6821,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D42"
-			(at 2.9105 -0.1045 180)
+			(at -0.564142 1.543317 0)
 			(layer "F.SilkS")
 			(uuid "68523ebf-6324-4c5c-b6ea-16d1c8f3fd69")
 			(effects
@@ -6832,7 +6833,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.7 0 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "a2c0cc1d-9648-44a1-beed-8755ce106d0f")
 			(effects
 				(font
@@ -7124,7 +7125,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R31"
-			(at -0.04 1.74 180)
+			(at 1.15177 1.292623 0)
 			(layer "F.SilkS")
 			(uuid "a0ea8d16-0201-4c1a-b4ed-faf9979dacff")
 			(effects
@@ -7136,7 +7137,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "eaebc1a3-4cdb-4b9c-9f4c-83fdc2c83001")
 			(effects
 				(font
@@ -7359,7 +7360,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R21"
-			(at 0 -1.75 90)
+			(at 2.578338 -0.01722 90)
 			(layer "F.SilkS")
 			(uuid "0eae1fe4-b8b4-4f87-834e-8e4d5b7af10b")
 			(effects
@@ -7594,7 +7595,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D31"
-			(at 2.9105 -0.1045 180)
+			(at -0.620212 -1.577536 0)
 			(layer "F.SilkS")
 			(uuid "7aeca81f-391e-4c69-b0b7-63e53a8a8d77")
 			(effects
@@ -7606,7 +7607,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.9764 0.0355 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "e83fa72d-0345-4028-8c13-688acea5189e")
 			(effects
 				(font
@@ -7898,7 +7899,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R76"
-			(at -0.04 1.74 90)
+			(at 1.226686 -1.261854 90)
 			(layer "F.SilkS")
 			(uuid "3c489f7b-88f1-421d-b9d9-41773dca84a2")
 			(effects
@@ -7910,7 +7911,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "123fd73a-be19-41aa-946f-52339f8f8981")
 			(effects
 				(font
@@ -9011,7 +9012,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R41"
-			(at -0.04 1.74 0)
+			(at 0.0787 -1.317561 0)
 			(layer "F.SilkS")
 			(uuid "bbf23278-f0c3-46db-8e05-dfa5a78d7bd3")
 			(effects
@@ -9023,7 +9024,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "94f9a6ae-d895-47cf-a4d9-d07fdb3f9339")
 			(effects
 				(font
@@ -9248,6 +9249,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "ab1d7ad2-3138-4ea6-a5c5-781fcd9fcfaf")
 			(effects
 				(font
@@ -9345,6 +9347,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "b5ab9793-72a7-4ca8-8a0c-24af5665f0fd")
 			(effects
 				(font
@@ -15602,7 +15605,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R73"
-			(at -0.04 1.74 180)
+			(at 2.646552 -0.077262 0)
 			(layer "F.SilkS")
 			(uuid "741a8d8e-7c9a-4f77-a93c-e0f2b74da68f")
 			(effects
@@ -15614,7 +15617,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "60dd188e-8f35-40c7-aff2-c9a2fe445937")
 			(effects
 				(font
@@ -15912,7 +15915,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R9"
-			(at -0.04 1.74 90)
+			(at -0.00182 1.270931 90)
 			(layer "F.SilkS")
 			(uuid "b26379bc-7483-4d70-a8a8-c46a74aede72")
 			(effects
@@ -16147,7 +16150,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV8"
-			(at 16.5 1.75 90)
+			(at 16.370741 3.675515 90)
 			(layer "F.SilkS")
 			(uuid "5dfd3dba-077c-4e29-a92d-71f7eda96223")
 			(effects
@@ -16615,7 +16618,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R69"
-			(at -0.04 1.74 270)
+			(at -0.008291 -1.366118 90)
 			(layer "F.SilkS")
 			(uuid "daa9b64f-84bf-4a7b-b737-319eab7b4a09")
 			(effects
@@ -16627,7 +16630,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "0e46a010-d83a-48ab-ad1e-977b78183f27")
 			(effects
 				(font
@@ -17085,7 +17088,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R36"
-			(at -0.04 1.74 180)
+			(at -0.004774 -1.366511 0)
 			(layer "F.SilkS")
 			(uuid "cb423ca8-89ac-4d26-bee6-f07d38232a09")
 			(effects
@@ -17097,7 +17100,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "9d6a52ec-45b5-4d8b-a1b6-79350d10029c")
 			(effects
 				(font
@@ -17332,7 +17335,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.5 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "2fcce1df-d072-470c-ab4f-789fcdec9949")
 			(effects
 				(font
@@ -17911,7 +17914,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D38"
-			(at 2.9105 -0.1045 180)
+			(at -0.472931 1.486286 0)
 			(layer "F.SilkS")
 			(uuid "a21b15b3-bad8-4d22-804e-5b974ff5c5be")
 			(effects
@@ -17923,7 +17926,7 @@
 		)
 		(property "Value" "LED"
 			(at -4 0 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "362bb919-deb2-4573-97e3-f732c93d7c20")
 			(effects
 				(font
@@ -18215,7 +18218,7 @@
 		(descr "SOD-123")
 		(tags "SOD-123")
 		(property "Reference" "D13"
-			(at -3.75 0 0)
+			(at -0.037039 1.867464 0)
 			(layer "F.SilkS")
 			(uuid "d2596ae7-3e18-4736-86ce-bdc468ceb9e3")
 			(effects
@@ -18575,6 +18578,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "efe46733-3122-4c51-85fc-34afc6dcc526")
 			(effects
 				(font
@@ -25862,7 +25866,7 @@
 		(descr "QFN, 24 Pin (https://www.alldatasheet.com/datasheet-pdf/pdf/1159021/ALFA/AS3330.html), generated with kicad-footprint-generator ipc_noLead_generator.py")
 		(tags "QFN NoLead")
 		(property "Reference" "U10"
-			(at 0 -3.330001 0)
+			(at -0.221714 3.382265 0)
 			(layer "F.SilkS")
 			(uuid "ec86c127-f03c-4910-b3c9-08674bdc2936")
 			(effects
@@ -26682,7 +26686,7 @@
 		(descr "CP, Radial series, Radial, pin pitch=2.50mm, diameter=6.3mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.50mm diameter 6.3mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C33"
-			(at -3.5 0 90)
+			(at 5.330212 -0.101112 0)
 			(layer "F.SilkS")
 			(uuid "11b22f2d-83d8-4e02-936b-9238402c1a8c")
 			(effects
@@ -33120,7 +33124,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "0afb1354-65ba-4b93-8d9d-e5e2284cf903")
 			(effects
 				(font
@@ -33343,7 +33347,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R37"
-			(at -0.04 1.74 180)
+			(at -0.064791 -1.402263 0)
 			(layer "F.SilkS")
 			(uuid "20aaa474-e3c2-4bfb-9be5-3121a6127a32")
 			(effects
@@ -33355,7 +33359,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "cca942ca-f0a5-49cb-85a6-ec93d8778c76")
 			(effects
 				(font
@@ -33580,6 +33584,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "3034070b-fcbe-4bff-ad63-523361c508d6")
 			(effects
 				(font
@@ -33675,7 +33680,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV22"
-			(at 16.5 1.75 90)
+			(at 16.449622 -0.053022 90)
 			(layer "F.SilkS")
 			(uuid "ec09002e-f713-469f-86ee-f1b554010190")
 			(effects
@@ -34565,6 +34570,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "1c2a2ea8-ab49-4565-bd92-22fd7a986f25")
 			(effects
 				(font
@@ -35105,6 +35111,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "038e069b-8182-45a6-a5dd-d9fa6475a509")
 			(effects
 				(font
@@ -35200,7 +35207,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R56"
-			(at -0.04 1.74 180)
+			(at 0.798605 1.285916 0)
 			(layer "F.SilkS")
 			(uuid "2b0ff83d-5d4c-459e-b7e6-d178281c9418")
 			(effects
@@ -35212,7 +35219,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "cf8bc83a-bd25-4f63-aab5-f680b4715ed4")
 			(effects
 				(font
@@ -36026,6 +36033,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "1d0ef922-a4d8-49be-bd6e-882b55637d0c")
 			(effects
 				(font
@@ -36585,7 +36593,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D55"
-			(at 2.9105 -0.1045 270)
+			(at -3.219774 -0.014028 0)
 			(layer "F.SilkS")
 			(uuid "21dae2ad-6e93-4f71-b359-78e46294eb58")
 			(effects
@@ -36597,7 +36605,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.8518 -0.0245 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "d5c36b11-4746-4b89-9184-a22e00624b7a")
 			(effects
 				(font
@@ -36964,7 +36972,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D59"
-			(at 2.9105 -0.1045 180)
+			(at -0.52105 1.483125 0)
 			(layer "F.SilkS")
 			(uuid "02f8dc6d-2c17-4c9a-b8c7-34d489b640cf")
 			(effects
@@ -36976,7 +36984,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.8895 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "2eb80bd9-7cdc-45d0-9006-c878db774e3e")
 			(effects
 				(font
@@ -37354,7 +37362,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R52"
-			(at -0.04 1.74 180)
+			(at 1.190605 1.287277 0)
 			(layer "F.SilkS")
 			(uuid "5c5dbaba-1863-4a18-b142-390d7c9a6cae")
 			(effects
@@ -37366,7 +37374,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "6dbabda9-bfb7-474f-ac40-ca93810e2462")
 			(effects
 				(font
@@ -37601,7 +37609,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "13cc7f6e-543f-443e-a217-42e51d71d1db")
 			(effects
 				(font
@@ -37836,7 +37844,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "6fbf2050-5212-44c4-a600-3ca0b2863b6a")
 			(effects
 				(font
@@ -38416,7 +38424,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D6"
-			(at 2.9105 -0.1045 180)
+			(at -0.547045 1.515193 0)
 			(layer "F.SilkS")
 			(uuid "a8572415-72fb-4e94-b2a7-e258f7e79a4e")
 			(effects
@@ -38428,7 +38436,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.6 -0.1 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "80fd4040-78db-42a3-a73e-49403fac2195")
 			(effects
 				(font
@@ -38720,7 +38728,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D56"
-			(at 2.8482 0.0155 270)
+			(at -0.538457 -1.586029 90)
 			(layer "F.SilkS")
 			(uuid "28852220-3f93-4b4b-aa18-d1587ec1e959")
 			(effects
@@ -38732,7 +38740,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.8518 -0.0245 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "e21975db-bda7-4c43-8951-61b357a7de98")
 			(effects
 				(font
@@ -39024,7 +39032,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV3"
-			(at 16.5 1.75 90)
+			(at 16.419622 -0.014232 90)
 			(layer "F.SilkS")
 			(uuid "fab53789-a0da-4aa9-9bd8-29af77004f86")
 			(effects
@@ -39567,7 +39575,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D16"
-			(at 2.9 0.08 180)
+			(at -0.042288 1.535091 0)
 			(layer "F.SilkS")
 			(uuid "f24af773-2748-499d-a623-1bd9bb3ded02")
 			(effects
@@ -39579,7 +39587,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.6 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "361441c4-ccd2-4f36-8789-103ac01978a0")
 			(effects
 				(font
@@ -40227,7 +40235,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D64"
-			(at 2.9105 -0.1045 180)
+			(at -0.618085 -1.597312 0)
 			(layer "F.SilkS")
 			(uuid "996f67d9-9c7e-476e-b63e-e76cb01ea712")
 			(effects
@@ -40889,7 +40897,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R74"
-			(at -0.04 1.74 180)
+			(at -0.056507 -1.410829 0)
 			(layer "F.SilkS")
 			(uuid "e1a9af74-a59a-4b3a-8d5f-83aa544b99fd")
 			(effects
@@ -40901,7 +40909,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "7843e00a-497b-4a22-9423-90335b04ccf7")
 			(effects
 				(font
@@ -48287,7 +48295,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.95 0.07 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "7c657fbe-94b9-4418-9685-1623b8a8f10e")
 			(effects
 				(font
@@ -48979,7 +48987,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R63"
-			(at -0.04 1.74 0)
+			(at 2.671562 0.041511 0)
 			(layer "F.SilkS")
 			(uuid "18c36694-755f-45c4-b6e0-9793f0f2a627")
 			(effects
@@ -48991,7 +48999,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "d30a4156-1137-4ea4-ab19-481e59385893")
 			(effects
 				(font
@@ -49214,7 +49222,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R2"
-			(at -1 -1.25 0)
+			(at -0.019525 1.290307 0)
 			(layer "F.SilkS")
 			(uuid "208a657d-fca7-40cf-accd-66a15ce20017")
 			(effects
@@ -49225,7 +49233,7 @@
 			)
 		)
 		(property "Value" "10k_0402"
-			(at 0.85 1.25 0)
+			(at 0.053391 -1.337924 0)
 			(layer "F.SilkS")
 			(uuid "273f1052-e651-498e-9f2d-96fda9ba95f2")
 			(effects
@@ -52018,7 +52026,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D51"
-			(at 2.9105 -0.1045 180)
+			(at -2.152789 -1.572702 0)
 			(layer "F.SilkS")
 			(uuid "c0cda651-b9fc-437f-b157-da8a8a2e9163")
 			(effects
@@ -52030,7 +52038,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.9518 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "21f80340-332a-4294-b3ed-300f4968d03e")
 			(effects
 				(font
@@ -52322,7 +52330,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R40"
-			(at -0.04 1.74 180)
+			(at -0.020561 -1.380169 0)
 			(layer "F.SilkS")
 			(uuid "c95bf106-3825-4913-8c4a-cdb6a9f6e05c")
 			(effects
@@ -52334,7 +52342,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "e6dec60e-ab33-40c4-bd91-e180e1aa1cda")
 			(effects
 				(font
@@ -52557,7 +52565,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D63"
-			(at 2.9105 -0.1045 180)
+			(at -0.545476 1.49946 0)
 			(layer "F.SilkS")
 			(uuid "7a248072-b415-4aca-b537-dfd2efe06c63")
 			(effects
@@ -53097,7 +53105,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D46"
-			(at 2.9105 -0.1045 180)
+			(at -0.534367 1.540117 0)
 			(layer "F.SilkS")
 			(uuid "3d4311e9-5659-40f1-bce3-acf8d282fe35")
 			(effects
@@ -53109,7 +53117,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.9623 0.04 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "c3383373-e7db-44ae-a0f2-4ed1ab7aa0f7")
 			(effects
 				(font
@@ -53401,7 +53409,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R53"
-			(at -0.04 1.74 180)
+			(at -0.014261 -1.376393 0)
 			(layer "F.SilkS")
 			(uuid "05aa5cc0-7a12-4ee9-a5fa-0713bb9652d8")
 			(effects
@@ -53413,7 +53421,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "027a08ca-178b-466e-a8b6-daa0b94dfdcb")
 			(effects
 				(font
@@ -53711,7 +53719,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D14"
-			(at 2.9105 -0.1045 180)
+			(at -0.124543 1.555874 0)
 			(layer "F.SilkS")
 			(uuid "b8ec7d8a-bccb-4620-9164-52d09b1a896e")
 			(effects
@@ -53723,7 +53731,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.6 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "4487e6de-1365-4fe8-a0fe-82d5d5bf1762")
 			(effects
 				(font
@@ -54651,7 +54659,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D9"
-			(at 2.9105 -0.1045 180)
+			(at -0.52137 1.484446 0)
 			(layer "F.SilkS")
 			(uuid "04fa92f5-cba7-4a8b-9b62-d1cc47d24e0e")
 			(effects
@@ -54663,7 +54671,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.6 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "fbf5a016-bff2-411f-8074-3bd35e7167ef")
 			(effects
 				(font
@@ -54955,7 +54963,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D57"
-			(at 2.9105 -0.1045 180)
+			(at -0.638691 -1.641943 0)
 			(layer "F.SilkS")
 			(uuid "0d5c814f-b2f0-4679-bb98-a99134cedc1d")
 			(effects
@@ -55260,7 +55268,7 @@
 		(descr "QFN, 24 Pin (https://www.alldatasheet.com/datasheet-pdf/pdf/1159021/ALFA/AS3330.html), generated with kicad-footprint-generator ipc_noLead_generator.py")
 		(tags "QFN NoLead")
 		(property "Reference" "U2"
-			(at 0 -3.330001 90)
+			(at -3.754341 -0.026226 0)
 			(layer "F.SilkS")
 			(uuid "b4812d13-6120-4f6b-be42-d3976d32c73e")
 			(effects
@@ -56750,7 +56758,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R55"
-			(at -0.04 1.74 90)
+			(at 0.015965 -1.27617 90)
 			(layer "F.SilkS")
 			(uuid "1c8a9a12-3aaf-47e8-8c56-befcd514ac55")
 			(effects
@@ -56762,7 +56770,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "71584362-fcb2-44e2-8184-07cbf5963b95")
 			(effects
 				(font
@@ -57153,7 +57161,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.95 0.07 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "13f0d915-44da-4d33-a3f5-8c2ad4bbdb29")
 			(effects
 				(font
@@ -58260,7 +58268,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV23"
-			(at 16.5 1.75 90)
+			(at 16.422895 -0.034153 90)
 			(layer "F.SilkS")
 			(uuid "a134231b-508f-478a-b721-7ff89f1631ba")
 			(effects
@@ -59017,6 +59025,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "86dc8022-9bfd-4cb4-8e54-ab002f8a594c")
 			(effects
 				(font
@@ -59545,6 +59554,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "8bc79d53-589d-4ace-8c42-8f562e449bdd")
 			(effects
 				(font
@@ -60001,7 +60011,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R39"
-			(at -0.04 1.74 180)
+			(at 2.658243 -0.053373 0)
 			(layer "F.SilkS")
 			(uuid "475fef71-2782-42b9-b87c-c2ad2322ddc4")
 			(effects
@@ -60013,7 +60023,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "a1559636-175b-492f-b1b0-45aaa9505597")
 			(effects
 				(font
@@ -60236,7 +60246,7 @@
 		(descr "SOIC, 24 Pin (JEDEC MS-013AD, https://www.analog.com/media/en/package-pcb-resources/package/pkg_pdf/soic_wide-rw/RW_24.pdf), generated with kicad-footprint-generator ipc_gullwing_generator.py")
 		(tags "SOIC SO")
 		(property "Reference" "U4"
-			(at 0 -8.65 0)
+			(at -0.012829 -0.061948 0)
 			(layer "F.SilkS")
 			(uuid "98bacad9-2ead-4df6-a74c-d51cbe0b6cc8")
 			(effects
@@ -62031,7 +62041,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R62"
-			(at -0.04 1.74 270)
+			(at -0.030613 -1.352809 90)
 			(layer "F.SilkS")
 			(uuid "2c1dd2f7-09d0-4c81-b07c-b771f6f912ea")
 			(effects
@@ -62043,7 +62053,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "ca3e91b6-f6bf-48a9-bfb2-6f7e8d165364")
 			(effects
 				(font
@@ -62858,7 +62868,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D36"
-			(at 2.9105 -0.1045 180)
+			(at -0.520773 1.499461 0)
 			(layer "F.SilkS")
 			(uuid "d223283e-6f74-4e5b-ae70-42cd834f1357")
 			(effects
@@ -62870,7 +62880,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.63385 0.1 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "c6166725-40fd-4e08-a95e-920c6bbe6f56")
 			(effects
 				(font
@@ -64271,7 +64281,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D58"
-			(at 2.9105 0.0955 180)
+			(at -0.490347 -1.599264 0)
 			(layer "F.SilkS")
 			(uuid "07dd756f-c049-4321-9415-8b7edff19642")
 			(effects
@@ -64788,7 +64798,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.6895 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "3a30bc38-dc98-4d2e-92f0-ced87c409a43")
 			(effects
 				(font
@@ -65092,7 +65102,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.95 0.07 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "0bf83769-0ca0-4ba0-8e50-5697ab154b06")
 			(effects
 				(font
@@ -65879,7 +65889,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R19"
-			(at -0.04 -1.75 90)
+			(at 0.800465 -1.357138 90)
 			(layer "F.SilkS")
 			(uuid "b2cc485d-4fc7-4ed3-a31a-224d384b632b")
 			(effects
@@ -66627,7 +66637,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R51"
-			(at -0.04 1.74 90)
+			(at 0.076151 -1.295158 90)
 			(layer "F.SilkS")
 			(uuid "69c4163c-130c-4e8b-92df-33df1695d8d8")
 			(effects
@@ -66639,7 +66649,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "589fe2af-a83f-4853-9a0a-347093bfdae6")
 			(effects
 				(font
@@ -67197,7 +67207,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D17"
-			(at 2.9105 -0.1045 180)
+			(at -0.657986 1.478147 0)
 			(layer "F.SilkS")
 			(uuid "33bcdebe-9f7e-4e41-a9ea-e8648f9954af")
 			(effects
@@ -67209,7 +67219,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.6 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "125dbba4-8f55-45bf-9cd2-58a72dd1f4ba")
 			(effects
 				(font
@@ -67984,7 +67994,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D48"
-			(at 2.9105 -0.1045 180)
+			(at -3.96512 -0.043269 0)
 			(layer "F.SilkS")
 			(uuid "4d2e5cd0-5d0c-4d85-a50b-f7781902da4f")
 			(effects
@@ -67996,7 +68006,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.9623 0.04 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "7c8a82db-792a-4f95-854f-6c74b0c898fd")
 			(effects
 				(font
@@ -70538,7 +70548,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R1"
-			(at -1.25 1.325 270)
+			(at -0.064965 -1.347306 90)
 			(layer "F.SilkS")
 			(uuid "50664593-b0d6-46ec-8cf8-b674e6ddd6f0")
 			(effects
@@ -70693,7 +70703,7 @@
 		(uuid "7b94c492-b018-46ad-865e-e72de3ff2570")
 		(at 266.25 248.42)
 		(property "Reference" ""
-			(at 0 0 0)
+			(at -2.375 -2 0)
 			(layer "F.SilkS")
 			(uuid "dde3a8ec-2354-4b04-b697-e928c0c950bd")
 			(effects
@@ -70755,7 +70765,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV6"
-			(at 16.5 1.75 90)
+			(at 16.419293 3.662746 90)
 			(layer "F.SilkS")
 			(uuid "77eb453e-5761-47cf-9604-67adc2406e17")
 			(effects
@@ -71517,6 +71527,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "7508789e-5071-481f-a47e-729c91edf9d0")
 			(effects
 				(font
@@ -71770,6 +71781,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "51f7a142-5cf6-4588-bea0-6ca555950e16")
 			(effects
 				(font
@@ -72210,7 +72222,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV25"
-			(at 16.5 1.75 90)
+			(at 16.425979 -0.037928 90)
 			(layer "F.SilkS")
 			(uuid "53c708a2-62f1-4e8e-961d-291c57434268")
 			(effects
@@ -73213,7 +73225,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D49"
-			(at 2.9105 -0.1045 180)
+			(at -3.997672 -0.050921 0)
 			(layer "F.SilkS")
 			(uuid "be776ed6-11f5-4e00-ab4a-7264ff7e558e")
 			(effects
@@ -73225,7 +73237,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.9623 0.04 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "a8e5e057-c3d1-4764-b196-ee07997c4e37")
 			(effects
 				(font
@@ -74117,7 +74129,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D20"
-			(at 2.9105 -0.1045 180)
+			(at -0.546185 -1.576946 0)
 			(layer "F.SilkS")
 			(uuid "09fbacbf-cb4a-463e-ba87-40220e8bd076")
 			(effects
@@ -74129,7 +74141,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.85 -0.03 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "3da719b3-0178-4f0a-8d74-2d8973971fb3")
 			(effects
 				(font
@@ -74589,7 +74601,7 @@
 		)
 		(property "Value" "LED"
 			(at 3.2 0.06 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "fa8ef7e0-ab59-41fb-893d-1d2a5358d2da")
 			(effects
 				(font
@@ -74881,7 +74893,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R58"
-			(at -0.04 1.74 90)
+			(at -0.01196 -1.278978 90)
 			(layer "F.SilkS")
 			(uuid "bcf190d9-ddba-452b-842a-9a6f5cb33c14")
 			(effects
@@ -74893,7 +74905,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "7f6d70b9-2bb4-4cd8-92d2-91c22f246ee1")
 			(effects
 				(font
@@ -76086,6 +76098,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "3f78709e-5d80-4275-9f70-f0e3af030587")
 			(effects
 				(font
@@ -76181,7 +76194,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D7"
-			(at 2.8 0 180)
+			(at -3.641145 -0.115318 0)
 			(layer "F.SilkS")
 			(uuid "908bb158-35c3-4e65-a81e-e88c97bdbd97")
 			(effects
@@ -76193,7 +76206,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.5 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "a82a2abf-434c-451a-9276-801557a13152")
 			(effects
 				(font
@@ -80468,7 +80481,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R70"
-			(at -0.04 1.74 90)
+			(at 0.829367 1.395397 90)
 			(layer "F.SilkS")
 			(uuid "5cd8291f-b650-41b3-9b89-85a631ce4dc4")
 			(effects
@@ -80480,7 +80493,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "fa9925c8-c335-484a-aba4-368093fea8b3")
 			(effects
 				(font
@@ -80992,6 +81005,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "57a46262-9e49-4c7a-acd9-9964b62449a1")
 			(effects
 				(font
@@ -83370,6 +83384,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "31e322f5-f7b2-4b08-86f4-834f23bcb100")
 			(effects
 				(font
@@ -83822,7 +83837,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R12"
-			(at -0.04 1.74 90)
+			(at -0.036643 1.30778 90)
 			(layer "F.SilkS")
 			(uuid "e61077a5-56aa-43ed-be80-87977d739fc1")
 			(effects
@@ -84917,7 +84932,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R59"
-			(at -0.04 1.74 90)
+			(at 0.005738 -1.274194 90)
 			(layer "F.SilkS")
 			(uuid "162d241f-607e-4237-8642-4bb69e5b64f2")
 			(effects
@@ -84929,7 +84944,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "60619e73-4b83-4bf5-a940-84935bd9808e")
 			(effects
 				(font
@@ -85152,7 +85167,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R60"
-			(at -0.04 1.74 270)
+			(at -0.024571 1.28964 90)
 			(layer "F.SilkS")
 			(uuid "cd5f2eb2-6bda-4324-985c-ea46a6792e15")
 			(effects
@@ -85164,7 +85179,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "5804e3a8-63f5-422d-81b8-22e0d8111d1e")
 			(effects
 				(font
@@ -85387,7 +85402,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV24"
-			(at 16.5 1.75 90)
+			(at 16.501553 -0.046579 90)
 			(layer "F.SilkS")
 			(uuid "2a03cd9b-2312-4740-800d-31a9297a54f6")
 			(effects
@@ -85867,7 +85882,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "41b709bd-55bf-4594-9295-ef66b7469487")
 			(effects
 				(font
@@ -86090,7 +86105,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D43"
-			(at 2.9105 -0.1045 180)
+			(at -4.017326 -0.051473 0)
 			(layer "F.SilkS")
 			(uuid "f9765b82-b694-43df-87ab-d69de359b17f")
 			(effects
@@ -86102,7 +86117,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.7 0 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "955db73c-e873-4375-9fe9-b2ccdc78e3bf")
 			(effects
 				(font
@@ -86396,6 +86411,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "d70328fb-e075-47a5-90ee-da681f0d23e7")
 			(effects
 				(font
@@ -87829,7 +87845,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "9a893000-7d6a-4488-848a-b7c6862358dc")
 			(effects
 				(font
@@ -88061,7 +88077,7 @@
 			)
 		)
 		(property "Value" "SQ_TOGGLESTEP4"
-			(at 4.95 -0.58 90)
+			(at 5.005627 -0.177539 90)
 			(layer "F.SilkS")
 			(uuid "417605f5-4687-40e5-89a4-71db2a02ba28")
 			(effects
@@ -88917,7 +88933,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R28"
-			(at -0.04 1.74 180)
+			(at 2.671194 -0.035312 0)
 			(layer "F.SilkS")
 			(uuid "dc80d417-4e43-4c96-8830-a333b01815e7")
 			(effects
@@ -88929,7 +88945,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "81ccf060-a31c-4e99-80f0-ebbc7b130ab3")
 			(effects
 				(font
@@ -89360,7 +89376,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R54"
-			(at -0.04 1.74 90)
+			(at 0.058064 -1.29663 90)
 			(layer "F.SilkS")
 			(uuid "86cd0e63-d1b7-4e0d-9b5f-6d9dd665c4ff")
 			(effects
@@ -89372,7 +89388,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "1eec71cd-bf13-4f33-b29f-49835dcb6fb9")
 			(effects
 				(font
@@ -89595,7 +89611,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R44"
-			(at -0.04 1.74 90)
+			(at 0.059191 -1.301598 90)
 			(layer "F.SilkS")
 			(uuid "a5c72097-c504-46ce-a122-ec8b9a93c4f1")
 			(effects
@@ -89607,7 +89623,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "984a6ffe-e012-4304-9b6d-b18326b3c2b7")
 			(effects
 				(font
@@ -89832,6 +89848,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "8964b809-d14c-4028-bc7d-dfceb9060be6")
 			(effects
 				(font
@@ -89927,7 +89944,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R57"
-			(at -0.04 1.74 180)
+			(at -0.07414 -1.399097 0)
 			(layer "F.SilkS")
 			(uuid "70ed55e2-7562-4b25-a269-21d09a6d68d9")
 			(effects
@@ -89939,7 +89956,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "484adb80-e616-4750-a083-3f87c5789663")
 			(effects
 				(font
@@ -90362,7 +90379,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D41"
-			(at 2.9105 -0.1045 180)
+			(at -1.651415 -1.581556 0)
 			(layer "F.SilkS")
 			(uuid "d0711dd4-08fe-4ead-9f79-5d74ac1699ef")
 			(effects
@@ -90374,7 +90391,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.7141 -0.0845 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "87aeb05d-2288-4c71-929d-7b0ae8c33528")
 			(effects
 				(font
@@ -90666,7 +90683,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D37"
-			(at 2.9105 -0.1045 180)
+			(at -0.619856 -1.64765 0)
 			(layer "F.SilkS")
 			(uuid "2c81b23a-220b-4f7d-99ba-c9b53ad5e240")
 			(effects
@@ -90678,7 +90695,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.8141 0.0355 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "31399127-e6cd-4552-85d4-4f2d57aeaa7d")
 			(effects
 				(font
@@ -90970,7 +90987,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D60"
-			(at 2.9105 -0.1045 180)
+			(at -4.040231 -0.034684 0)
 			(layer "F.SilkS")
 			(uuid "9823513c-1f29-49c4-a685-d2cb73fe22c1")
 			(effects
@@ -90982,7 +90999,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.8895 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "1c1a22e5-afd3-4ccd-b912-5e5902f912d9")
 			(effects
 				(font
@@ -91510,7 +91527,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D34"
-			(at 2.86615 -0.08 180)
+			(at -0.594531 -1.620188 0)
 			(layer "F.SilkS")
 			(uuid "f5d4cd20-ff8a-4cdb-a601-ac7abaf80495")
 			(effects
@@ -91522,7 +91539,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.93385 -0.02 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "ba6b7e66-a261-44f2-84f3-b888f142c67a")
 			(effects
 				(font
@@ -91816,6 +91833,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "8128e8d5-3c60-4d5f-acb2-d02582ae542a")
 			(effects
 				(font
@@ -91997,7 +92015,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R48"
-			(at -0.04 1.74 90)
+			(at -0.015725 -1.299406 90)
 			(layer "F.SilkS")
 			(uuid "4e2bc1d9-e4c0-4b44-bc45-d030c692f262")
 			(effects
@@ -92009,7 +92027,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "430c1b1b-0900-4cb8-ae66-d5e1b7412cb9")
 			(effects
 				(font
@@ -92579,6 +92597,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "d3b7932b-4763-4219-88e2-a5b78ea1d954")
 			(effects
 				(font
@@ -93521,7 +93540,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D40"
-			(at 2.9105 -0.1045 180)
+			(at -0.549376 -1.608338 0)
 			(layer "F.SilkS")
 			(uuid "88af58ea-2262-4116-b190-5fa8d32cb6d3")
 			(effects
@@ -93533,7 +93552,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.83385 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "68fcb42d-2cc7-4a75-98b9-95ce8c6b5a8e")
 			(effects
 				(font
@@ -94551,7 +94570,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D45"
-			(at 3 0 180)
+			(at -0.544396 -1.615212 0)
 			(layer "F.SilkS")
 			(uuid "c037f783-a4b1-462a-8080-2785e1f40e5c")
 			(effects
@@ -94563,7 +94582,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.7141 -0.0845 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "bbccbaed-92cf-4425-8978-544d36ec5ebf")
 			(effects
 				(font
@@ -95297,7 +95316,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D44"
-			(at 2.9105 -0.1045 180)
+			(at -1.623745 -1.602007 0)
 			(layer "F.SilkS")
 			(uuid "af8fdf40-d938-407c-a565-32d1d50d93d8")
 			(effects
@@ -95309,7 +95328,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.7 0 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "bcf9df5d-87e7-4808-859b-8fc565e173fa")
 			(effects
 				(font
@@ -96318,7 +96337,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D52"
-			(at 2.9105 -0.1045 180)
+			(at -0.566355 -1.583583 0)
 			(layer "F.SilkS")
 			(uuid "89e9fa00-fa49-4b98-8607-25bf4492e665")
 			(effects
@@ -96330,7 +96349,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.7518 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "e2d6bf16-ad2a-48a2-acb3-f347034f6e88")
 			(effects
 				(font
@@ -97158,7 +97177,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "09daf609-8071-443b-8039-e2e6b1e083a5")
 			(effects
 				(font
@@ -97393,7 +97412,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "2d36ed08-0498-4486-9d9e-7067e9e27cf5")
 			(effects
 				(font
@@ -99105,7 +99124,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D18"
-			(at 2.9105 -0.1045 180)
+			(at -0.494659 1.519431 0)
 			(layer "F.SilkS")
 			(uuid "da68ccb7-4de7-4a98-a58a-f22e7188d6ba")
 			(effects
@@ -99117,7 +99136,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.85 -0.03 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "62255777-d3b2-479f-875a-10958a93f8f4")
 			(effects
 				(font
@@ -99421,7 +99440,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "695b46b0-d932-40c8-a4e0-1cf22be12b5d")
 			(effects
 				(font
@@ -99644,7 +99663,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV7"
-			(at 16.5 1.75 90)
+			(at 16.519822 0.023727 90)
 			(layer "F.SilkS")
 			(uuid "4bc36eca-2123-4a2f-8a6a-dc159e4582a0")
 			(effects
@@ -101098,7 +101117,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R46"
-			(at -0.04 1.74 180)
+			(at 2.642947 -0.033359 0)
 			(layer "F.SilkS")
 			(uuid "85164df3-4d5d-4646-b7ae-de53c2b2c45d")
 			(effects
@@ -101110,7 +101129,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "2827ea92-aa61-4d0f-b601-6263a59311ae")
 			(effects
 				(font
@@ -101926,7 +101945,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D35"
-			(at 2.9105 -0.1045 180)
+			(at -0.529998 1.482321 0)
 			(layer "F.SilkS")
 			(uuid "19efbe15-6493-4da2-ba25-db81e9ad9a52")
 			(effects
@@ -101938,7 +101957,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.93385 -0.02 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "7d7f6247-f7c0-41c5-a09c-70151ed33dd1")
 			(effects
 				(font
@@ -102230,7 +102249,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R61"
-			(at -0.04 1.74 270)
+			(at -0.078378 1.305579 90)
 			(layer "F.SilkS")
 			(uuid "ebabee2f-0a8e-494e-b395-6fe9c9c9d0b5")
 			(effects
@@ -102242,7 +102261,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "4e510112-4232-4c49-a01f-0bb0ca72b1c7")
 			(effects
 				(font
@@ -102465,7 +102484,7 @@
 		(descr "QFN, 24 Pin (https://www.alldatasheet.com/datasheet-pdf/pdf/1159021/ALFA/AS3330.html), generated with kicad-footprint-generator ipc_noLead_generator.py")
 		(tags "QFN NoLead")
 		(property "Reference" "U1"
-			(at 0 -3.33 0)
+			(at -0.142907 3.356891 0)
 			(layer "F.SilkS")
 			(uuid "2f41a47f-109c-46ee-8d8f-1f5c339ef02c")
 			(effects
@@ -103132,6 +103151,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "734e5404-fab3-4b87-924f-c2e5d29b0e78")
 			(effects
 				(font
@@ -103313,7 +103333,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV5"
-			(at 16.5 1.75 90)
+			(at 16.42858 -0.019391 90)
 			(layer "F.SilkS")
 			(uuid "4a1e33c8-7c40-4226-b486-89be3f892c1b")
 			(effects
@@ -104126,7 +104146,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D19"
-			(at 2.9105 -0.1045 180)
+			(at -4.010079 -0.032504 0)
 			(layer "F.SilkS")
 			(uuid "2eb3117e-4794-472c-ab93-b1e573b666e2")
 			(effects
@@ -104138,7 +104158,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.85 -0.03 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "e28abad2-a34c-4fe4-9895-059b1e0b7cae")
 			(effects
 				(font
@@ -105532,7 +105552,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D53"
-			(at 2.9105 -0.1045 180)
+			(at -0.539512 -1.607679 0)
 			(layer "F.SilkS")
 			(uuid "8a5aa429-3fd4-466f-b10d-df75c5a078e5")
 			(effects
@@ -105544,7 +105564,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.7518 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "4a5b04d4-98bf-4304-897e-41dbbe1d382d")
 			(effects
 				(font
@@ -105992,7 +106012,7 @@
 		(descr "Capacitor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C31"
-			(at 3.5 0 90)
+			(at 3.807894 -0.031151 90)
 			(layer "F.SilkS")
 			(uuid "61ef39b2-a37b-4147-b1b0-db54e8a97c5b")
 			(effects
@@ -109024,7 +109044,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R47"
-			(at -0.04 1.74 180)
+			(at -0.076575 -1.410828 0)
 			(layer "F.SilkS")
 			(uuid "a944e4cd-f59b-4371-8624-614ca84527ec")
 			(effects
@@ -109036,7 +109056,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "03f3f628-cd7e-417c-8caa-84e8751b9faf")
 			(effects
 				(font
@@ -109495,7 +109515,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV1"
-			(at 16.5 1.75 90)
+			(at 16.520379 -0.048775 90)
 			(layer "F.SilkS")
 			(uuid "5f16d4ba-47b2-4ba5-8102-768a85a0751f")
 			(effects
@@ -110861,7 +110881,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R34"
-			(at -0.04 1.74 180)
+			(at 2.618602 -0.046433 0)
 			(layer "F.SilkS")
 			(uuid "d70edbc0-e68c-485e-a4f0-58046de1ce18")
 			(effects
@@ -110873,7 +110893,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "cd107974-9a0b-46b0-9594-2986a31c2b8f")
 			(effects
 				(font
@@ -111180,7 +111200,7 @@
 			)
 		)
 		(property "Value" "SQ_TOGGLESTEP3"
-			(at 4.95 -0.38 90)
+			(at 4.986183 -3.423588 90)
 			(layer "F.SilkS")
 			(uuid "6a70dfaa-cd98-470e-aa6c-fbd34e8a51b5")
 			(effects
@@ -112127,6 +112147,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "dff1b1f1-f914-4c46-b54d-55c20c3fef3f")
 			(effects
 				(font
@@ -112222,7 +112243,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D54"
-			(at 2.9105 -0.1045 270)
+			(at -0.613015 1.522218 90)
 			(layer "F.SilkS")
 			(uuid "852103bf-525f-4cd0-8cf6-72255ad734ec")
 			(effects
@@ -112234,7 +112255,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.8518 -0.0245 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "d6d36338-d319-4b56-a68e-d1d1b3e7321a")
 			(effects
 				(font
@@ -112526,7 +112547,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R68"
-			(at -0.04 1.74 270)
+			(at 1.228118 1.288308 90)
 			(layer "F.SilkS")
 			(uuid "b0def272-411d-40e9-ab7e-374d3214c928")
 			(effects
@@ -112538,7 +112559,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "57f687b3-dc54-486c-b7f8-3b3fce7edf4f")
 			(effects
 				(font
@@ -113206,7 +113227,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R11"
-			(at -0.04 1.74 90)
+			(at -0.089681 1.317699 90)
 			(layer "F.SilkS")
 			(uuid "aac03301-56ad-4106-aaa0-cd8a1bfb643c")
 			(effects
@@ -113441,7 +113462,7 @@
 		(descr "Capacitor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C14"
-			(at 3.3125 0.25 180)
+			(at -2.500125 1.932746 90)
 			(layer "F.SilkS")
 			(uuid "d1296f47-28cc-47be-be98-0054609284a6")
 			(effects
@@ -113599,6 +113620,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "667a2ab1-48b8-4f74-9108-a9113986e9e5")
 			(effects
 				(font
@@ -113850,7 +113872,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R10"
-			(at -0.04 1.74 90)
+			(at -0.029937 1.299351 90)
 			(layer "F.SilkS")
 			(uuid "d227b83f-21ae-458a-a706-20f538c57471")
 			(effects
@@ -114553,7 +114575,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D47"
-			(at 2.9105 -0.1045 180)
+			(at -4.147862 -0.087316 0)
 			(layer "F.SilkS")
 			(uuid "a12dd2a1-c5fc-4966-b529-85218f5fb9c7")
 			(effects
@@ -114565,7 +114587,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.9623 0.04 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "b93ce36f-c8f0-46fa-b56d-4536c77a93f0")
 			(effects
 				(font
@@ -114857,7 +114879,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R72"
-			(at -0.04 1.74 90)
+			(at 1.242229 -1.262464 90)
 			(layer "F.SilkS")
 			(uuid "55178c69-169b-4e4f-b5ef-4baa6569083b")
 			(effects
@@ -114869,7 +114891,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "9b2892ca-0901-4b15-8775-f21b868c7f9e")
 			(effects
 				(font
@@ -115104,7 +115126,7 @@
 		)
 		(property "Value" "LED"
 			(at 2.9 0 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "56242cb0-9378-428a-b087-df2344ce845e")
 			(effects
 				(font
@@ -116162,7 +116184,7 @@
 			)
 		)
 		(property "Value" "SQ_TOGGLESTEP1"
-			(at 5.15 -0.28 90)
+			(at 4.97737 -0.198458 90)
 			(layer "F.SilkS")
 			(uuid "443333fe-b562-47b3-848f-544343c8c520")
 			(effects
@@ -116701,7 +116723,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R30"
-			(at -0.04 1.74 90)
+			(at 0.419146 -1.277263 90)
 			(layer "F.SilkS")
 			(uuid "89e242f2-722e-496c-a429-5edd55d54488")
 			(effects
@@ -116713,7 +116735,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "383b53aa-b365-4033-9690-2824e2c65630")
 			(effects
 				(font
@@ -117173,7 +117195,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "dfbf094a-1ea5-44d8-bd20-d96aab21930a")
 			(effects
 				(font
@@ -118043,7 +118065,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D39"
-			(at 2.9105 -0.1045 180)
+			(at -3.985138 -0.06659 0)
 			(layer "F.SilkS")
 			(uuid "17cc0583-ef25-420a-a6a2-bafdd3d42423")
 			(effects
@@ -118055,7 +118077,7 @@
 		)
 		(property "Value" "LED"
 			(at -4 0 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "f116277c-7af5-4f82-a4d4-9e07b1e97428")
 			(effects
 				(font
@@ -118622,7 +118644,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV2"
-			(at 16.5 1.75 90)
+			(at 16.44697 -0.038827 90)
 			(layer "F.SilkS")
 			(uuid "e7ff6db4-4765-4df4-b69d-eb63e8b7511d")
 			(effects
@@ -119090,7 +119112,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R66"
-			(at -0.04 1.74 270)
+			(at -0.016388 1.295518 90)
 			(layer "F.SilkS")
 			(uuid "970133b4-336e-4496-a6e3-ef090e73055f")
 			(effects
@@ -119102,7 +119124,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "25cf5a7b-6bd5-4c0b-afea-559fca5894fe")
 			(effects
 				(font
@@ -119325,7 +119347,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R33"
-			(at -0.04 1.74 180)
+			(at 2.6498 -0.054016 0)
 			(layer "F.SilkS")
 			(uuid "de456e17-26a3-4c1a-adce-6bccf273f606")
 			(effects
@@ -119337,7 +119359,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "4d9ec804-b3c0-4f29-bf42-bd7f2a6e2cf7")
 			(effects
 				(font
@@ -119635,7 +119657,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R67"
-			(at -0.04 1.74 180)
+			(at -0.076419 -1.388146 0)
 			(layer "F.SilkS")
 			(uuid "c8196d62-900a-419f-bb19-775642cc04fd")
 			(effects
@@ -119647,7 +119669,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "8d119cbc-6be3-4301-a1dc-3ce4b8208be1")
 			(effects
 				(font
@@ -119870,7 +119892,7 @@
 		(descr "QFN, 24 Pin (https://www.alldatasheet.com/datasheet-pdf/pdf/1159021/ALFA/AS3330.html), generated with kicad-footprint-generator ipc_noLead_generator.py")
 		(tags "QFN NoLead")
 		(property "Reference" "U11"
-			(at 0 -3.330001 90)
+			(at -3.724842 0.725418 0)
 			(layer "F.SilkS")
 			(uuid "8bd5550e-bbef-485a-8ec7-708f0e0795c6")
 			(effects
@@ -121827,7 +121849,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.6 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "c0c986a5-b622-4b59-b9eb-a9f2ee9a9358")
 			(effects
 				(font
@@ -122119,7 +122141,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R77"
-			(at -0.04 1.74 90)
+			(at -2.595852 0.105185 90)
 			(layer "F.SilkS")
 			(uuid "4f31c048-5a75-429a-9279-6b8430da5a2a")
 			(effects
@@ -122131,7 +122153,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "82089073-3b8f-4a59-846b-f1b9d268009b")
 			(effects
 				(font
@@ -122589,7 +122611,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D65"
-			(at 2.9105 -0.1045 180)
+			(at -0.553652 -1.586028 0)
 			(layer "F.SilkS")
 			(uuid "5a792e12-3c06-489b-8c13-f14c9efbfd68")
 			(effects
@@ -122601,7 +122623,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.6895 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "8ef6b9e9-85a1-4d24-abc0-d6a611546e22")
 			(effects
 				(font
@@ -122893,7 +122915,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R78"
-			(at -0.04 1.74 90)
+			(at -1.645249 -1.255125 90)
 			(layer "F.SilkS")
 			(uuid "dc21b595-1cb5-412b-9b03-4e988a49c28a")
 			(effects
@@ -122905,7 +122927,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "402efe71-4aa7-42f0-832b-1f9b63686295")
 			(effects
 				(font
@@ -123130,6 +123152,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "8dc4bc69-fbcc-4a01-a53f-e0d8846206e1")
 			(effects
 				(font
@@ -123941,7 +123964,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "47883d1c-36cc-4564-8352-a9765d01037f")
 			(effects
 				(font
@@ -124456,7 +124479,7 @@
 			)
 		)
 		(property "Value" "SQ_TOGGLESTEP2"
-			(at 5.05 -0.38 90)
+			(at 4.980063 -0.112637 90)
 			(layer "F.SilkS")
 			(uuid "c433dcb1-9230-47b9-a6ed-e32c4cb4601c")
 			(effects
@@ -125573,7 +125596,7 @@
 		(descr "Bourns single-gang slide potentiometer, 20.0mm travel, https://www.bourns.com/docs/Product-Datasheets/pta.pdf")
 		(tags "Bourns single-gang slide potentiometer 20.0mm")
 		(property "Reference" "RV4"
-			(at 16.5 1.75 90)
+			(at 16.494107 -0.02956 90)
 			(layer "F.SilkS")
 			(uuid "9e8ff8fa-706e-45bf-a6f0-cd416a613ea7")
 			(effects
@@ -126041,7 +126064,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D33"
-			(at 2.9105 -0.1045 180)
+			(at -4.003311 -0.067528 0)
 			(layer "F.SilkS")
 			(uuid "60143d20-6688-4cd3-a7d7-bc41468ab484")
 			(effects
@@ -126053,7 +126076,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.93385 -0.02 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "7debe725-0c49-43c2-ba2c-3ea0b6528c07")
 			(effects
 				(font
@@ -126420,7 +126443,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D50"
-			(at 2.9105 -0.1045 180)
+			(at -0.552547 1.493401 0)
 			(layer "F.SilkS")
 			(uuid "043d0bb7-f3ec-474d-9a44-e34232654fd1")
 			(effects
@@ -126432,7 +126455,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.9518 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "0eb8cb40-56b9-4b87-a05a-795ba17e9df3")
 			(effects
 				(font
@@ -126736,7 +126759,7 @@
 		)
 		(property "Value" "LED"
 			(at 2.7 -0.16 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "c466a421-7b9e-430d-bd9b-04012df79f89")
 			(effects
 				(font
@@ -127026,7 +127049,7 @@
 		(uuid "f7852a9d-e4e0-4dd6-82c9-6e7447d30b0b")
 		(at 266.3 265.92)
 		(property "Reference" ""
-			(at 0 0 0)
+			(at 2.374999 -2 0)
 			(layer "F.SilkS")
 			(uuid "49cd1462-a1d8-402f-a86d-474c435d8f4b")
 			(effects
@@ -127371,7 +127394,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D61"
-			(at 2.9105 -0.1045 180)
+			(at -0.643339 -1.754909 0)
 			(layer "F.SilkS")
 			(uuid "b2b83cee-b07b-4380-9292-712139969d9e")
 			(effects
@@ -127383,7 +127406,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.8895 -0.0245 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "1dd187d1-c5b0-4931-a603-88312d4f731c")
 			(effects
 				(font
@@ -127825,7 +127848,7 @@
 		(descr "LED SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "diode")
 		(property "Reference" "D32"
-			(at 2.9105 -0.1045 180)
+			(at -0.54819 1.501737 0)
 			(layer "F.SilkS")
 			(uuid "c753c7bf-44f0-4377-bd3f-b9245780c26a")
 			(effects
@@ -127837,7 +127860,7 @@
 		)
 		(property "Value" "LED"
 			(at -3.93385 -0.02 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "08e024b6-636e-4f16-9be9-b3f7ee30eec3")
 			(effects
 				(font
@@ -128129,7 +128152,7 @@
 		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
 		(tags "resistor 0603")
 		(property "Reference" "R29"
-			(at -0.04 1.74 180)
+			(at -0.001563 -1.364835 0)
 			(layer "F.SilkS")
 			(uuid "a768ad29-c894-41e6-8ff3-6ab9ecff3c30")
 			(effects
@@ -128141,7 +128164,7 @@
 		)
 		(property "Value" "47R"
 			(at 0.09 -1.61 180)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "231ae542-930d-476c-844f-a38cded3197b")
 			(effects
 				(font
@@ -128373,7 +128396,7 @@
 			)
 		)
 		(property "Value" "SQ_TOGGLESTEP5"
-			(at 5.15 -0.68 90)
+			(at 4.985033 -0.075725 90)
 			(layer "F.SilkS")
 			(uuid "7b0f7ccb-98ea-498d-a42b-0d91a41ae0ca")
 			(effects
@@ -129449,6 +129472,7 @@
 		(property "Reference" "REF**"
 			(at 0 -3.75 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "5c875c1c-bbab-4e95-bddb-8ac01753f28b")
 			(effects
 				(font
@@ -147261,7 +147285,7 @@
 			)
 		)
 	)
-	(gr_text "POWER\n5-9V DC In\nCentre +ve"
+	(gr_text "POWER\n7-24V DC In\nCentre +ve"
 		(at 84.5 23 0)
 		(layer "F.SilkS")
 		(uuid "c573e35a-905c-4aac-b043-ec2851c96275")
@@ -147274,7 +147298,7 @@
 			)
 			(justify top)
 		)
-		(render_cache "POWER\n5-9V DC In\nCentre +ve" 0
+		(render_cache "POWER\n7-24V DC In\nCentre +ve" 0
 			(polygon
 				(pts
 					(xy 82.267193 22.986319) (xy 82.347894 23.003711) (xy 82.413858 23.030616) (xy 82.467594 23.066259)
@@ -147345,107 +147369,93 @@
 			)
 			(polygon
 				(pts
-					(xy 80.502966 24.660041) (xy 81.156682 24.660041) (xy 81.156682 24.851528) (xy 80.712648 24.851528)
-					(xy 80.712648 25.009309) (xy 80.773098 24.996669) (xy 80.836296 24.992212) (xy 80.929731 24.998838)
-					(xy 81.007553 25.017379) (xy 81.072457 25.046476) (xy 81.126579 25.085696) (xy 81.171088 25.135684)
-					(xy 81.203239 25.194485) (xy 81.223337 25.263855) (xy 81.230443 25.346242) (xy 81.225544 25.412092)
-					(xy 81.211511 25.469783) (xy 81.188914 25.520649) (xy 81.157733 25.565738) (xy 81.117359 25.60575)
-					(xy 81.058925 25.6449) (xy 80.988753 25.674139) (xy 80.904551 25.692844) (xy 80.803507 25.699539)
-					(xy 80.717205 25.695417) (xy 80.631743 25.683053) (xy 80.547386 25.662483) (xy 80.462666 25.633105)
-					(xy 80.462666 25.425987) (xy 80.545929 25.467929) (xy 80.620813 25.496329) (xy 80.69497 25.51416)
-					(xy 80.761863 25.519776) (xy 80.823994 25.513996) (xy 80.873271 25.498013) (xy 80.912439 25.472882)
-					(xy 80.942737 25.438348) (xy 80.961032 25.396742) (xy 80.967455 25.345875) (xy 80.961005 25.294572)
-					(xy 80.942688 25.252892) (xy 80.912439 25.218564) (xy 80.873295 25.193606) (xy 80.824017 25.177722)
-					(xy 80.761863 25.171974) (xy 80.704405 25.175427) (xy 80.640902 25.186324) (xy 80.576069 25.203979)
-					(xy 80.502966 25.230593)
+					(xy 79.961297 24.660041) (xy 80.729807 24.660041) (xy 80.729807 24.808297) (xy 80.33224 25.68)
+					(xy 80.07603 25.68) (xy 80.452469 24.851528) (xy 79.961297 24.851528)
 				)
 			)
 			(polygon
 				(pts
-					(xy 81.404588 25.17979) (xy 81.833601 25.17979) (xy 81.833601 25.379092) (xy 81.404588 25.379092)
+					(xy 80.917568 25.17979) (xy 81.346581 25.17979) (xy 81.346581 25.379092) (xy 80.917568 25.379092)
 				)
 			)
 			(polygon
 				(pts
-					(xy 82.45446 24.650288) (xy 82.523574 24.667066) (xy 82.58401 24.693983) (xy 82.637104 24.731)
-					(xy 82.683749 24.778804) (xy 82.720884 24.833072) (xy 82.750905 24.89662) (xy 82.773499 24.970879)
-					(xy 82.787926 25.057573) (xy 82.793048 25.158663) (xy 82.787236 25.261404) (xy 82.770738 25.350722)
-					(xy 82.744617 25.42847) (xy 82.709452 25.496243) (xy 82.665309 25.555314) (xy 82.611326 25.606515)
-					(xy 82.550453 25.646282) (xy 82.481725 25.675223) (xy 82.403756 25.693242) (xy 82.31482 25.699539)
-					(xy 82.243965 25.696801) (xy 82.177495 25.688792) (xy 82.112597 25.675358) (xy 82.049084 25.656552)
-					(xy 82.049084 25.468974) (xy 82.11178 25.495065) (xy 82.169313 25.512937) (xy 82.226745 25.523978)
-					(xy 82.282702 25.527592) (xy 82.341212 25.523078) (xy 82.390167 25.510392) (xy 82.43127 25.49033)
-					(xy 82.465824 25.46299) (xy 82.493778 25.429005) (xy 82.516233 25.386828) (xy 82.532911 25.3349)
-					(xy 82.543004 25.271259) (xy 82.494739 25.30148) (xy 82.443903 25.322855) (xy 82.389851 25.335613)
-					(xy 82.329902 25.340013) (xy 82.252563 25.333821) (xy 82.185879 25.316171) (xy 82.127986 25.287813)
-					(xy 82.077477 25.248606) (xy 82.035937 25.199954) (xy 82.006233 25.144594) (xy 81.987896 25.081211)
-					(xy 81.98149 25.007965) (xy 81.983227 24.988304) (xy 82.234892 24.988304) (xy 82.239446 25.047448)
-					(xy 82.251567 25.0912) (xy 82.269697 25.123126) (xy 82.295925 25.147564) (xy 82.329739 25.162642)
-					(xy 82.373561 25.168066) (xy 82.417422 25.162639) (xy 82.451232 25.147559) (xy 82.477425 25.123126)
-					(xy 82.495588 25.091195) (xy 82.50773 25.047443) (xy 82.512291 24.988304) (xy 82.507748 24.929632)
-					(xy 82.495623 24.885958) (xy 82.477425 24.853848) (xy 82.451203 24.829196) (xy 82.417391 24.814004)
-					(xy 82.373561 24.808541) (xy 82.32977 24.814001) (xy 82.295954 24.829191) (xy 82.269697 24.853848)
-					(xy 82.251533 24.885953) (xy 82.239427 24.929627) (xy 82.234892 24.988304) (xy 81.983227 24.988304)
-					(xy 81.988643 24.927013) (xy 82.009084 24.85729) (xy 82.042159 24.796683) (xy 82.088407 24.743695)
-					(xy 82.14446 24.701427) (xy 82.209656 24.670587) (xy 82.285736 24.65124) (xy 82.374965 24.64441)
+					(xy 81.825114 25.488513) (xy 82.27391 25.488513) (xy 82.27391 25.68) (xy 81.532694 25.68) (xy 81.532694 25.488513)
+					(xy 81.905042 25.156526) (xy 81.949875 25.110231) (xy 81.978742 25.068538) (xy 81.996782 25.024382)
+					(xy 82.002678 24.979206) (xy 81.997072 24.933595) (xy 81.981046 24.895774) (xy 81.954501 24.863923)
+					(xy 81.920081 24.840265) (xy 81.878087 24.825519) (xy 81.826457 24.820265) (xy 81.764058 24.826288)
+					(xy 81.691879 24.845849) (xy 81.618593 24.87647) (xy 81.535442 24.92187) (xy 81.535442 24.69912)
+					(xy 81.624343 24.673748) (xy 81.710991 24.655523) (xy 81.797472 24.644207) (xy 81.881106 24.640502)
+					(xy 81.973587 24.64633) (xy 82.050138 24.662546) (xy 82.113408 24.687741) (xy 82.165588 24.721224)
+					(xy 82.209671 24.765166) (xy 82.240971 24.816264) (xy 82.260288 24.875942) (xy 82.267071 24.946355)
+					(xy 82.262274 25.000826) (xy 82.24801 25.052439) (xy 82.224023 25.101999) (xy 82.191196 25.147819)
+					(xy 82.133758 25.210685) (xy 82.042978 25.295256)
 				)
 			)
 			(polygon
 				(pts
-					(xy 82.889951 24.660041) (xy 83.154283 24.660041) (xy 83.424843 25.412859) (xy 83.69467 24.660041)
-					(xy 83.959002 24.660041) (xy 83.581281 25.68) (xy 83.267734 25.68)
+					(xy 83.15984 25.304842) (xy 83.305348 25.304842) (xy 83.305348 25.496329) (xy 83.15984 25.496329)
+					(xy 83.15984 25.68) (xy 82.91114 25.68) (xy 82.91114 25.496329) (xy 82.458924 25.496329) (xy 82.458924 25.304842)
+					(xy 82.622872 25.304842) (xy 82.91114 25.304842) (xy 82.91114 24.877051) (xy 82.622872 25.304842)
+					(xy 82.458924 25.304842) (xy 82.458924 25.270282) (xy 82.86742 24.660041) (xy 83.15984 24.660041)
 				)
 			)
 			(polygon
 				(pts
-					(xy 85.015313 24.664633) (xy 85.127453 24.67652) (xy 85.204885 24.693197) (xy 85.27774 24.720686)
-					(xy 85.342418 24.758046) (xy 85.399913 24.805549) (xy 85.443895 24.85423) (xy 85.479252 24.907133)
-					(xy 85.506464 24.964734) (xy 85.525424 25.025797) (xy 85.537229 25.093557) (xy 85.541329 25.168982)
-					(xy 85.537217 25.245358) (xy 85.5254 25.313693) (xy 85.506464 25.375001) (xy 85.479236 25.432799)
-					(xy 85.443876 25.4858) (xy 85.399913 25.534492) (xy 85.341939 25.581974) (xy 85.276676 25.619362)
-					(xy 85.203114 25.646905) (xy 85.125117 25.6636) (xy 85.013388 25.675443) (xy 84.858854 25.68) (xy 84.581516 25.68)
-					(xy 84.581516 25.480697) (xy 84.844505 25.480697) (xy 84.938782 25.480697) (xy 85.019764 25.474958)
-					(xy 85.086153 25.459011) (xy 85.140557 25.434171) (xy 85.18504 25.400891) (xy 85.220925 25.358485)
-					(xy 85.247318 25.30705) (xy 85.264092 25.244714) (xy 85.270098 25.168982) (xy 85.264108 25.093581)
-					(xy 85.247388 25.031597) (xy 85.221092 24.980522) (xy 85.185346 24.938478) (xy 85.141088 24.905543)
-					(xy 85.086743 24.880906) (xy 85.020196 24.865056) (xy 84.938782 24.859344) (xy 84.844505 24.859344)
-					(xy 84.844505 25.480697) (xy 84.581516 25.480697) (xy 84.581516 24.660041) (xy 84.858854 24.660041)
+					(xy 83.376972 24.660041) (xy 83.641304 24.660041) (xy 83.911864 25.412859) (xy 84.181691 24.660041)
+					(xy 84.446023 24.660041) (xy 84.068301 25.68) (xy 83.754754 25.68)
 				)
 			)
 			(polygon
 				(pts
-					(xy 86.551945 25.623335) (xy 86.477902 25.656477) (xy 86.400942 25.680305) (xy 86.321247 25.694667)
-					(xy 86.237055 25.699539) (xy 86.134188 25.693187) (xy 86.04405 25.675064) (xy 85.964821 25.646157)
-					(xy 85.894969 25.606874) (xy 85.833322 25.557023) (xy 85.780741 25.497339) (xy 85.73967 25.430095)
-					(xy 85.70966 25.35422) (xy 85.690939 25.268248) (xy 85.684395 25.170387) (xy 85.690947 25.072192)
-					(xy 85.709686 24.986001) (xy 85.739706 24.910007) (xy 85.780772 24.842727) (xy 85.833322 24.783079)
-					(xy 85.894973 24.733205) (xy 85.964826 24.693904) (xy 86.044055 24.664986) (xy 86.134191 24.646856)
-					(xy 86.237055 24.640502) (xy 86.321247 24.645374) (xy 86.400942 24.659736) (xy 86.477902 24.683564)
-					(xy 86.551945 24.716706) (xy 86.551945 24.929685) (xy 86.477796 24.885073) (xy 86.407781 24.855558)
-					(xy 86.335326 24.83795) (xy 86.258243 24.831988) (xy 86.189058 24.838089) (xy 86.130329 24.855414)
-					(xy 86.080075 24.883275) (xy 86.036898 24.922053) (xy 86.002968 24.969013) (xy 85.977888 25.024829)
-					(xy 85.961968 25.091228) (xy 85.956298 25.170387) (xy 85.961958 25.249143) (xy 85.977862 25.315305)
-					(xy 86.00294 25.371021) (xy 86.036898 25.417988) (xy 86.080075 25.456765) (xy 86.130329 25.484627)
-					(xy 86.189058 25.501952) (xy 86.258243 25.508053) (xy 86.335326 25.502091) (xy 86.407781 25.484483)
-					(xy 86.477796 25.454967) (xy 86.551945 25.410355)
+					(xy 85.502333 24.664633) (xy 85.614474 24.67652) (xy 85.691905 24.693197) (xy 85.76476 24.720686)
+					(xy 85.829439 24.758046) (xy 85.886933 24.805549) (xy 85.930915 24.85423) (xy 85.966272 24.907133)
+					(xy 85.993484 24.964734) (xy 86.012445 25.025797) (xy 86.024249 25.093557) (xy 86.02835 25.168982)
+					(xy 86.024237 25.245358) (xy 86.012421 25.313693) (xy 85.993484 25.375001) (xy 85.966257 25.432799)
+					(xy 85.930897 25.4858) (xy 85.886933 25.534492) (xy 85.82896 25.581974) (xy 85.763696 25.619362)
+					(xy 85.690135 25.646905) (xy 85.612137 25.6636) (xy 85.500408 25.675443) (xy 85.345874 25.68) (xy 85.068537 25.68)
+					(xy 85.068537 25.480697) (xy 85.331525 25.480697) (xy 85.425803 25.480697) (xy 85.506785 25.474958)
+					(xy 85.573174 25.459011) (xy 85.627578 25.434171) (xy 85.672061 25.400891) (xy 85.707946 25.358485)
+					(xy 85.734338 25.30705) (xy 85.751112 25.244714) (xy 85.757118 25.168982) (xy 85.751128 25.093581)
+					(xy 85.734408 25.031597) (xy 85.708112 24.980522) (xy 85.672366 24.938478) (xy 85.628109 24.905543)
+					(xy 85.573764 24.880906) (xy 85.507217 24.865056) (xy 85.425803 24.859344) (xy 85.331525 24.859344)
+					(xy 85.331525 25.480697) (xy 85.068537 25.480697) (xy 85.068537 24.660041) (xy 85.345874 24.660041)
 				)
 			)
 			(polygon
 				(pts
-					(xy 87.256464 24.660041) (xy 87.519452 24.660041) (xy 87.519452 25.68) (xy 87.256464 25.68)
+					(xy 87.038966 25.623335) (xy 86.964922 25.656477) (xy 86.887963 25.680305) (xy 86.808267 25.694667)
+					(xy 86.724076 25.699539) (xy 86.621209 25.693187) (xy 86.531071 25.675064) (xy 86.451841 25.646157)
+					(xy 86.38199 25.606874) (xy 86.320342 25.557023) (xy 86.267761 25.497339) (xy 86.22669 25.430095)
+					(xy 86.196681 25.35422) (xy 86.177959 25.268248) (xy 86.171415 25.170387) (xy 86.177968 25.072192)
+					(xy 86.196706 24.986001) (xy 86.226727 24.910007) (xy 86.267793 24.842727) (xy 86.320342 24.783079)
+					(xy 86.381993 24.733205) (xy 86.451846 24.693904) (xy 86.531076 24.664986) (xy 86.621212 24.646856)
+					(xy 86.724076 24.640502) (xy 86.808267 24.645374) (xy 86.887963 24.659736) (xy 86.964922 24.683564)
+					(xy 87.038966 24.716706) (xy 87.038966 24.929685) (xy 86.964816 24.885073) (xy 86.894801 24.855558)
+					(xy 86.822346 24.83795) (xy 86.745264 24.831988) (xy 86.676079 24.838089) (xy 86.617349 24.855414)
+					(xy 86.567096 24.883275) (xy 86.523919 24.922053) (xy 86.489988 24.969013) (xy 86.464909 25.024829)
+					(xy 86.448989 25.091228) (xy 86.443319 25.170387) (xy 86.448979 25.249143) (xy 86.464883 25.315305)
+					(xy 86.48996 25.371021) (xy 86.523919 25.417988) (xy 86.567096 25.456765) (xy 86.617349 25.484627)
+					(xy 86.676079 25.501952) (xy 86.745264 25.508053) (xy 86.822346 25.502091) (xy 86.894801 25.484483)
+					(xy 86.964816 25.454967) (xy 87.038966 25.410355)
 				)
 			)
 			(polygon
 				(pts
-					(xy 88.535441 25.211969) (xy 88.535441 25.68) (xy 88.28955 25.68) (xy 88.28955 25.603857) (xy 88.28955 25.321817)
-					(xy 88.285093 25.184553) (xy 88.278444 25.14962) (xy 88.269766 25.128988) (xy 88.252852 25.107601)
-					(xy 88.23081 25.091557) (xy 88.204895 25.081625) (xy 88.174756 25.078185) (xy 88.12674 25.084978)
-					(xy 88.087381 25.104517) (xy 88.054527 25.137536) (xy 88.031374 25.179332) (xy 88.016323 25.233072)
-					(xy 88.010808 25.301912) (xy 88.010808 25.68) (xy 87.76626 25.68) (xy 87.76626 24.914054) (xy 88.010808 24.914054)
-					(xy 88.010808 25.023475) (xy 88.0499 24.981847) (xy 88.088989 24.949705) (xy 88.128289 24.9259)
-					(xy 88.170707 24.908611) (xy 88.216265 24.898104) (xy 88.265614 24.894515) (xy 88.331096 24.900174)
-					(xy 88.385066 24.916034) (xy 88.429754 24.941184) (xy 88.466748 24.975786) (xy 88.495089 25.017745)
-					(xy 88.516523 25.069629) (xy 88.530415 25.133524)
+					(xy 87.743484 24.660041) (xy 88.006473 24.660041) (xy 88.006473 25.68) (xy 87.743484 25.68)
+				)
+			)
+			(polygon
+				(pts
+					(xy 89.022462 25.211969) (xy 89.022462 25.68) (xy 88.77657 25.68) (xy 88.77657 25.603857) (xy 88.77657 25.321817)
+					(xy 88.772113 25.184553) (xy 88.765465 25.14962) (xy 88.756787 25.128988) (xy 88.739872 25.107601)
+					(xy 88.71783 25.091557) (xy 88.691915 25.081625) (xy 88.661776 25.078185) (xy 88.61376 25.084978)
+					(xy 88.574402 25.104517) (xy 88.541548 25.137536) (xy 88.518394 25.179332) (xy 88.503343 25.233072)
+					(xy 88.497828 25.301912) (xy 88.497828 25.68) (xy 88.25328 25.68) (xy 88.25328 24.914054) (xy 88.497828 24.914054)
+					(xy 88.497828 25.023475) (xy 88.53692 24.981847) (xy 88.576009 24.949705) (xy 88.615309 24.9259)
+					(xy 88.657728 24.908611) (xy 88.703285 24.898104) (xy 88.752635 24.894515) (xy 88.818116 24.900174)
+					(xy 88.872086 24.916034) (xy 88.916774 24.941184) (xy 88.953769 24.975786) (xy 88.982109 25.017745)
+					(xy 89.003544 25.069629) (xy 89.017435 25.133524)
 				)
 			)
 			(polygon
