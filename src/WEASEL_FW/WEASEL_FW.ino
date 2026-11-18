@@ -75,6 +75,8 @@ const char* FIRMWARE_VERSION = "1.0";
 #define MUX1_SIG A0  // MUX1 signal pin
 
 // -- MUX PINS - SECOND MUX
+// Prototype boards only. On the current schematic U5 shares MUX1_S0..S3 and these four pins
+// are unconnected (free for other uses - drop them from readPotentiometers() if reused).
 #define MUX2_S0 D4
 #define MUX2_S1 D5
 #define MUX2_S2 D6
@@ -706,19 +708,19 @@ inline void filterPot(int i, int raw) {
   }
 }
 
+// Both muxes are switched to the same channel together and then both ADCs are read.
+// Current schematic: U4 and U5 share MUX1_S0..S3 (D4/D5/D6/D10 are unconnected on the board).
+// Prototype boards: U5 still has its own MUX2_S0..S3 lines, so those are driven to the same
+// channel as well - the same code works on both boards.
 void readPotentiometers() {
-  for (int i = 0; i < TOTAL_POTS; i++) {
-    int raw;
-    if (i < NUM_POTS_PER_MUX) {
-      selectMuxChannel(i, MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3);
-      delayMicroseconds(20);  // longer settle after switching the mux
-      raw = analogRead(MUX1_SIG);
-    } else {
-      selectMuxChannel(i - NUM_POTS_PER_MUX, MUX2_S0, MUX2_S1, MUX2_S2, MUX2_S3);
-      delayMicroseconds(20);
-      raw = analogRead(MUX2_SIG);
-    }
-    filterPot(i, raw);
+  for (int ch = 0; ch < NUM_POTS_PER_MUX; ch++) {
+    selectMuxChannel(ch, MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3);
+    selectMuxChannel(ch, MUX2_S0, MUX2_S1, MUX2_S2, MUX2_S3);  // prototype only, harmless otherwise
+    delayMicroseconds(20);  // settle after switching the mux
+    int raw1 = analogRead(MUX1_SIG);
+    int raw2 = analogRead(MUX2_SIG);
+    filterPot(ch, raw1);
+    filterPot(ch + NUM_POTS_PER_MUX, raw2);
   }
   potFilterPrimed = true;
 }

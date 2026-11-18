@@ -8913,6 +8913,22 @@
 		(at 116.84 513.08)
 		(uuid "fbfc15a8-2f2c-4819-be0b-7ca747daf44d")
 	)
+	(no_connect
+		(at 104.14 120.65)
+		(uuid "ac695eeb-8a48-4fbd-a2e2-a19727a715a3")
+	)
+	(no_connect
+		(at 104.14 115.57)
+		(uuid "55e4c919-6377-412d-97d2-2f4d8d906dce")
+	)
+	(no_connect
+		(at 104.14 130.81)
+		(uuid "c7a09172-b4ce-4e40-a774-bc3548659dfc")
+	)
+	(no_connect
+		(at 104.14 133.35)
+		(uuid "07806b64-36b1-47f1-b1ef-d4c1359c0771")
+	)
 	(bus_entry
 		(at 325.12 158.75)
 		(size 2.54 2.54)
@@ -16860,7 +16876,7 @@
 			)
 		)
 	)
-	(global_label "MUX2_S2"
+	(global_label "MUX1_S2"
 		(shape input)
 		(at 217.17 110.49 180)
 		(fields_autoplaced yes)
@@ -17014,7 +17030,7 @@
 			)
 		)
 	)
-	(global_label "MUX2_S0"
+	(global_label "MUX1_S0"
 		(shape input)
 		(at 217.17 105.41 180)
 		(fields_autoplaced yes)
@@ -18598,7 +18614,7 @@
 			)
 		)
 	)
-	(global_label "MUX2_S1"
+	(global_label "MUX1_S1"
 		(shape input)
 		(at 217.17 107.95 180)
 		(fields_autoplaced yes)
@@ -19566,7 +19582,7 @@
 			)
 		)
 	)
-	(global_label "MUX2_S3"
+	(global_label "MUX1_S3"
 		(shape input)
 		(at 217.17 113.03 180)
 		(fields_autoplaced yes)
@@ -19689,28 +19705,6 @@
 		(uuid "7f3191a2-dbb2-49cf-9a05-c89e1cd983f7")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 50.8 200.5172 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "MUX2_S0"
-		(shape input)
-		(at 104.14 120.65 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "7f9c8990-8156-4b62-8373-df9569689788")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 115.7127 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20024,28 +20018,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "MUX2_S3"
-		(shape input)
-		(at 104.14 115.57 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "8bb63080-f62e-415f-b6e5-9deda81195c2")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 115.7127 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 				(hide yes)
 			)
 		)
@@ -21260,28 +21232,6 @@
 			)
 		)
 	)
-	(global_label "MUX2_S1"
-		(shape input)
-		(at 104.14 130.81 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "ce67c9d4-daa1-475d-9a02-687a68c3ded0")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 115.7127 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "REVERB MIX"
 		(shape input)
 		(at 242.57 115.57 0)
@@ -21454,28 +21404,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "MUX2_S2"
-		(shape input)
-		(at 104.14 133.35 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "d49da589-ddf3-4357-b192-03eb0a131863")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 115.7127 133.35 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 				(hide yes)
 			)
 		)
