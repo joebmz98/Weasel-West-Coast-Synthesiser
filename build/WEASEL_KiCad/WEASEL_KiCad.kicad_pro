@@ -94,42 +94,6 @@
         [
           "items_not_allowed|220858323|201750000|8a776f54-3757-4a2f-be1f-d34fe91530c7|00000000-0000-0000-0000-000000000000",
           "Exclusion zone is just for footprint design"
-        ],
-        [
-          "unconnected_items|167000000|26130000|F.Cu|4|d6c0adcc-55e2-48c9-9457-dbd5e2dace4b|c75a13da-ec9c-4545-9484-30229df9b9e4",
-          ""
-        ],
-        [
-          "unconnected_items|237000000|43630000|F.Cu|4|c7175f16-7be6-4def-b9ad-19ccb1fff25b|62c2da0e-fe2c-4154-b615-c209a2c29990",
-          ""
-        ],
-        [
-          "unconnected_items|263000000|26130000|F.Cu|4|4e7cfc57-a26b-4b97-90d2-a1c927940b5c|23be3a38-537d-4a57-bb50-e28cbac0df22",
-          ""
-        ],
-        [
-          "unconnected_items|267997300|140715800|F.Cu|4|8196976a-3279-4415-8d5b-411dd39e4304|fdf41acb-1dbe-4685-985a-f059dedb777c",
-          ""
-        ],
-        [
-          "unconnected_items|270750000|125968500|F.Cu|4|646d92c3-af13-4b70-8578-cccf94c247bb|2b3cf66f-0184-4b79-9b1d-7c6e9d202882",
-          ""
-        ],
-        [
-          "unconnected_items|294750000|34750000|F.Cu|4|74cffc50-a398-44a1-8023-283366ff7a97|8c6383f5-f3e0-4140-bdf2-260ae032d3fc",
-          ""
-        ],
-        [
-          "unconnected_items|306997300|105750000|F.Cu|4|2d9b7000-992f-4c76-8192-ac1420e09533|97d3eedb-56d0-479c-a271-3794ff81b1c5",
-          ""
-        ],
-        [
-          "unconnected_items|306997300|140715800|F.Cu|4|e1c3a60d-c11b-465e-adea-d398da0a97d6|9ac3d590-8332-44df-8c48-63c43ebd3ed1",
-          ""
-        ],
-        [
-          "unconnected_items|319750000|34750000|F.Cu|4|e221c4bf-503b-4cd7-8c33-a02e65eda0a2|b578e608-9721-4b96-9077-50d6766af31f",
-          ""
         ]
       ],
       "meta": {
