@@ -1,5 +1,5 @@
 ** Drc report for WEASEL_KiCad.kicad_pcb **
-** Created on 2026-11-18T17:50:10+0000 **
+** Created on 2026-11-18T18:28:27+0000 **
 
 ** Found 383 DRC violations **
 [items_not_allowed]: Items not allowed (keepout area)
@@ -54,16 +54,16 @@
     @(41.1350 mm, 80.4750 mm): Footprint C39
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(303.7473 mm, 362.9658 mm): Footprint REF**
+    @(303.7473 mm, 344.9658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'D_SOD-123' does not match copy in library 'Diode_SMD'.
     Local override; warning
     @(80.7500 mm, 48.5000 mm): Footprint D13
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(303.7500 mm, 328.0000 mm): Footprint REF**
+    @(303.7500 mm, 310.0000 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'AXS_LOGO_FMASK_10X10' does not match copy in library 'AXS_LOGO_KICAD'.
     Local override; warning
-    @(71.4506 mm, 249.4245 mm): Footprint G***
+    @(71.4506 mm, 231.4245 mm): Footprint G***
 [lib_footprint_mismatch]: Footprint 'QFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm' does not match copy in library 'Package_DFN_QFN'.
     Local override; warning
     @(193.9875 mm, 146.7000 mm): Footprint U10
@@ -75,13 +75,13 @@
     @(88.5000 mm, 18.0000 mm): Footprint C33
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(271.2473 mm, 362.9658 mm): Footprint REF**
+    @(271.2473 mm, 344.9658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(271.2473 mm, 327.9658 mm): Footprint REF**
+    @(271.2473 mm, 309.9658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(291.5000 mm, 257.0000 mm): Footprint REF**
+    @(291.5000 mm, 239.0000 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(322.5000 mm, 148.0000 mm): Footprint C29
@@ -90,19 +90,19 @@
     @(80.5000 mm, 17.0000 mm): Footprint C32
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(188.7500 mm, 248.3800 mm): Footprint REF**
+    @(188.7500 mm, 230.3800 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'TSOT-23-6' does not match copy in library 'Package_TO_SOT_SMD'.
     Local override; warning
     @(95.0000 mm, 52.0000 mm): Footprint U12
 [lib_footprint_mismatch]: Footprint 'AXS_LOGO_FMASK_10X10' does not match copy in library 'AXS_LOGO_KICAD'.
     Local override; warning
-    @(71.4500 mm, 249.4000 mm): Footprint G***
+    @(71.4500 mm, 231.4000 mm): Footprint G***
 [lib_footprint_mismatch]: Footprint 'C_0603_1608Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(92.0000 mm, 52.2500 mm): Footprint C43
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(141.2473 mm, 327.9658 mm): Footprint REF**
+    @(141.2473 mm, 309.9658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(161.2500 mm, 158.0000 mm): Footprint C16
@@ -126,7 +126,7 @@
     @(242.3125 mm, 118.0000 mm): Footprint C23
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(158.7473 mm, 327.9658 mm): Footprint REF**
+    @(158.7473 mm, 309.9658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'SOIC-24W_7.5x15.4mm_P1.27mm' does not match copy in library 'Package_SO'.
     Local override; warning
     @(91.5000 mm, 97.2500 mm): Footprint U4
@@ -189,7 +189,7 @@
     @(321.1875 mm, 93.0000 mm): Footprint C27
 [lib_footprint_mismatch]: Footprint 'WEASEL_FMASK_fullsize' does not match copy in library 'WEASEL'.
     Local override; warning
-    @(181.5811 mm, 533.9189 mm): Footprint G***
+    @(181.5811 mm, 515.9189 mm): Footprint G***
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(41.1350 mm, 110.2500 mm): Footprint C37
@@ -201,7 +201,7 @@
     @(41.1350 mm, 95.2500 mm): Footprint C38
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(163.7500 mm, 248.3800 mm): Footprint REF**
+    @(163.7500 mm, 230.3800 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'SOIC-16_3.9x9.9mm_P1.27mm' does not match copy in library 'Package_SO'.
     Local override; warning
     @(47.6350 mm, 114.2250 mm): Footprint U7
@@ -216,7 +216,7 @@
     @(298.0125 mm, 125.6750 mm): Footprint C41
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(316.5000 mm, 257.0000 mm): Footprint REF**
+    @(316.5000 mm, 239.0000 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(308.6875 mm, 93.0000 mm): Footprint C26
@@ -231,13 +231,13 @@
     @(100.2500 mm, 61.2500 mm): Footprint FB1
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(233.7500 mm, 248.3800 mm): Footprint REF**
+    @(233.7500 mm, 230.3800 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(218.7500 mm, 158.0000 mm): Footprint C19
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(271.2473 mm, 345.4658 mm): Footprint REF**
+    @(271.2473 mm, 327.4658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'QFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm' does not match copy in library 'Package_DFN_QFN'.
     Local override; warning
     @(114.5500 mm, 56.2625 mm): Footprint U1
@@ -279,13 +279,13 @@
     @(160.5000 mm, 92.7500 mm): Footprint C5
 [lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(233.7500 mm, 265.8800 mm): Footprint REF**
+    @(233.7500 mm, 247.8800 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'SOT-23' does not match copy in library 'Package_TO_SOT_SMD'.
     Local override; warning
     @(89.2500 mm, 54.0000 mm): Footprint Q1
 [text_thickness]: Text thickness out of range (TrueType font characters with insufficient stroke weight)
     Rule: board setup constraints silk text thickness; warning
-    @(123.2500 mm, 240.2500 mm): PCB text 'SEQUENTIAL VOLTAGE SOURCE
+    @(123.2500 mm, 222.2500 mm): PCB text 'SEQUENTIAL VOLTAGE SOURCE
 ' on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
@@ -295,19 +295,19 @@
     @(18.5000 mm, 205.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5000 mm, 239.0000 mm): Arc on F.Silkscreen
+    @(21.5000 mm, 221.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(18.5000 mm, 239.0000 mm): Segment on F.Silkscreen
+    @(18.5000 mm, 221.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(18.5000 mm, 425.0000 mm): Segment on F.Silkscreen
+    @(18.5000 mm, 407.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 441.0000 mm): Arc on F.Silkscreen
+    @(21.5500 mm, 423.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(18.5500 mm, 627.0000 mm): Segment on F.Silkscreen
+    @(18.5500 mm, 609.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
@@ -316,490 +316,490 @@
     @(21.5000 mm, 205.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5000 mm, 236.0000 mm): Segment on F.Silkscreen
+    @(21.5000 mm, 218.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5000 mm, 239.0000 mm): Segment on F.Silkscreen
+    @(21.5000 mm, 221.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5000 mm, 425.0000 mm): Arc on F.Silkscreen
+    @(21.5000 mm, 407.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 438.0000 mm): Segment on F.Silkscreen
+    @(21.5500 mm, 420.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 441.0000 mm): Segment on F.Silkscreen
+    @(21.5500 mm, 423.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 441.0000 mm): Segment on F.Silkscreen
+    @(21.5500 mm, 423.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 627.2500 mm): Segment on F.Silkscreen
+    @(21.5500 mm, 609.2500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 627.0000 mm): Arc on F.Silkscreen
+    @(21.5500 mm, 609.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(125.5000 mm, 321.1500 mm): Circle on F.Silkscreen
+    @(125.5000 mm, 303.1500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(125.5000 mm, 325.7000 mm): Circle on F.Silkscreen
+    @(125.5000 mm, 307.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(125.5000 mm, 330.2500 mm): Circle on F.Silkscreen
+    @(125.5000 mm, 312.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(125.5000 mm, 334.8000 mm): Circle on F.Silkscreen
+    @(125.5000 mm, 316.8000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(132.0000 mm, 244.5000 mm): Segment on F.Silkscreen
+    @(132.0000 mm, 226.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(132.0000 mm, 251.0000 mm): Circle on F.Silkscreen
+    @(132.0000 mm, 233.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(132.0000 mm, 251.5000 mm): Segment on F.Silkscreen
+    @(132.0000 mm, 233.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(134.5000 mm, 244.5000 mm): Segment on F.Silkscreen
+    @(134.5000 mm, 226.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(134.5000 mm, 247.0000 mm): Circle on F.Silkscreen
+    @(134.5000 mm, 229.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(134.5000 mm, 247.5000 mm): Segment on F.Silkscreen
+    @(134.5000 mm, 229.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(137.0000 mm, 244.5000 mm): Segment on F.Silkscreen
+    @(137.0000 mm, 226.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(137.0000 mm, 249.0000 mm): Circle on F.Silkscreen
+    @(137.0000 mm, 231.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(137.0000 mm, 249.5000 mm): Segment on F.Silkscreen
+    @(137.0000 mm, 231.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(139.2500 mm, 327.9658 mm): Curve on F.Silkscreen
+    @(139.2500 mm, 309.9658 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(139.2500 mm, 327.9658 mm): Curve on F.Silkscreen
+    @(139.2500 mm, 309.9658 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(139.2500 mm, 327.9658 mm): Curve on F.Silkscreen
+    @(139.2500 mm, 309.9658 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(139.2500 mm, 327.9658 mm): Curve on F.Silkscreen
+    @(139.2500 mm, 309.9658 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(139.5000 mm, 244.5000 mm): Segment on F.Silkscreen
+    @(139.5000 mm, 226.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(139.5000 mm, 245.5000 mm): Circle on F.Silkscreen
+    @(139.5000 mm, 227.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(139.5000 mm, 246.0000 mm): Segment on F.Silkscreen
+    @(139.5000 mm, 228.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(142.0000 mm, 244.5000 mm): Segment on F.Silkscreen
+    @(142.0000 mm, 226.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(142.0000 mm, 250.2500 mm): Circle on F.Silkscreen
+    @(142.0000 mm, 232.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(142.0000 mm, 250.7500 mm): Segment on F.Silkscreen
+    @(142.0000 mm, 232.7500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(145.4000 mm, 273.5000 mm): Circle on F.Silkscreen
+    @(145.4000 mm, 255.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.3000 mm, 246.9000 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 228.9000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.3000 mm, 251.4500 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 233.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.3000 mm, 256.0000 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 238.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.3000 mm, 325.7000 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 307.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.3000 mm, 330.2500 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 312.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(153.5614 mm, 325.8658 mm): Curve on F.Silkscreen
+    @(153.5614 mm, 307.8658 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(156.7614 mm, 327.9658 mm): Curve on F.Silkscreen
+    @(156.7614 mm, 309.9658 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(157.8500 mm, 273.5000 mm): Circle on F.Silkscreen
+    @(157.8500 mm, 255.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(161.7473 mm, 248.2842 mm): Curve on F.Silkscreen
+    @(161.7473 mm, 230.2842 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(161.7473 mm, 248.2842 mm): Curve on F.Silkscreen
+    @(161.7473 mm, 230.2842 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(161.7473 mm, 248.2842 mm): Curve on F.Silkscreen
+    @(161.7473 mm, 230.2842 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(170.4000 mm, 273.5000 mm): Circle on F.Silkscreen
+    @(170.4000 mm, 255.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(172.4973 mm, 334.4658 mm): Segment on F.Silkscreen
+    @(172.4973 mm, 316.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(173.3000 mm, 246.9000 mm): Circle on F.Silkscreen
+    @(173.3000 mm, 228.9000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(173.3000 mm, 251.4500 mm): Circle on F.Silkscreen
+    @(173.3000 mm, 233.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(173.3000 mm, 256.0000 mm): Circle on F.Silkscreen
+    @(173.3000 mm, 238.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(179.9973 mm, 334.4658 mm): Segment on F.Silkscreen
+    @(179.9973 mm, 316.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(182.9000 mm, 273.5000 mm): Circle on F.Silkscreen
+    @(182.9000 mm, 255.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(186.7500 mm, 248.2500 mm): Curve on F.Silkscreen
+    @(186.7500 mm, 230.2500 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(186.7500 mm, 248.2500 mm): Curve on F.Silkscreen
+    @(186.7500 mm, 230.2500 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(186.7500 mm, 248.2500 mm): Curve on F.Silkscreen
+    @(186.7500 mm, 230.2500 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(195.4000 mm, 273.5000 mm): Circle on F.Silkscreen
+    @(195.4000 mm, 255.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(201.5839 mm, 246.9000 mm): Circle on F.Silkscreen
+    @(201.5839 mm, 228.9000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(201.5839 mm, 251.4500 mm): Circle on F.Silkscreen
+    @(201.5839 mm, 233.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(201.5839 mm, 256.0000 mm): Circle on F.Silkscreen
+    @(201.5839 mm, 238.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(201.6000 mm, 265.8500 mm): Circle on F.Silkscreen
+    @(201.6000 mm, 247.8500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(201.6000 mm, 270.4000 mm): Circle on F.Silkscreen
+    @(201.6000 mm, 252.4000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(201.6000 mm, 274.9500 mm): Circle on F.Silkscreen
+    @(201.6000 mm, 256.9500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(204.9973 mm, 334.4316 mm): Segment on F.Silkscreen
+    @(204.9973 mm, 316.4316 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(208.2500 mm, 260.9500 mm): Segment on F.Silkscreen
+    @(208.2500 mm, 242.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(209.4375 mm, 260.9500 mm): Segment on F.Silkscreen
+    @(209.4375 mm, 242.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(211.3125 mm, 258.9500 mm): Segment on F.Silkscreen
+    @(211.3125 mm, 240.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(211.3125 mm, 258.9500 mm): Segment on F.Silkscreen
+    @(211.3125 mm, 240.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(212.4973 mm, 334.4316 mm): Segment on F.Silkscreen
+    @(212.4973 mm, 316.4316 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(214.0000 mm, 259.0000 mm): Segment on F.Silkscreen
+    @(214.0000 mm, 241.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(214.0000 mm, 259.0000 mm): Segment on F.Silkscreen
+    @(214.0000 mm, 241.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(214.5000 mm, 258.9500 mm): Segment on F.Silkscreen
+    @(214.5000 mm, 240.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(214.5000 mm, 258.9500 mm): Segment on F.Silkscreen
+    @(214.5000 mm, 240.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(217.0000 mm, 258.9500 mm): Segment on F.Silkscreen
+    @(217.0000 mm, 240.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(222.1875 mm, 260.9500 mm): Segment on F.Silkscreen
+    @(222.1875 mm, 242.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(231.7500 mm, 248.3800 mm): Curve on F.Silkscreen
+    @(231.7500 mm, 230.3800 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(231.7500 mm, 248.3800 mm): Curve on F.Silkscreen
+    @(231.7500 mm, 230.3800 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(231.7500 mm, 248.3800 mm): Curve on F.Silkscreen
+    @(231.7500 mm, 230.3800 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(231.7500 mm, 265.8800 mm): Curve on F.Silkscreen
+    @(231.7500 mm, 247.8800 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(231.7500 mm, 265.8800 mm): Curve on F.Silkscreen
+    @(231.7500 mm, 247.8800 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(231.7500 mm, 265.8800 mm): Curve on F.Silkscreen
+    @(231.7500 mm, 247.8800 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(233.7000 mm, 257.0000 mm): Circle on F.Silkscreen
+    @(233.7000 mm, 239.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(242.4973 mm, 334.4658 mm): Segment on F.Silkscreen
+    @(242.4973 mm, 316.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(243.5000 mm, 239.0000 mm): Segment on F.Silkscreen
+    @(243.5000 mm, 221.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 246.9000 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 228.9000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 251.4500 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 233.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 256.0000 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 238.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 263.6000 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 245.6000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 268.1500 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 250.1500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(249.9973 mm, 334.4658 mm): Segment on F.Silkscreen
+    @(249.9973 mm, 316.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(256.2500 mm, 343.6250 mm): Curve on F.Silkscreen
+    @(256.2500 mm, 325.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(256.2500 mm, 346.6250 mm): Curve on F.Silkscreen
+    @(256.2500 mm, 328.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(257.7500 mm, 343.6250 mm): Curve on F.Silkscreen
+    @(257.7500 mm, 325.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(257.7500 mm, 343.6250 mm): Curve on F.Silkscreen
+    @(257.7500 mm, 325.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(257.7500 mm, 346.6250 mm): Curve on F.Silkscreen
+    @(257.7500 mm, 328.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(257.7500 mm, 346.6250 mm): Curve on F.Silkscreen
+    @(257.7500 mm, 328.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(259.2500 mm, 343.6250 mm): Curve on F.Silkscreen
+    @(259.2500 mm, 325.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(259.2500 mm, 343.6250 mm): Curve on F.Silkscreen
+    @(259.2500 mm, 325.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(259.2500 mm, 346.6250 mm): Curve on F.Silkscreen
+    @(259.2500 mm, 328.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(259.2500 mm, 346.6250 mm): Curve on F.Silkscreen
+    @(259.2500 mm, 328.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(260.7500 mm, 343.6250 mm): Curve on F.Silkscreen
+    @(260.7500 mm, 325.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(260.7500 mm, 343.6250 mm): Curve on F.Silkscreen
+    @(260.7500 mm, 325.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(260.7500 mm, 346.6250 mm): Curve on F.Silkscreen
+    @(260.7500 mm, 328.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(260.7500 mm, 346.6250 mm): Curve on F.Silkscreen
+    @(260.7500 mm, 328.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(262.2500 mm, 343.6250 mm): Curve on F.Silkscreen
+    @(262.2500 mm, 325.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(262.2500 mm, 346.6250 mm): Curve on F.Silkscreen
+    @(262.2500 mm, 328.6250 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(264.2500 mm, 248.5000 mm): Curve on F.Silkscreen
+    @(264.2500 mm, 230.5000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(264.2500 mm, 248.5000 mm): Curve on F.Silkscreen
+    @(264.2500 mm, 230.5000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(264.2500 mm, 248.5000 mm): Curve on F.Silkscreen
+    @(264.2500 mm, 230.5000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(264.2500 mm, 266.0000 mm): Curve on F.Silkscreen
+    @(264.2500 mm, 248.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(264.2500 mm, 266.0000 mm): Curve on F.Silkscreen
+    @(264.2500 mm, 248.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(266.3000 mm, 257.0000 mm): Circle on F.Silkscreen
+    @(266.3000 mm, 239.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(266.6900 mm, 374.3000 mm): Circle on F.Silkscreen
+    @(266.6900 mm, 356.3000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(269.2500 mm, 363.0000 mm): Curve on F.Silkscreen
+    @(269.2500 mm, 345.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(269.2500 mm, 363.0000 mm): Curve on F.Silkscreen
+    @(269.2500 mm, 345.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(269.2500 mm, 363.0000 mm): Curve on F.Silkscreen
+    @(269.2500 mm, 345.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(271.2400 mm, 374.3000 mm): Circle on F.Silkscreen
+    @(271.2400 mm, 356.3000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(273.2238 mm, 328.1445 mm): Curve on F.Silkscreen
+    @(273.2238 mm, 310.1445 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(273.2492 mm, 345.5000 mm): Curve on F.Silkscreen
+    @(273.2492 mm, 327.5000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(275.7459 mm, 343.2000 mm): Curve on F.Silkscreen
+    @(275.0842 mm, 307.7445 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(275.7900 mm, 374.3000 mm): Circle on F.Silkscreen
+    @(275.7459 mm, 325.2000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(276.2342 mm, 325.7445 mm): Curve on F.Silkscreen
+    @(275.7900 mm, 356.3000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(280.7000 mm, 343.2000 mm): Circle on F.Silkscreen
+    @(280.7000 mm, 307.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(280.7000 mm, 347.7000 mm): Circle on F.Silkscreen
+    @(280.7000 mm, 312.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(281.5000 mm, 252.4500 mm): Circle on F.Silkscreen
+    @(280.7000 mm, 325.2000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(281.5000 mm, 257.0000 mm): Circle on F.Silkscreen
+    @(280.7000 mm, 329.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(281.5000 mm, 261.5500 mm): Circle on F.Silkscreen
+    @(281.5000 mm, 234.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(282.0000 mm, 325.7000 mm): Circle on F.Silkscreen
+    @(281.5000 mm, 239.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(282.0000 mm, 330.2500 mm): Circle on F.Silkscreen
+    @(281.5000 mm, 243.5500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(286.0000 mm, 358.4200 mm): Circle on F.Silkscreen
+    @(287.3000 mm, 340.4200 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(286.0000 mm, 362.9700 mm): Circle on F.Silkscreen
+    @(287.3000 mm, 344.9700 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(286.0000 mm, 367.5200 mm): Circle on F.Silkscreen
+    @(287.3000 mm, 349.5200 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(289.3000 mm, 325.7000 mm): Circle on F.Silkscreen
+    @(289.3000 mm, 307.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(289.3000 mm, 330.2500 mm): Circle on F.Silkscreen
+    @(289.3000 mm, 312.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(291.5000 mm, 253.5000 mm): Segment on F.Silkscreen
+    @(291.5000 mm, 235.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(296.5000 mm, 352.2000 mm): Circle on F.Silkscreen
+    @(296.5000 mm, 334.2000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(299.0000 mm, 266.0000 mm): Circle on F.Silkscreen
+    @(299.0000 mm, 248.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(301.7473 mm, 363.0000 mm): Segment on F.Silkscreen
+    @(301.7473 mm, 345.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(301.7473 mm, 363.0000 mm): Curve on F.Silkscreen
+    @(301.7473 mm, 345.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(301.7473 mm, 363.0000 mm): Curve on F.Silkscreen
+    @(301.7473 mm, 345.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(301.8792 mm, 328.0342 mm): Curve on F.Silkscreen
+    @(301.8792 mm, 310.0342 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(301.8792 mm, 328.0342 mm): Curve on F.Silkscreen
+    @(301.8792 mm, 310.0342 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(303.7473 mm, 365.0000 mm): Curve on F.Silkscreen
+    @(303.7473 mm, 347.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(303.7473 mm, 365.0000 mm): Segment on F.Silkscreen
+    @(303.7473 mm, 347.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(303.7473 mm, 365.0000 mm): Segment on F.Silkscreen
+    @(303.7473 mm, 347.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(303.8000 mm, 337.3000 mm): Circle on F.Silkscreen
+    @(303.8000 mm, 319.3000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(308.2000 mm, 266.0000 mm): Circle on F.Silkscreen
+    @(308.2000 mm, 248.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(316.5000 mm, 253.5000 mm): Segment on F.Silkscreen
+    @(316.5000 mm, 235.5000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(319.3794 mm, 371.2914 mm): Segment on F.Silkscreen
+    @(319.3794 mm, 353.2914 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(318.2442 mm, 373.2914 mm): Arc on F.Silkscreen
+    @(318.2442 mm, 355.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(319.9973 mm, 334.4658 mm): Segment on F.Silkscreen
+    @(319.9973 mm, 316.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(319.9973 mm, 364.4658 mm): Segment on F.Silkscreen
+    @(319.9973 mm, 346.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(318.2442 mm, 373.2914 mm): Arc on F.Silkscreen
+    @(318.2442 mm, 355.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(318.2442 mm, 373.2914 mm): Arc on F.Silkscreen
+    @(318.2442 mm, 355.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(318.2442 mm, 373.2914 mm): Arc on F.Silkscreen
+    @(318.2442 mm, 355.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(329.2442 mm, 373.2914 mm): Arc on F.Silkscreen
+    @(329.2442 mm, 355.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(329.2442 mm, 373.2914 mm): Arc on F.Silkscreen
+    @(329.2442 mm, 355.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(326.5000 mm, 252.4500 mm): Circle on F.Silkscreen
+    @(326.5000 mm, 234.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(326.5000 mm, 257.0000 mm): Circle on F.Silkscreen
+    @(326.5000 mm, 239.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(326.5000 mm, 261.5500 mm): Circle on F.Silkscreen
+    @(326.5000 mm, 243.5500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(329.2442 mm, 373.2914 mm): Arc on F.Silkscreen
+    @(329.2442 mm, 355.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(327.4973 mm, 334.4658 mm): Segment on F.Silkscreen
+    @(327.4973 mm, 316.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(327.4973 mm, 364.4658 mm): Segment on F.Silkscreen
+    @(327.4973 mm, 346.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(329.2442 mm, 373.2914 mm): Arc on F.Silkscreen
+    @(329.2442 mm, 355.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(328.1294 mm, 371.2914 mm): Segment on F.Silkscreen
+    @(328.1294 mm, 353.2914 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(342.5000 mm, 19.0000 mm): Arc on F.Silkscreen
@@ -808,22 +808,22 @@
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5000 mm, 239.0000 mm): Arc on F.Silkscreen
+    @(342.5000 mm, 221.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5000 mm, 239.0000 mm): Segment on F.Silkscreen
+    @(342.5000 mm, 221.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5000 mm, 428.0000 mm): Segment on F.Silkscreen
+    @(342.5000 mm, 410.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5500 mm, 441.0000 mm): Arc on F.Silkscreen
+    @(342.5500 mm, 423.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5500 mm, 441.0000 mm): Segment on F.Silkscreen
+    @(342.5500 mm, 423.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5500 mm, 630.0000 mm): Segment on F.Silkscreen
+    @(342.5500 mm, 612.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(345.5000 mm, 19.0000 mm): Segment on F.Silkscreen
@@ -832,64 +832,76 @@
     @(342.5000 mm, 205.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(345.5000 mm, 239.0000 mm): Segment on F.Silkscreen
+    @(345.5000 mm, 221.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5000 mm, 425.0000 mm): Arc on F.Silkscreen
+    @(342.5000 mm, 407.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(345.5500 mm, 441.0000 mm): Segment on F.Silkscreen
+    @(345.5500 mm, 423.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5500 mm, 627.0000 mm): Arc on F.Silkscreen
+    @(342.5500 mm, 609.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(301.5261 mm, 116.4100 mm): PCB text 'R25' on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(244.2500 mm, 240.2500 mm): PCB text 'PULSAR' on F.Silkscreen
+    @(244.2500 mm, 222.2500 mm): PCB text 'PULSAR' on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(249.4500 mm, 49.9000 mm): Segment of R49 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(175.3500 mm, 352.8000 mm): Rectangle of REF** on F.Silkscreen
+    @(175.3500 mm, 334.8000 mm): Rectangle of REF** on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(265.3500 mm, 287.8000 mm): Rectangle of REF** on F.Silkscreen
+    @(313.0300 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(297.8500 mm, 287.8000 mm): Rectangle of REF** on F.Silkscreen
+    @(313.0300 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(71.2798 mm, 246.3875 mm): Polygon of G*** on F.Silkscreen
+    @(313.1500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(72.2671 mm, 248.5250 mm): Polygon of G*** on F.Silkscreen
+    @(313.2681 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(71.9115 mm, 246.2698 mm): Polygon of G*** on F.Silkscreen
+    @(313.6224 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(71.4466 mm, 249.2430 mm): Polygon of G*** on F.Silkscreen
+    @(313.7405 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(71.0693 mm, 248.5210 mm): Polygon of G*** on F.Silkscreen
+    @(313.8586 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(71.6724 mm, 248.5119 mm): Polygon of G*** on F.Silkscreen
+    @(313.9767 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(245.3500 mm, 352.8000 mm): Rectangle of REF** on F.Silkscreen
+    @(314.3309 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(282.8500 mm, 123.1500 mm): Segment of R65 on F.Silkscreen
+    @(314.4490 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(117.2500 mm, 389.2500 mm): Segment on F.Silkscreen
-    @(135.2500 mm, 384.7500 mm): PCB text '3 -------------------------  pulsar
+    @(117.2500 mm, 371.2500 mm): Segment on F.Silkscreen
+    @(135.2500 mm, 366.7500 mm): PCB text '3 -------------------------  pulsar
 
 4 --  random voltage generator' on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(101.0000 mm, 367.0000 mm): Segment on F.Silkscreen
+    @(93.5000 mm, 366.7500 mm): PCB text 'sequencer  ------------- 1
+
+envelope generator  -- 2' on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(93.5000 mm, 366.7500 mm): PCB text 'sequencer  ------------- 1
+
+envelope generator  -- 2' on F.Silkscreen
+    @(107.2500 mm, 370.2500 mm): Segment on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(38.1700 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
@@ -905,51 +917,7 @@
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(43.3100 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(40.4157 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(40.5338 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(40.6519 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(40.7700 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(45.8500 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(48.3900 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(50.9900 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
     @(38.5262 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(38.6443 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(38.7624 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(38.8805 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
@@ -966,6 +934,22 @@
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
     @(39.3529 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(38.6443 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(38.7624 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(38.8805 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(43.3100 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
@@ -1001,7 +985,123 @@
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(40.4157 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(40.5338 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(40.6519 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(40.7700 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(45.8500 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(48.3900 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(50.9900 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(27.0000 mm, 26.7500 mm): Segment of J2 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(39.0000 mm, 15.7500 mm): Segment of J2 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(59.6300 mm, 13.8000 mm): Segment of A1 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.3180 mm, 16.1900 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.3260 mm, 16.1500 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.3330 mm, 16.1100 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.3410 mm, 16.0700 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(85.3500 mm, 16.0300 mm): Segment of C33 on F.Silkscreen
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.3600 mm, 15.9900 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.3690 mm, 15.9500 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.3800 mm, 15.9100 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.3910 mm, 15.8700 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(85.4020 mm, 15.8300 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(88.5000 mm, 16.7500 mm): Circle of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(89.5400 mm, 15.8300 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(89.5400 mm, 15.8700 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(320.7100 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(323.2500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(325.8500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
     @(313.0300 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(313.1500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(313.2681 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(313.3862 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
@@ -1068,18 +1168,6 @@
     @(315.2757 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.1500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.2681 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.3862 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
     @(315.3938 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
@@ -1096,76 +1184,8 @@
     @(318.1700 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(320.7100 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(323.2500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(325.8500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.3180 mm, 16.1900 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.3260 mm, 16.1500 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.3330 mm, 16.1100 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.3410 mm, 16.0700 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(85.3500 mm, 16.0300 mm): Segment of C33 on F.Silkscreen
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.3600 mm, 15.9900 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.3690 mm, 15.9500 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.3800 mm, 15.9100 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.3910 mm, 15.8700 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(85.4020 mm, 15.8300 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(88.5000 mm, 16.7500 mm): Circle of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(93.3000 mm, 21.1500 mm): Segment of J22 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(102.5000 mm, 12.5500 mm): Segment of J22 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 15.8300 mm): Segment of C33 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 15.8700 mm): Segment of C33 on F.Silkscreen
+    @(205.3500 mm, 54.6500 mm): Segment of R43 on F.Silkscreen
+    @(205.2500 mm, 51.5500 mm): Segment of R42 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
@@ -1200,22 +1220,6 @@
     @(89.5400 mm, 16.1500 mm): Segment of C33 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(205.3500 mm, 54.6500 mm): Segment of R43 on F.Silkscreen
-    @(205.2500 mm, 51.5500 mm): Segment of R42 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(27.0000 mm, 26.7500 mm): Segment of J2 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(39.0000 mm, 15.7500 mm): Segment of J2 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(59.6300 mm, 13.8000 mm): Segment of A1 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
     @(59.9300 mm, 65.1000 mm): Segment of A1 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
@@ -1233,23 +1237,19 @@
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(103.8250 mm, 26.3000 mm): Segment of J1 on F.Silkscreen
+    @(93.3000 mm, 21.1500 mm): Segment of J22 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(102.5000 mm, 12.5500 mm): Segment of J22 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
     @(115.8250 mm, 15.3000 mm): Segment of J1 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(101.0000 mm, 385.0000 mm): Segment on F.Silkscreen
-    @(93.5000 mm, 384.7500 mm): PCB text 'sequencer  ------------- 1
-
-envelope generator  -- 2' on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(93.5000 mm, 384.7500 mm): PCB text 'sequencer  ------------- 1
-
-envelope generator  -- 2' on F.Silkscreen
-    @(107.2500 mm, 388.2500 mm): Segment on F.Silkscreen
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(103.8250 mm, 26.3000 mm): Segment of J1 on F.Silkscreen
 
 ** Found 0 unconnected pads **
 
