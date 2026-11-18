@@ -1,0 +1,41 @@
+# --- OS / editor junk ---
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.vscode/
+.idea/
+
+# --- KiCad ---
+# automatic backups and autosaves
+*-backups/
+_autosave-*
+*.bak
+*.bck
+*.kicad_pcb-bak
+*.sch-bak
+\#auto_saved_files#
+# lock files created while a board/schematic is open
+*.lck
+~*.lck
+# local caches and per-user view settings
+fp-info-cache
+*.kicad_prl
+# Fabrication Toolkit backup archives (current production files stay tracked)
+**/production/backups/
+
+# --- Arduino / PlatformIO / build output ---
+build/**/*.elf
+build/**/*.hex
+*.bin
+*.map
+.pio/
+.pioenvs/
+.piolibdeps/
+src/**/build/
+
+# --- Python ---
+__pycache__/
+*.pyc
