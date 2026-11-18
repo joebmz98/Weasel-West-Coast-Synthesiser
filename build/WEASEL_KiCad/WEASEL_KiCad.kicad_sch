@@ -23290,7 +23290,7 @@
 		(at 516.89 186.69 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "008b06ff-f23b-4c68-a178-218d2d3c000b")
@@ -23361,6 +23361,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 436.88 78.74 0)
@@ -23428,12 +23429,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 158.75 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "00cd7df7-7e4b-448b-b762-1f7c34060eea")
@@ -23504,6 +23506,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 46.99 430.53 0)
@@ -23571,6 +23574,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 330.2 76.2 90)
@@ -23635,6 +23639,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 335.28 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "67681f29-a323-4192-bb12-5043303ce8af")
 		)
@@ -23650,6 +23663,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 152.4 344.17 90)
@@ -23761,6 +23775,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 165.1 346.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ff4ef9e9-c8c4-466b-b1a1-e146032508cd")
 		)
@@ -23776,6 +23799,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 411.48 78.74 0)
@@ -23843,6 +23867,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 171.45 90)
@@ -23954,6 +23979,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 173.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f3a4ed44-9a02-4efd-a762-a93cb9efe0eb")
 		)
@@ -23969,6 +24003,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 73.66 191.77 0)
@@ -24035,6 +24070,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 411.48 101.6 270)
@@ -24088,6 +24124,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 411.48 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7c9f6fc4-303c-48c5-aafe-437c685f8ef8")
 		)
@@ -24106,6 +24151,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 100.33 90)
@@ -24217,6 +24263,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "10d2f8ea-2122-4e67-b7b3-d720f36fe067")
 		)
@@ -24232,6 +24287,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 355.6 140.97 90)
@@ -24296,6 +24352,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 360.68 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3aba7a82-f368-4360-948b-6698c86d2064")
 		)
@@ -24311,6 +24376,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 375.92 135.89 270)
@@ -24382,6 +24448,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 72.39 227.33 0)
@@ -24448,6 +24515,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 57.15 259.08 0)
@@ -24561,6 +24629,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 54.61 271.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5b152ced-047f-48d9-b0cf-934562aa74f6")
 		)
@@ -24576,6 +24653,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 411.48 182.88 0)
@@ -24643,6 +24721,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 81.28 146.05 0)
@@ -24710,6 +24789,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 87.63 90)
@@ -24821,6 +24901,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "019396f8-57ea-451f-bbda-c8205934670d")
 		)
@@ -24836,6 +24925,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Interface_Expansion:AW9523B")
 		(at 500.38 166.37 0)
@@ -24884,6 +24974,15 @@
 		)
 		(property "Description" "16 multi-function led driver and gpio controller with i2c interface"
 			(at 500.38 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C148077"
+			(at 534.67 193.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24975,6 +25074,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 101.6 294.64 0)
@@ -25088,6 +25188,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 99.06 307.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "164003fd-4005-403b-8acf-df380b02dc39")
 		)
@@ -25103,6 +25212,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 73.66 50.8 180)
@@ -25198,8 +25308,8 @@
 				(justify right)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 72.39 38.1 0)
+		(property "LCSC Part #" "C24497"
+			(at 76.2 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25222,6 +25332,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 115.57 528.32 0)
@@ -25289,6 +25400,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 90.17 483.87 0)
@@ -25356,6 +25468,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 375.92 71.12 270)
@@ -25409,6 +25522,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 375.92 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e6205198-a28b-4b85-b6e9-01ba329ba47e")
 		)
@@ -25427,6 +25549,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 156.21 90)
@@ -25538,6 +25661,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 158.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3b6cfeac-9394-4ab6-9f22-45b2e77019cd")
 		)
@@ -25553,6 +25685,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 381 259.08 90)
@@ -25617,6 +25750,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 386.08 261.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c8b10b36-8603-4a70-8cb9-d1d99cf3f87a")
 		)
@@ -25632,6 +25774,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 82.55 90)
@@ -25743,6 +25886,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b59173dd-ede9-4875-b3fc-1f630887f1bf")
 		)
@@ -25758,6 +25910,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 375.92 217.17 270)
@@ -25811,6 +25964,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 375.92 217.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f0405f7d-adf0-4042-ad96-588009be59af")
 		)
@@ -25829,6 +25991,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 386.08 78.74 0)
@@ -25896,12 +26059,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 171.45 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "0e38ca1e-9de4-43ba-965e-f2b5e673962e")
@@ -25972,6 +26136,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 105.41 90)
@@ -26083,6 +26248,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "0c424d7d-31e8-418c-85b3-44b6b7bca83d")
 		)
@@ -26098,6 +26272,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 106.68 224.79 0)
@@ -26211,6 +26386,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 104.14 237.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c3b40e29-aa1e-47ea-acb2-7e71ed9dd881")
 		)
@@ -26226,6 +26410,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 350.52 217.17 270)
@@ -26279,6 +26464,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 350.52 217.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "86d5ce5d-3d0c-4c91-ad6e-8ec6cf37c9fb")
 		)
@@ -26297,6 +26491,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 157.48 345.44 0)
@@ -26364,6 +26559,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 46.99 414.02 0)
@@ -26431,6 +26627,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_SPDT")
 		(at 173.99 177.8 90)
@@ -26485,6 +26682,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C1788492"
+			(at 173.99 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "e23107ff-3cf3-4093-bcd3-15639bfaed7a")
 		)
@@ -26503,6 +26709,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 360.68 143.51 0)
@@ -26570,6 +26777,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 214.63 132.08 0)
@@ -26635,6 +26843,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 184.15 482.6 90)
@@ -26727,8 +26936,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 196.85 481.33 0)
+		(property "LCSC Part #" "C24497"
+			(at 189.23 485.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -26751,6 +26960,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 238.76 483.87 0)
@@ -26818,6 +27028,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 123.19 187.96 0)
@@ -26931,6 +27142,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 120.65 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b8388f65-86c9-497f-8ebe-ea14f699e4a3")
 		)
@@ -26946,6 +27166,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 161.29 90)
@@ -27057,6 +27278,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 163.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "cdcd354c-eb16-4101-9b6e-9c094969ecab")
 		)
@@ -27072,6 +27302,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 435.61 143.51 0)
@@ -27139,6 +27370,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 579.12 114.3 0)
@@ -27205,6 +27437,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 158.75 127 0)
@@ -27318,6 +27551,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 156.21 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "826f3cf4-a0e8-458b-aa09-dc4d81d5b246")
 		)
@@ -27333,6 +27575,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 421.64 109.22 0)
@@ -27400,6 +27643,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 151.13 90)
@@ -27511,6 +27755,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5481afba-1dfe-4141-a588-78ae03c0e79a")
 		)
@@ -27526,6 +27779,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 355.6 180.34 90)
@@ -27590,6 +27844,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 360.68 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2574ab8e-db88-45a2-8985-3f1e1ccca0da")
 		)
@@ -27605,12 +27868,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 107.95 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "16d055c5-28f0-4c76-bfc9-bced127e2a8e")
@@ -27681,12 +27945,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 115.57 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "16e2b5fe-64ed-479f-b109-35d06f304d68")
@@ -27757,6 +28022,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 375.92 254 270)
@@ -27828,6 +28094,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 231.14 533.4 0)
@@ -27895,6 +28162,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 152.4 326.39 90)
@@ -28006,6 +28274,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 165.1 328.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e7a1ffd4-c4f1-4f05-84c6-34a0418be709")
 		)
@@ -28021,6 +28298,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 132.08 284.48 90)
@@ -28075,6 +28353,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 127 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "49507cfc-9852-47d7-b44e-e8997c0aaed6")
 		)
@@ -28090,12 +28377,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 90.17 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "1bd730ff-662d-4d0a-ac37-0844653abcbc")
@@ -28166,6 +28454,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 335.28 182.88 0)
@@ -28233,12 +28522,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 113.03 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "1c2b5a24-495f-4416-963d-507c1c4082c9")
@@ -28309,6 +28599,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 401.32 217.17 270)
@@ -28362,6 +28653,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 401.32 217.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "0e0b5c0b-4c6d-4494-b51e-6d241b28a31a")
 		)
@@ -28380,6 +28680,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 187.96 483.87 0)
@@ -28447,6 +28748,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 157.48 363.22 0)
@@ -28514,6 +28816,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 179.07 77.47 90)
@@ -28607,8 +28910,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 191.77 76.2 0)
+		(property "LCSC Part #" "C24497"
+			(at 184.15 80.01 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -28631,6 +28934,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 115.57 90)
@@ -28742,6 +29046,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3af502c0-9ada-4f18-a8e3-4d6e5a5e9e5f")
 		)
@@ -28757,6 +29070,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 132.08 400.05 0)
@@ -28824,6 +29138,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 78.74 397.51 0)
@@ -28891,6 +29206,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 57.15 177.8 90)
@@ -28945,6 +29261,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 52.07 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "74773ae2-df1d-4a49-acfc-c21cf0b749fb")
 		)
@@ -28960,6 +29285,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Isolator:6N138")
 		(at 307.34 46.99 0)
@@ -29013,6 +29339,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C142297"
+			(at 314.706 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "423855a3-e7b3-4c79-93d5-07e69b5f7716")
 		)
@@ -29046,6 +29381,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 330.2 222.25 90)
@@ -29110,6 +29446,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 335.28 224.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "271a85d3-4cc2-41d9-ba33-8fbccb9dfe24")
 		)
@@ -29125,6 +29470,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 158.75 130.81 0)
@@ -29190,6 +29536,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 360.68 78.74 0)
@@ -29257,6 +29604,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 500.38 128.27 0)
@@ -29324,12 +29672,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 181.61 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "2b02a918-9bf7-4d91-9d2a-b160b56afed1")
@@ -29400,6 +29749,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 325.12 135.89 270)
@@ -29453,6 +29803,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 325.12 135.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7c83b6e3-ee92-4b12-89d4-c164555b1910")
 		)
@@ -29471,6 +29830,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 179.07 90)
@@ -29582,6 +29942,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6a808b82-8754-47f4-88f7-d5e5e0e34c5b")
 		)
@@ -29597,6 +29966,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 152.4 396.24 90)
@@ -29708,6 +30078,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 165.1 398.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3b3bef6a-1916-4885-b5bd-3c352751628e")
 		)
@@ -29723,6 +30102,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 386.08 182.88 0)
@@ -29790,12 +30170,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 85.09 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "2f75034b-222f-4c49-8e2d-1ba96e45e47d")
@@ -29866,6 +30247,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 381 140.97 90)
@@ -29930,6 +30312,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 386.08 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "50006bdb-f3d1-41aa-8cc6-8352cda88c34")
 		)
@@ -29945,6 +30336,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 97.79 90)
@@ -30056,6 +30448,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b889c35d-1a48-4cca-a7bd-99d684eb036c")
 		)
@@ -30071,6 +30472,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 436.88 182.88 0)
@@ -30138,6 +30540,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 46.99 350.52 0)
@@ -30205,6 +30608,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 39.37 368.3 0)
@@ -30258,6 +30662,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 39.37 368.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "beb71c89-e511-4d82-bf95-4220fa7a17ad")
 		)
@@ -30276,6 +30689,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 411.48 143.51 0)
@@ -30343,6 +30757,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 431.8 76.2 90)
@@ -30407,6 +30822,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 436.88 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "50ea0a28-1d3c-4c5c-b303-6b7a18189edc")
 		)
@@ -30422,12 +30846,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 123.19 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "34f2f10a-5ce3-434f-a76d-31cd4022dfe0")
@@ -30498,6 +30923,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R")
 		(at 289.56 44.45 90)
@@ -30552,6 +30978,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C22962"
+			(at 289.56 46.228 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "774af839-2fa9-4b4c-b7d6-04bfec40f191")
 		)
@@ -30567,6 +31002,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 335.28 78.74 0)
@@ -30634,12 +31070,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 118.11 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "36934fe5-85dc-44b0-9e91-0f5afc380c30")
@@ -30710,6 +31147,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 360.68 182.88 0)
@@ -30777,6 +31215,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 406.4 222.25 90)
@@ -30841,6 +31280,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 411.48 224.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "bf2e745d-7311-4246-8612-4d6aa71b0d2b")
 		)
@@ -30856,6 +31304,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 39.37 335.28 0)
@@ -30909,6 +31358,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 39.37 335.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "b4aed16a-2cbb-4fc4-9564-99727975826e")
 		)
@@ -30927,6 +31385,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 441.96 106.68 90)
@@ -30991,6 +31450,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 447.04 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ead09f6d-293c-4ad6-9bd1-6e170388426c")
 		)
@@ -31006,6 +31474,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "74xx:74HC165")
 		(at 82.55 508 0)
@@ -31053,6 +31522,15 @@
 			)
 		)
 		(property "Description" "Shift Register, 8-bit, Parallel Load"
+			(at 82.55 508 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C5613"
 			(at 82.55 508 0)
 			(effects
 				(font
@@ -31118,6 +31596,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 140.97 351.79 180)
@@ -31171,6 +31650,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 140.97 351.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "28721ecb-4c9e-476e-9e63-a8b832ca4a96")
 		)
@@ -31186,6 +31674,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 124.46 384.81 0)
@@ -31239,6 +31728,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 124.46 384.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "31350464-85b7-41e6-8a4f-1181045ea1df")
 		)
@@ -31257,6 +31755,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "74xx:CD74HC4067M")
 		(at 229.87 107.95 0)
@@ -31306,6 +31805,15 @@
 		)
 		(property "Description" "High-Speed CMOS Logic 16-Channel Analog Multiplexer/Demultiplexer, SOIC-24"
 			(at 229.87 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C496123"
+			(at 252.73 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -31394,6 +31902,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 129.54 533.4 0)
@@ -31461,6 +31970,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 124.46 99.06 0)
@@ -31573,6 +32083,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23162"
+			(at 121.92 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "978efd70-03f4-4588-8857-cf378fb3ba5d")
 		)
@@ -31588,12 +32107,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 97.79 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "3cade349-1252-446a-b918-6fa78082e801")
@@ -31664,6 +32184,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 381 75.9816 90)
@@ -31728,6 +32249,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 386.08 78.5216 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8a97afd0-1434-4ff5-a5e1-d161cd723687")
 		)
@@ -31743,6 +32273,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 82.55 248.92 90)
@@ -31797,6 +32328,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 77.47 248.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "4fcc3d5c-333c-4a77-b0aa-32569a2006a3")
 		)
@@ -31812,6 +32352,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 95.25 90)
@@ -31923,6 +32464,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "1fc0969a-68ca-4b12-b7f8-d40f5fde092f")
 		)
@@ -31938,6 +32488,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 57.15 187.96 0)
@@ -32051,6 +32602,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 54.61 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4f71e316-91df-47e3-857d-405835dd00f6")
 		)
@@ -32066,6 +32626,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 425.45 135.89 270)
@@ -32119,6 +32680,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 425.45 135.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "1c41e9ed-e3df-4fee-81aa-7c8c77965e9c")
 		)
@@ -32137,6 +32707,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 447.04 109.22 0)
@@ -32204,12 +32775,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "3f5adc47-b7bf-41e0-8ecf-5a4469caf050")
@@ -32280,6 +32852,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_SPDT")
 		(at 97.79 177.8 90)
@@ -32334,6 +32907,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C1788492"
+			(at 97.79 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "049de4e5-c712-45c8-9c6e-5bb6d6249562")
 		)
@@ -32352,6 +32934,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 132.08 330.2 0)
@@ -32419,6 +33002,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 325.12 101.6 270)
@@ -32472,6 +33056,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 325.12 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "083a18f4-0797-4542-bc79-cca5c79c5e48")
 		)
@@ -32490,6 +33083,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 173.99 187.96 0)
@@ -32603,6 +33197,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 171.45 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8525b9fc-8884-4831-91ab-649335e0c0f3")
 		)
@@ -32618,12 +33221,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 110.49 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "429d3625-ef7f-4266-8332-510b6b00ebf1")
@@ -32694,6 +33298,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 386.08 109.22 0)
@@ -32761,6 +33366,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 72.39 223.52 0)
@@ -32874,6 +33480,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 69.85 236.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "462b972e-3c94-4cbe-96aa-3a00ae70376f")
 		)
@@ -32889,6 +33504,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 132.08 347.98 0)
@@ -32956,6 +33572,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 113.03 90)
@@ -33067,6 +33684,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "bc5a3cb6-de41-4d75-98b7-f2ff473ec05e")
 		)
@@ -33082,6 +33708,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 82.55 90)
@@ -33193,6 +33820,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c0bc4dae-9579-4dd7-bf0f-db05501c7690")
 		)
@@ -33208,6 +33844,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 78.74 430.53 0)
@@ -33275,12 +33912,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 107.95 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "4666c462-f203-4e4b-90cd-1469c64d7a8a")
@@ -33351,6 +33989,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 72.39 213.36 90)
@@ -33405,6 +34044,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 67.31 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "36627e06-4144-4d0e-af91-e631756ff5b5")
 		)
@@ -33420,6 +34068,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 140.97 403.86 180)
@@ -33473,6 +34122,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 140.97 403.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "106a29b8-84a5-4191-80cb-d8706424f5ca")
 		)
@@ -33488,6 +34146,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 488.95 140.97 0)
@@ -33555,6 +34214,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 50.8 377.19 270)
@@ -33610,6 +34270,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 50.8 377.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "51731482-f2bf-48e2-832c-56c261f8f887")
 		)
@@ -33625,12 +34294,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 82.55 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "49fc766f-f1ec-4e44-832d-891dc6a1bb31")
@@ -33701,6 +34371,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 71.12 335.28 0)
@@ -33754,6 +34425,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 71.12 335.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "4e2d1b9d-aea4-450c-90f4-5b0683b685d7")
 		)
@@ -33772,12 +34452,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 87.63 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "4ae7cabb-2003-422a-846f-4c8cfe460877")
@@ -33848,6 +34529,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 168.91 90)
@@ -33959,6 +34641,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c9011eed-e668-4add-95bb-9cb7902bfab0")
 		)
@@ -33974,6 +34665,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 214.63 128.27 0)
@@ -34087,6 +34779,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 212.09 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "0f8e87c8-5117-407b-b640-3fbfeb9c45cb")
 		)
@@ -34102,6 +34803,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 82.55 440.69 270)
@@ -34157,6 +34859,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 82.55 440.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3a26b792-81fa-4cfb-a68a-3df838bc19f5")
 		)
@@ -34172,12 +34883,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 176.53 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "4e0cee62-1022-4dd1-aa1c-5234d97a481e")
@@ -34248,6 +34960,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 120.65 90)
@@ -34359,6 +35072,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f3b608cf-83e2-415c-b11b-6dbd2389c535")
 		)
@@ -34374,6 +35096,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 97.79 90)
@@ -34485,6 +35208,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e616b3b8-af29-47a8-adc0-df5f0f323e73")
 		)
@@ -34500,6 +35232,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_SPDT")
 		(at 123.19 177.8 90)
@@ -34554,6 +35287,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C1788492"
+			(at 123.19 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "4ccceadf-1ceb-42c1-a72f-70fe9219fe62")
 		)
@@ -34572,6 +35314,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 148.59 90)
@@ -34683,6 +35426,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5d86a8eb-82bc-41dd-8a17-d669543e2e55")
 		)
@@ -34698,6 +35450,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 381 180.2362 90)
@@ -34762,6 +35515,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 386.08 182.7762 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "bcb9abcc-ba3d-4e56-8345-ea3f9c28c257")
 		)
@@ -34777,12 +35539,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 173.99 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "50c38ded-9ed2-4b79-a0fc-c1955506f8ab")
@@ -34853,6 +35616,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 39.37 398.78 0)
@@ -34906,6 +35670,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 39.37 398.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "1b6e3a3b-cf06-470f-b74d-c2ac317321fd")
 		)
@@ -34924,6 +35697,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 229.87 135.89 0)
@@ -34989,6 +35763,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 220.98 176.53 0)
@@ -35055,6 +35830,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 350.52 135.89 270)
@@ -35107,6 +35883,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 350.52 135.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c2149ebe-105d-4ab4-8839-7a6fd87edc79")
 		)
@@ -35125,6 +35910,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 589.28 76.2 90)
@@ -35217,8 +36003,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 601.98 74.93 0)
+		(property "LCSC Part #" "C24497"
+			(at 594.36 78.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -35241,6 +36027,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 132.08 298.45 0)
@@ -35307,6 +36094,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 76.2 146.05 0)
@@ -35373,12 +36161,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 100.33 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "542774b6-a5a4-45ad-8de1-31987fdfb858")
@@ -35449,6 +36238,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 173.99 134.62 0)
@@ -35514,6 +36304,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 120.65 96.52 0)
@@ -35626,6 +36417,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23162"
+			(at 118.11 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "9c1cce63-e0ad-449d-8644-115b7eb115f9")
 		)
@@ -35641,6 +36441,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_SPDT")
 		(at 199.39 177.8 90)
@@ -35695,6 +36496,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C1788492"
+			(at 199.39 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "ed2e75a4-9bb2-42ce-b8ea-43a9df0e8ee3")
 		)
@@ -35713,6 +36523,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack3")
 		(at 231.14 52.07 0)
@@ -35784,6 +36595,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 152.4 361.95 90)
@@ -35895,6 +36707,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 165.1 364.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "14f92b2f-e344-48d4-b74b-071275c2c779")
 		)
@@ -35910,6 +36731,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 153.67 90)
@@ -36021,6 +36843,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5c90137a-c8f7-4111-9112-4e80b85e2a69")
 		)
@@ -36036,12 +36867,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 148.59 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "58415581-1595-4ff6-bcb8-a1c1399a6e98")
@@ -36112,6 +36944,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 256.54 177.8 0)
@@ -36178,12 +37011,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 82.55 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "59484486-e5bd-46a6-bac3-d304ee6160cd")
@@ -36254,6 +37088,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 57.15 191.77 0)
@@ -36320,12 +37155,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 85.09 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "5c2f401f-8fdd-41b6-902c-dd9a746eeadb")
@@ -36396,6 +37232,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 82.55 377.19 270)
@@ -36451,6 +37288,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 82.55 377.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "cab816b8-f136-43e5-86ef-3b57eb3e77d3")
 		)
@@ -36466,6 +37312,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 97.79 55.88 0)
@@ -36532,6 +37379,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 153.67 90)
@@ -36643,6 +37491,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6519fd2b-8bd1-4553-9d6b-39e23cff7b37")
 		)
@@ -36658,6 +37515,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 132.08 294.64 0)
@@ -36771,6 +37629,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 129.54 307.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "dd14a94a-40a5-4643-9e46-a6cee98d6ea8")
 		)
@@ -36786,6 +37653,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 593.09 191.77 0)
@@ -36853,6 +37721,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 425.45 252.73 270)
@@ -36924,6 +37793,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 124.46 436.88 0)
@@ -36977,6 +37847,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 124.46 436.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "55cb4618-0173-4366-b837-d296caa8a01a")
 		)
@@ -36995,6 +37874,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 157.48 397.51 0)
@@ -37062,6 +37942,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 157.48 415.29 0)
@@ -37129,12 +38010,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 146.05 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "62241b3c-a69f-464f-916e-56ad06f98ca1")
@@ -37205,6 +38087,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 132.08 417.83 0)
@@ -37272,6 +38155,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 381 222.25 90)
@@ -37336,6 +38220,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 386.08 224.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b796e271-9971-4882-9b5a-99f62d7fd72a")
 		)
@@ -37351,6 +38244,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 50.8 440.69 270)
@@ -37406,6 +38300,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 50.8 440.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "1eb608fb-08c6-4b1e-83d4-816126f43ec0")
 		)
@@ -37421,6 +38324,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 386.08 261.62 0)
@@ -37488,12 +38392,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 151.13 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "6678b68d-7d90-4855-8173-dbb31a6e9ba0")
@@ -37564,6 +38469,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 140.97 387.35 180)
@@ -37617,6 +38523,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 140.97 387.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "12b529a6-6b80-425e-9fdc-647f8ee261a8")
 		)
@@ -37632,6 +38547,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 124.46 419.1 0)
@@ -37685,6 +38601,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 124.46 419.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "a723fb28-1f97-4fdf-9c22-887b3a7fb507")
 		)
@@ -37703,6 +38628,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_SL_Capacitors:100uF_25V")
 		(at 97.79 52.07 270)
@@ -37758,6 +38684,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C44589"
+			(at 93.98 52.832 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "39da1d49-6f3f-4c29-adac-01986e3d7751")
 		)
@@ -37773,12 +38708,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 151.13 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "677dc5cd-57a5-450d-8c69-5ea1d3b3ad63")
@@ -37849,12 +38785,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 87.63 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "6807acb4-f3a2-48bd-8559-f6f8c480fea6")
@@ -37925,6 +38862,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 107.95 248.92 90)
@@ -37979,6 +38917,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 102.87 248.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "01a6bd81-03f6-41ec-b90c-8f3bf5cc6350")
 		)
@@ -37994,6 +38941,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 426.72 175.26 270)
@@ -38046,6 +38994,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 426.72 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "18e7944d-ccf3-4d08-aea0-17dc26f91314")
 		)
@@ -38064,6 +39021,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 133.35 482.6 90)
@@ -38156,8 +39114,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 146.05 481.33 0)
+		(property "LCSC Part #" "C24497"
+			(at 138.43 485.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -38180,6 +39138,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 182.88 78.74 0)
@@ -38245,6 +39204,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 176.53 90)
@@ -38356,6 +39316,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 179.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "20bec166-201b-4316-9661-10cd893dc031")
 		)
@@ -38371,12 +39340,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 163.83 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "6c5de860-3cac-4f34-849b-52795831352d")
@@ -38447,6 +39417,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 355.6 76.2 90)
@@ -38511,6 +39482,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 360.68 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "92436fb9-46c8-4a72-b377-d0c7340290e0")
 		)
@@ -38526,6 +39506,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 181.61 90)
@@ -38637,6 +39618,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "d1474425-e558-4f34-970c-38dbfb46d242")
 		)
@@ -38652,12 +39642,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "6fbe02f4-7e0b-4523-b45e-b1c47bb83ccc")
@@ -38728,12 +39719,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 168.91 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "70194d4c-7052-4106-ba15-ef89348f1acd")
@@ -38804,12 +39796,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 90.17 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "70c029ab-182e-43d0-8083-243df862ca0f")
@@ -38880,6 +39873,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 140.97 369.57 180)
@@ -38933,6 +39927,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 140.97 369.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f3d99a5b-9aeb-4c3e-83d7-d1b6224ec572")
 		)
@@ -38948,6 +39951,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 110.49 90)
@@ -39059,6 +40063,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "9f4ec198-4ba3-4d88-9c86-13cc5d8d8d6b")
 		)
@@ -39074,12 +40087,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 97.79 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "716d1c9f-b966-4f82-b052-5857d3a34388")
@@ -39150,6 +40164,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 386.08 143.51 0)
@@ -39217,6 +40232,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 36.83 494.03 0)
@@ -39283,6 +40299,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 325.12 71.12 270)
@@ -39336,6 +40353,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 325.12 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "0a89a293-31ff-4b85-b319-3ea6bbe25665")
 		)
@@ -39354,6 +40380,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector:Jack-DC")
 		(at 35.56 44.45 0)
@@ -39421,6 +40448,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 238.76 57.15 0)
@@ -39486,6 +40514,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 435.61 260.35 0)
@@ -39553,12 +40582,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 156.21 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "7561a11b-bc1f-4f01-8a10-0cbc4f4ce30a")
@@ -39629,6 +40659,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 90.17 90)
@@ -39740,6 +40771,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5ed7eb59-d5a2-4402-ad86-996af10cf849")
 		)
@@ -39755,6 +40795,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 85.09 90)
@@ -39866,6 +40907,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7d910bf7-3659-482d-ad83-df44cf668e6d")
 		)
@@ -39881,6 +40931,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 78.74 414.02 0)
@@ -39948,6 +40999,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 350.52 71.12 270)
@@ -40001,6 +41053,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 350.52 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a36803f6-a205-4cb9-bc08-c3a412568e9b")
 		)
@@ -40019,6 +41080,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 234.95 482.6 90)
@@ -40111,8 +41173,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 247.65 481.33 0)
+		(property "LCSC Part #" "C24497"
+			(at 240.03 485.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -40135,6 +41197,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 430.53 140.97 90)
@@ -40199,6 +41262,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 435.61 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ee6c980f-e0a4-472a-b63d-5cd6ae33c4e4")
 		)
@@ -40214,6 +41286,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 173.99 90)
@@ -40325,6 +41398,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "29f6f620-a158-4f67-9613-492169d0bcb0")
 		)
@@ -40340,6 +41422,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 124.46 331.47 0)
@@ -40393,6 +41476,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 124.46 331.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "0176aecc-3369-4c14-9090-e3d62098ad04")
 		)
@@ -40411,6 +41503,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 105.41 90)
@@ -40522,6 +41615,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "54674d8d-ccad-4c50-a300-4868f1d8a1ad")
 		)
@@ -40537,6 +41639,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 431.8 180.1006 90)
@@ -40601,6 +41704,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 436.88 182.6406 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "da755c36-7058-43c2-a4aa-d6ccfbde910e")
 		)
@@ -40616,6 +41728,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 137.16 483.87 0)
@@ -40683,6 +41796,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 186.69 90)
@@ -40794,6 +41908,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a8baf340-b5de-437d-9d73-72c22d11ff45")
 		)
@@ -40809,6 +41932,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 49.53 284.48 90)
@@ -40863,6 +41987,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 44.45 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "2cc26685-3cec-4a05-89bb-5526edc7d608")
 		)
@@ -40878,6 +42011,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 107.95 90)
@@ -40989,6 +42123,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "29e44baf-46c4-4b54-8808-17a1d5c1b268")
 		)
@@ -41004,6 +42147,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 57.15 248.92 90)
@@ -41058,6 +42202,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 52.07 248.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "2d6f5749-9de9-4924-bfcb-fa69713ac458")
 		)
@@ -41073,6 +42226,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 217.17 528.32 0)
@@ -41140,6 +42294,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 39.37 431.8 0)
@@ -41193,6 +42348,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 39.37 431.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "c66d8080-7032-48b0-8585-1537015b6292")
 		)
@@ -41211,6 +42375,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 87.63 90)
@@ -41322,6 +42487,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "629faefe-6927-4b5f-a543-0e74f4e2d18a")
 		)
@@ -41337,6 +42511,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 110.49 90)
@@ -41448,6 +42623,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "1c45fa1b-1cfc-48de-b302-345cfc17c90f")
 		)
@@ -41463,6 +42647,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 401.32 175.26 270)
@@ -41516,6 +42701,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 401.32 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "222bc79b-e1c1-49d0-8f39-b3f1336d7f9b")
 		)
@@ -41534,6 +42728,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "MCU_Module:Electrosmith_Daisy_Seed_Rev4")
 		(at 78.74 107.95 0)
@@ -41717,6 +42912,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 106.68 228.6 0)
@@ -41783,6 +42979,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 71.12 294.64 0)
@@ -41896,6 +43093,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 68.58 307.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4b1e58f1-d219-4c5a-a27f-7ed5194b44e2")
 		)
@@ -41911,6 +43117,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 276.86 53.34 0)
@@ -41978,6 +43185,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 426.72 71.12 270)
@@ -42031,6 +43239,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 426.72 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2574fb69-a7f3-4ea8-a560-390433650252")
 		)
@@ -42049,6 +43266,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 375.92 101.6 270)
@@ -42102,6 +43320,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 375.92 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "d20c36ae-9156-4b22-afff-a55c59153d51")
 		)
@@ -42120,6 +43347,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 71.12 368.3 0)
@@ -42173,6 +43401,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 71.12 368.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "50befa18-b5b4-4a7a-bd21-1ed6b4af70ae")
 		)
@@ -42191,6 +43428,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 71.12 298.45 0)
@@ -42257,6 +43495,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 120.65 90)
@@ -42368,6 +43607,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2570006d-823d-476a-9587-21136e8026fc")
 		)
@@ -42383,6 +43631,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 148.59 90)
@@ -42494,6 +43743,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8d935885-5677-4ed0-b7a8-0c26a7990529")
 		)
@@ -42509,12 +43767,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 120.65 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "86bf9819-9e8b-4d9f-ab46-08a059ac5ad7")
@@ -42585,6 +43844,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 199.39 187.96 0)
@@ -42698,6 +43958,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 196.85 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "99ec6efb-fdfb-42f1-a451-14680e6e5c53")
 		)
@@ -42713,6 +43982,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 71.12 398.78 0)
@@ -42766,6 +44036,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 71.12 398.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "746f365c-49ab-49fb-a445-7bb4fb695ccd")
 		)
@@ -42784,6 +44063,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 335.28 261.62 0)
@@ -42850,6 +44130,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 452.12 175.26 270)
@@ -42921,6 +44202,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 486.41 182.88 0)
@@ -42987,6 +44269,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 146.05 90)
@@ -43098,6 +44381,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "265b4e98-4ff3-4a7b-b0d8-8561ff7c29c0")
 		)
@@ -43113,6 +44405,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 124.46 401.32 0)
@@ -43165,6 +44458,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 124.46 401.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "6a7b8170-4284-42de-8bf9-4a79d7658c2d")
 		)
@@ -43183,6 +44485,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 107.95 262.89 0)
@@ -43249,6 +44552,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 330.2 140.97 90)
@@ -43313,6 +44617,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 335.28 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6f5cd4d0-dbc8-4503-acfc-a3fe121111b5")
 		)
@@ -43328,6 +44641,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 82.55 262.89 0)
@@ -43394,12 +44708,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "8e45e0b9-01b9-4ad5-8984-3937e389dba4")
@@ -43470,12 +44785,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 95.25 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "8f47b0c7-852b-4247-bced-bc9d7ce418f0")
@@ -43546,12 +44862,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 92.71 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "8fbf2683-d6d0-4a67-b905-e6d7f3bfa289")
@@ -43622,6 +44939,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Interface_Expansion:AW9523B")
 		(at 594.36 166.37 0)
@@ -43670,6 +44988,15 @@
 		)
 		(property "Description" "16 multi-function led driver and gpio controller with i2c interface"
 			(at 594.36 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C148077"
+			(at 628.65 193.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -43761,6 +45088,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 97.79 187.96 0)
@@ -43874,6 +45202,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 95.25 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "85ef37c5-253f-4f65-9199-9d1604f6b8fd")
 		)
@@ -43889,6 +45226,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 199.39 191.77 0)
@@ -43955,6 +45293,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 158.75 90)
@@ -44066,6 +45405,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ac3c8b4e-10f2-4473-abbe-355c6b682562")
 		)
@@ -44081,6 +45429,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Generic:Conn_02x05_Counter_Clockwise")
 		(at 271.78 179.07 0)
@@ -44107,7 +45456,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x05_P2.54mm_Horizontal"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x05_P2.54mm_Horizontal"
 			(at 271.78 179.07 0)
 			(effects
 				(font
@@ -44126,6 +45475,15 @@
 			)
 		)
 		(property "Description" "Generic connector, double row, 02x05, counter clockwise pin numbering scheme (similar to DIP package numbering), script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 271.78 179.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C492433"
 			(at 271.78 179.07 0)
 			(effects
 				(font
@@ -44173,6 +45531,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 123.19 214.63 90)
@@ -44227,6 +45586,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 118.11 214.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "1a30cf9f-1b87-42f4-b30b-c6d4457318ab")
 		)
@@ -44242,6 +45610,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 330.2 180.34 90)
@@ -44306,6 +45675,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 335.28 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b171e6e0-8d59-4019-b46d-6b647af983bf")
 		)
@@ -44321,6 +45699,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 401.32 71.12 270)
@@ -44374,6 +45753,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 401.32 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7188b7f4-4ae9-4b17-81d1-7d4b78fa64c9")
 		)
@@ -44392,6 +45780,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 71.12 415.29 0)
@@ -44445,6 +45834,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 71.12 415.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "a1165583-5cad-4c41-82dd-71d29760bf8c")
 		)
@@ -44463,6 +45861,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 123.19 224.79 0)
@@ -44576,6 +45975,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 120.65 237.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "79a8f2cd-b379-4110-bb63-686f88b93416")
 		)
@@ -44591,6 +45999,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 140.97 334.01 180)
@@ -44644,6 +46053,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 140.97 334.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "94a5488b-5d6d-4d7d-947f-e00a1c5744bb")
 		)
@@ -44659,12 +46077,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 161.29 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "9b6e6441-b0f7-40e7-8201-3547a3475b7a")
@@ -44735,6 +46154,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 330.2 259.08 90)
@@ -44799,6 +46219,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 335.28 261.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5b6929ac-8cf9-4036-9f7b-3511d52ed3e7")
 		)
@@ -44814,6 +46243,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 485.14 120.65 0)
@@ -44881,6 +46311,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 73.66 187.96 0)
@@ -44994,6 +46425,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 71.12 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "d3740483-2a35-4fa3-a9cd-eb97e89b3717")
 		)
@@ -45009,12 +46449,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 118.11 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "a133a3b2-d1a7-458d-bd91-8d9b7d541f9a")
@@ -45085,12 +46526,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 92.71 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "a1edfb63-fc49-4aa3-a5f3-763fc8578ac1")
@@ -45161,6 +46603,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 123.19 191.77 0)
@@ -45227,6 +46670,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 335.28 109.22 0)
@@ -45294,6 +46738,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 123.19 90)
@@ -45405,6 +46850,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a03cf65a-8194-4f8a-b593-cc8ce568cfae")
 		)
@@ -45420,12 +46874,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 146.05 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "a44f3dcc-c771-46b7-a51a-d7fffcab9bfc")
@@ -45496,6 +46951,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 68.58 528.32 0)
@@ -45563,6 +47019,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Generic:Conn_02x05_Counter_Clockwise")
 		(at 236.22 177.8 0)
@@ -45589,7 +47046,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x05_P2.54mm_Horizontal"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x05_P2.54mm_Horizontal"
 			(at 236.22 177.8 0)
 			(effects
 				(font
@@ -45608,6 +47065,15 @@
 			)
 		)
 		(property "Description" "Generic connector, double row, 02x05, counter clockwise pin numbering scheme (similar to DIP package numbering), script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 236.22 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C492433"
 			(at 236.22 177.8 0)
 			(effects
 				(font
@@ -45655,6 +47121,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 148.59 191.77 0)
@@ -45721,6 +47188,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 163.83 90)
@@ -45832,6 +47300,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3e7aafef-6261-4560-94e9-3f37f9f21c94")
 		)
@@ -45847,6 +47324,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 406.4 180.34 90)
@@ -45911,6 +47389,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 411.48 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f5cda300-8fcb-489c-9a51-debeb15524ae")
 		)
@@ -45926,6 +47413,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 355.6 222.25 90)
@@ -45990,6 +47478,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 360.68 224.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "23fc36f5-1fce-47ea-86c5-3323fbd2e659")
 		)
@@ -46005,6 +47502,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 335.28 224.79 0)
@@ -46072,6 +47570,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 123.19 90)
@@ -46183,6 +47682,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e1703758-a00c-4f64-8fb4-f85f058ae9e2")
 		)
@@ -46198,6 +47706,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 330.2 106.68 90)
@@ -46262,6 +47771,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 335.28 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2f3f6304-6600-4b40-8069-f0d5dd4135f7")
 		)
@@ -46277,6 +47795,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 118.11 90)
@@ -46388,6 +47907,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "95a55c61-2cfd-4d3a-95a5-8b18d123cec9")
 		)
@@ -46403,6 +47931,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 46.99 334.01 0)
@@ -46470,6 +47999,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 381 106.6423 90)
@@ -46534,6 +48064,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 386.08 109.1823 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "1073de54-4c7f-477f-9db8-7185d0ea7ffc")
 		)
@@ -46549,6 +48088,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 113.03 90)
@@ -46660,6 +48200,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "58348f29-c79d-4615-a800-d54e5837f5ec")
 		)
@@ -46675,6 +48224,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 238.76 80.01 0)
@@ -46740,6 +48290,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 462.28 182.88 0)
@@ -46807,6 +48358,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 375.92 175.26 270)
@@ -46878,6 +48430,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 430.53 257.81 90)
@@ -46942,6 +48495,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 435.61 260.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2c2c2d5c-d0df-471a-b4f5-bd4b4995b677")
 		)
@@ -46957,6 +48519,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 90.17 90)
@@ -47068,6 +48631,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2a46d4e4-d3e1-4e2e-8b0b-f78387c1c95d")
 		)
@@ -47083,6 +48655,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 92.71 90)
@@ -47194,6 +48767,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f9fa9727-b15b-4d18-a36e-ffe3fb966966")
 		)
@@ -47209,6 +48791,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 118.11 90)
@@ -47320,6 +48903,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "d7baa7fb-7d40-44d6-b68b-03d2791f897d")
 		)
@@ -47335,12 +48927,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 184.15 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "ad8cb9c0-c046-4229-be99-824058e99cb4")
@@ -47411,12 +49004,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 148.59 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "ae0c6b1e-0efd-4a99-9f27-2de01fc13cfd")
@@ -47487,6 +49081,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "74xx:CD74HC4067M")
 		(at 173.99 106.68 0)
@@ -47536,6 +49131,15 @@
 		)
 		(property "Description" "High-Speed CMOS Logic 16-Channel Analog Multiplexer/Demultiplexer, SOIC-24"
 			(at 173.99 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C496123"
+			(at 196.85 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -47624,12 +49228,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 113.03 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "aec6ce08-c556-428d-83a1-a1bee0d405e8")
@@ -47700,6 +49305,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 173.99 191.77 0)
@@ -47766,6 +49372,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 73.66 177.8 90)
@@ -47820,6 +49427,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 68.58 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "d056db53-5636-4c38-91f1-1dedac61702e")
 		)
@@ -47835,6 +49451,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 161.29 248.92 90)
@@ -47889,6 +49506,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 156.21 248.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "fca7789e-7aa6-4410-9904-1798a95c4d9d")
 		)
@@ -47904,6 +49530,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 132.08 383.54 0)
@@ -47971,6 +49598,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 71.12 431.8 0)
@@ -48024,6 +49652,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 71.12 431.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "2bb27c88-d0d2-4070-b082-f4b467e9e2a6")
 		)
@@ -48042,12 +49679,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 100.33 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "b1bbc6e4-5708-43b8-8e12-499c864b0dd6")
@@ -48118,6 +49756,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 386.08 224.79 0)
@@ -48185,6 +49824,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 106.68 214.63 90)
@@ -48239,6 +49879,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 101.6 214.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "7dddd004-1b63-4f47-afac-76b67b874d6d")
 		)
@@ -48254,6 +49903,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 152.4 379.73 90)
@@ -48365,6 +50015,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 165.1 382.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8334c64d-fed9-40bc-8f54-26734470d80f")
 		)
@@ -48380,6 +50039,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 360.68 224.79 0)
@@ -48447,6 +50107,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 46.99 367.03 0)
@@ -48514,6 +50175,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 166.37 528.32 0)
@@ -48581,6 +50243,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:C")
 		(at 86.36 52.07 0)
@@ -48636,6 +50299,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C13585"
+			(at 87.3252 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "cf978cfc-3cc4-4eac-8335-68d96f1de358")
 		)
@@ -48651,6 +50323,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 370.84 114.3 0)
@@ -48717,6 +50390,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 123.19 228.6 0)
@@ -48783,6 +50457,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 499.11 191.77 0)
@@ -48850,6 +50525,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_SPDT")
 		(at 148.59 177.8 90)
@@ -48904,6 +50580,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C1788492"
+			(at 148.59 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "18653d47-0284-47e5-9874-65b217e8b344")
 		)
@@ -48922,6 +50607,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 39.37 351.79 0)
@@ -48975,6 +50661,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 39.37 351.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "ae09b93e-6735-48c4-b320-f2dc02a8880f")
 		)
@@ -48993,6 +50688,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 49.53 298.45 0)
@@ -49059,6 +50755,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 101.6 298.45 0)
@@ -49125,6 +50822,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 132.08 435.61 0)
@@ -49192,6 +50890,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 124.46 349.25 0)
@@ -49245,6 +50944,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 124.46 349.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "5302fa8d-5fea-43ea-8198-08230da8dfc5")
 		)
@@ -49263,6 +50971,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 107.95 259.08 0)
@@ -49376,6 +51085,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 105.41 271.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a054e705-e639-49d1-b8b7-b4cb12b51036")
 		)
@@ -49391,6 +51109,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 151.13 90)
@@ -49502,6 +51221,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6671539f-7d53-4153-a084-aacc3de0e793")
 		)
@@ -49517,6 +51245,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 85.09 90)
@@ -49628,6 +51357,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "9372b0b5-d8bb-4398-a716-01a069b805d2")
 		)
@@ -49643,6 +51381,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 360.68 109.22 0)
@@ -49710,6 +51449,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 495.3 139.7 90)
@@ -49802,8 +51542,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 508 138.43 0)
+		(property "LCSC Part #" "C24497"
+			(at 500.38 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -49826,6 +51566,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 406.4 140.97 90)
@@ -49890,6 +51631,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 411.48 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "46fb33a4-4306-4657-bd21-65a62bff0c86")
 		)
@@ -49905,6 +51655,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 416.56 106.68 90)
@@ -49969,6 +51720,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 421.64 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "9e53fc66-a6ce-48a3-b7a8-93e25596bb98")
 		)
@@ -49984,6 +51744,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 78.74 334.01 0)
@@ -50051,6 +51812,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 124.46 367.03 0)
@@ -50104,6 +51866,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 124.46 367.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "a20b7302-61ee-416c-b3a5-79f68e9853a7")
 		)
@@ -50122,6 +51893,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 140.97 421.64 180)
@@ -50175,6 +51947,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 140.97 421.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f0c2d69d-549b-459c-a02f-fa9542bb571a")
 		)
@@ -50190,6 +51971,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 406.4 76.2 90)
@@ -50254,6 +52036,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 411.48 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "30493c29-19de-4f3b-8f73-4dd00339a714")
 		)
@@ -50269,6 +52060,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 78.74 367.03 0)
@@ -50336,6 +52128,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 325.12 254 270)
@@ -50407,6 +52200,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 161.29 262.89 0)
@@ -50473,6 +52267,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 86.36 482.6 90)
@@ -50565,8 +52360,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 99.06 481.33 0)
+		(property "LCSC Part #" "C24497"
+			(at 91.44 485.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -50589,6 +52384,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 46.99 397.51 0)
@@ -50656,6 +52452,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 495.3 76.2 90)
@@ -50748,8 +52545,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 508 74.93 0)
+		(property "LCSC Part #" "C24497"
+			(at 500.38 78.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -50772,6 +52569,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 589.28 139.7 90)
@@ -50864,8 +52662,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 601.98 138.43 0)
+		(property "LCSC Part #" "C24497"
+			(at 594.36 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -50888,6 +52686,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 582.93 77.47 0)
@@ -50955,6 +52754,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 320.04 45.72 0)
@@ -51068,6 +52868,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 317.5 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "54890eb7-c403-4c2c-a734-96707bef1add")
 		)
@@ -51083,6 +52892,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 133.35 259.08 0)
@@ -51196,6 +53006,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 130.81 271.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ca073e54-8a6e-47d7-adc2-4d06aa213155")
 		)
@@ -51211,12 +53030,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 115.57 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "ce2213d6-a804-44d1-a57d-91b29ae58895")
@@ -51287,6 +53107,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 161.29 259.08 0)
@@ -51400,6 +53221,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 158.75 271.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a623ce16-66d5-4494-b7dc-7f820ea84f3f")
 		)
@@ -51415,6 +53245,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 57.15 262.89 0)
@@ -51481,12 +53312,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 120.65 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "d29e2470-480f-456e-a77b-e680b64829c1")
@@ -51557,6 +53389,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 157.48 433.07 0)
@@ -51624,6 +53457,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 50.8 227.33 0)
@@ -51690,6 +53524,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "74xx:74HC165")
 		(at 231.14 508 0)
@@ -51737,6 +53572,15 @@
 			)
 		)
 		(property "Description" "Shift Register, 8-bit, Parallel Load"
+			(at 231.14 508 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C5613"
 			(at 231.14 508 0)
 			(effects
 				(font
@@ -51802,6 +53646,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 49.53 294.64 0)
@@ -51915,6 +53760,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 46.99 307.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "1d7884a8-bfad-4a29-bffa-247977a9b246")
 		)
@@ -51930,6 +53784,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 107.95 90)
@@ -52041,6 +53896,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "25415b77-6f21-45b0-86ca-5b5302b54c5f")
 		)
@@ -52056,6 +53920,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 457.2 180.34 90)
@@ -52120,6 +53985,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 462.28 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b4afb2c4-2a54-4eaa-a5a4-19467b697a2a")
 		)
@@ -52135,6 +54009,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 82.55 533.4 0)
@@ -52202,6 +54077,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 86.36 55.88 0)
@@ -52268,6 +54144,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 148.59 187.96 0)
@@ -52381,6 +54258,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 146.05 200.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3a38933a-1089-4abb-b77b-7e72aa15f8c9")
 		)
@@ -52396,6 +54282,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 73.66 53.34 0)
@@ -52462,12 +54349,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 610.87 95.25 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "d8bf0bdf-b8e3-4013-a155-7dd614f8feb8")
@@ -52538,6 +54426,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 294.64 48.26 270)
@@ -52590,6 +54479,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 294.64 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "66e55bc9-6d85-45ab-894d-726b0e05af34")
 		)
@@ -52605,6 +54503,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 401.32 135.89 270)
@@ -52658,6 +54557,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 401.32 135.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "00fc509c-9478-4ada-8c0d-aabc315265ff")
 		)
@@ -52676,6 +54584,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 95.25 90)
@@ -52787,6 +54696,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7918d8f4-9fa6-4014-a0ce-05d575f0740e")
 		)
@@ -52802,6 +54720,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 335.28 143.51 0)
@@ -52869,6 +54788,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 115.57 90)
@@ -52980,6 +54900,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4bb6093c-b1be-47a9-b2ef-93968c9cc107")
 		)
@@ -52995,6 +54924,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 71.12 284.48 90)
@@ -53049,6 +54979,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 66.04 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "4ac25d28-0950-461c-bee2-c669f3460c84")
 		)
@@ -53064,6 +55003,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 184.15 90)
@@ -53175,6 +55115,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "22b46ff6-e415-4a08-bb4f-95a121fbbcb4")
 		)
@@ -53190,6 +55139,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack3")
 		(at 267.97 44.45 0)
@@ -53261,6 +55211,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Diode:D_Generic")
 		(at 140.97 439.42 180)
@@ -53314,6 +55265,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C81598"
+			(at 140.97 439.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "226353ae-4db2-4f45-9051-5edc4798de59")
 		)
@@ -53329,6 +55289,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 488.95 77.47 0)
@@ -53396,6 +55357,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 594.36 128.27 0)
@@ -53463,6 +55425,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 325.12 217.17 270)
@@ -53516,6 +55479,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 325.12 217.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "1aa084da-afc4-4e2e-a4d8-5f8607d32297")
 		)
@@ -53534,6 +55506,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 350.52 101.6 270)
@@ -53587,6 +55560,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 350.52 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "96876c7b-d44f-44a8-9599-4feab3327537")
 		)
@@ -53605,6 +55587,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 50.8 213.36 90)
@@ -53659,6 +55642,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 45.72 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "8e7bd657-92ca-46e1-b21a-019d9f8b786d")
 		)
@@ -53674,6 +55666,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 39.37 415.29 0)
@@ -53727,6 +55720,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 39.37 415.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "15914719-1482-4af2-8d66-0f5a1838b3c0")
 		)
@@ -53745,6 +55747,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 132.08 365.76 0)
@@ -53812,6 +55815,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 320.04 55.88 0)
@@ -53879,6 +55883,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 243.84 129.54 0)
@@ -53944,6 +55949,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 157.48 381 0)
@@ -54011,6 +56017,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 152.4 414.02 90)
@@ -54122,6 +56129,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 165.1 416.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "514bd656-87c1-47cc-a337-2573276f9f6e")
 		)
@@ -54137,6 +56153,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 350.52 175.26 270)
@@ -54190,6 +56207,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 350.52 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "580de605-effd-4d93-9a2f-f0a0091ed292")
 		)
@@ -54208,6 +56234,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 101.6 284.48 90)
@@ -54262,6 +56289,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 96.52 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "a1a0b35c-8c72-47f6-a8c0-06ac2a38f3bd")
 		)
@@ -54277,6 +56313,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 411.48 224.79 0)
@@ -54344,6 +56381,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Regulator:Polyfuse_3A_15V")
 		(at 57.15 41.91 90)
@@ -54433,8 +56471,8 @@
 				(hide yes)
 			)
 		)
-		(property "JLCPCB ID" "C207070 "
-			(at 77.47 41.91 0)
+		(property "Part Number 2" "1812L150/16"
+			(at 74.93 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -54442,8 +56480,8 @@
 				(hide yes)
 			)
 		)
-		(property "Part Number 2" "1812L150/16"
-			(at 74.93 40.64 0)
+		(property "LCSC Part #" "C369169"
+			(at 73.66 48.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -54466,6 +56504,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 325.12 175.26 270)
@@ -54519,6 +56558,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 325.12 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "dd86df4b-d18e-42de-a27a-970fc027ad5d")
 		)
@@ -54537,6 +56585,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 157.48 327.66 0)
@@ -54604,6 +56653,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 78.74 350.52 0)
@@ -54671,6 +56721,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Interface_Expansion:AW9523B")
 		(at 594.36 102.87 0)
@@ -54719,6 +56770,15 @@
 		)
 		(property "Description" "16 multi-function led driver and gpio controller with i2c interface"
 			(at 594.36 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C148077"
+			(at 628.65 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -54810,6 +56870,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 582.93 140.97 0)
@@ -54877,12 +56938,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 179.07 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "f0c8d56b-b4ac-4730-8509-72813108bfe1")
@@ -54953,6 +57015,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 100.33 90)
@@ -55064,6 +57127,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3c1ea2de-ff61-41c9-be9a-3ac44d3be6f9")
 		)
@@ -55079,6 +57151,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 82.55 259.08 0)
@@ -55192,6 +57265,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 80.01 271.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "dfdb114f-95f0-4191-9ba9-5293595dcc65")
 		)
@@ -55207,6 +57289,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 46.99 52.07 0)
@@ -55273,6 +57356,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:100nF_0603_16V")
 		(at 234.95 78.74 90)
@@ -55366,8 +57450,8 @@
 				)
 			)
 		)
-		(property "JLCPCB ID" "C14663"
-			(at 247.65 77.47 0)
+		(property "LCSC Part #" "C24497"
+			(at 240.03 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -55390,6 +57474,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 524.51 146.05 90)
@@ -55501,6 +57586,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 537.21 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7b8f0583-f38f-453e-a7e5-03b67474f47d")
 		)
@@ -55516,6 +57610,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 436.88 101.6 270)
@@ -55569,6 +57664,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C5272874"
+			(at 436.88 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5a56f68a-d644-4801-8baf-b4d8da7a756d")
 		)
@@ -55587,6 +57691,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "74xx:74HC165")
 		(at 129.54 508 0)
@@ -55634,6 +57739,15 @@
 			)
 		)
 		(property "Description" "Shift Register, 8-bit, Parallel Load"
+			(at 129.54 508 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C5613"
 			(at 129.54 508 0)
 			(effects
 				(font
@@ -55699,6 +57813,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 152.4 431.8 90)
@@ -55810,6 +57925,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 165.1 434.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "9415363a-2701-449a-afca-1fcfa843d83a")
 		)
@@ -55825,6 +57949,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 133.35 262.89 0)
@@ -55891,12 +58016,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 123.19 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "f6262edf-5c65-457f-ba08-b01bc5b98fd4")
@@ -55967,6 +58093,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Interface_Expansion:AW9523B")
 		(at 500.38 102.87 0)
@@ -56015,6 +58142,15 @@
 		)
 		(property "Description" "16 multi-function led driver and gpio controller with i2c interface"
 			(at 500.38 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C148077"
+			(at 534.67 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -56106,6 +58242,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 133.35 248.92 90)
@@ -56160,6 +58297,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2837523"
+			(at 128.27 248.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "4334af54-9e61-4e76-affb-39800c0936bf")
 		)
@@ -56175,6 +58321,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 618.49 92.71 90)
@@ -56286,6 +58433,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C23182"
+			(at 631.19 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "cb64ee9c-de50-4782-89b9-dce4b2293f2b")
 		)
@@ -56301,12 +58457,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "fa15e656-528b-48fd-aa54-47ce54286ee5")
@@ -56377,6 +58534,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 97.79 191.77 0)
@@ -56443,6 +58601,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Resistor:10k_0402")
 		(at 50.8 223.52 0)
@@ -56556,6 +58715,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25804"
+			(at 48.26 236.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "1423727b-9ede-4ff8-ad5f-ab44a2286f8d")
 		)
@@ -56571,6 +58739,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Connector_Audio:AudioJack2_SwitchT")
 		(at 71.12 351.79 0)
@@ -56624,6 +58793,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C381126"
+			(at 71.12 351.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "S"
 			(uuid "d3349e96-9cb8-41f8-b88f-fdf96c91c7cc")
 		)
@@ -56642,6 +58820,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "PCM_4ms_Capacitor:C_Generic")
 		(at 355.6 106.68 90)
@@ -56706,6 +58885,15 @@
 				(justify left)
 			)
 		)
+		(property "LCSC Part #" "C1846"
+			(at 360.68 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2c781bcb-9d8d-446c-b95f-6faa267fa0ca")
 		)
@@ -56721,12 +58909,13 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:LED")
 		(at 516.89 110.49 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "fd235fbd-3381-4a4e-9424-b8c801af92f9")
@@ -56797,6 +58986,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "74xx:74HC165")
 		(at 180.34 508 0)
@@ -56844,6 +59034,15 @@
 			)
 		)
 		(property "Description" "Shift Register, 8-bit, Parallel Load"
+			(at 180.34 508 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C5613"
 			(at 180.34 508 0)
 			(effects
 				(font
@@ -56909,6 +59108,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 180.34 533.4 0)
@@ -57068,6 +59268,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C15127"
+			(at 703.58 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6b52cdf6-92fb-494d-9d33-cbb2edc7f48a")
 		)
@@ -57188,6 +59397,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C25819"
+			(at 703.58 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5449eba6-8fc7-491b-b40a-77071633e437")
 		)
@@ -57203,6 +59421,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 703.58 71.12 0)
@@ -57270,6 +59489,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:D_Zener")
 		(at 712.47 60.96 180)
@@ -57343,6 +59563,15 @@
 			)
 		)
 		(property "LCSC" ""
+			(at 712.47 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C2103"
 			(at 712.47 60.96 0)
 			(effects
 				(font
@@ -57493,6 +59722,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C353373"
+			(at 723.90 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b6943ab7-d653-4790-aad0-afa672d5b55e")
 		)
@@ -57508,6 +59746,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 723.90 59.69 0)
@@ -57575,6 +59814,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:C")
 		(at 734.06 55.88 0)
@@ -57656,6 +59896,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C13585"
+			(at 734.06 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "cc624030-4e3c-4c27-9db0-ebf5c335b267")
 		)
@@ -57671,6 +59920,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 734.06 59.69 0)
@@ -57738,6 +59988,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:C")
 		(at 745.49 55.88 0)
@@ -57819,6 +60070,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C14663"
+			(at 745.49 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2ca1fadc-4af5-4b70-b177-bd568592a61f")
 		)
@@ -57834,6 +60094,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 745.49 59.69 0)
@@ -57901,6 +60162,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Regulator_Switching:AP63205WU")
 		(at 768.35 53.34 0)
@@ -57982,6 +60244,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2071056"
+			(at 768.35 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "9c104c0b-4666-4533-8df0-d64c66ba964a")
 		)
@@ -58009,6 +60280,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 768.35 60.96 0)
@@ -58443,6 +60715,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C48427"
+			(at 791.21 50.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4f2b9ed2-7b1f-45a0-9b6f-d3a7e52abbe9")
 		)
@@ -58458,6 +60739,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:C")
 		(at 782.32 40.64 0)
@@ -58531,6 +60813,15 @@
 			)
 		)
 		(property "LCSC" ""
+			(at 782.32 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C14663"
 			(at 782.32 40.64 0)
 			(effects
 				(font
@@ -58703,6 +60994,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C12891"
+			(at 800.10 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "715643b3-4685-42cc-a358-32f3735e848e")
 		)
@@ -58718,6 +61018,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 800.10 59.69 0)
@@ -58785,6 +61086,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:C")
 		(at 808.99 55.88 0)
@@ -58866,6 +61168,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C12891"
+			(at 808.99 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "246a36d2-7928-4074-8b4b-e9e41b8b3181")
 		)
@@ -58881,6 +61192,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 808.99 59.69 0)
@@ -58948,6 +61260,7 @@
 			)
 		)
 	)
+
 	(symbol
 		(lib_id "Device:FerriteBead")
 		(at 815.34 50.80 90)
@@ -59021,6 +61334,15 @@
 			)
 		)
 		(property "LCSC" ""
+			(at 815.34 50.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1017"
 			(at 815.34 50.80 0)
 			(effects
 				(font
