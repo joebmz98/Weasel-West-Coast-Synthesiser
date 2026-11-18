@@ -1,475 +1,67 @@
 ** Drc report for WEASEL_KiCad.kicad_pcb **
-** Created on 2026-11-18T13:31:59+0000 **
+** Created on 2026-11-18T17:50:10+0000 **
 
-** Found 792 DRC violations **
+** Found 383 DRC violations **
 [items_not_allowed]: Items not allowed (keepout area)
-    Rule: keepout area; error (excluded)
+    Rule: keepout area; error
     @(144.1000 mm, 185.3000 mm): Track [Net-(D26-A)] on F.Cu, length 18.0000 mm
-    Exclusion zone is just for footprint design
 [items_not_allowed]: Items not allowed (keepout area)
-    Rule: keepout area; error (excluded)
+    Rule: keepout area; error
     @(154.2500 mm, 193.5000 mm): Track [Net-(D27-A)] on F.Cu, length 36.0527 mm
-    Exclusion zone is just for footprint design
 [items_not_allowed]: Items not allowed (keepout area)
-    Rule: keepout area; error (excluded)
+    Rule: keepout area; error
     @(124.7500 mm, 187.5000 mm): Track [Net-(D27-A)] on F.Cu, length 23.5000 mm
-    Exclusion zone is just for footprint design
 [items_not_allowed]: Items not allowed (keepout area)
-    Rule: keepout area; error (excluded)
+    Rule: keepout area; error
     @(154.7500 mm, 192.7500 mm): Track [Net-(D28-A)] on F.Cu, length 48.5000 mm
-    Exclusion zone is just for footprint design
 [items_not_allowed]: Items not allowed (keepout area)
-    Rule: keepout area; error (excluded)
+    Rule: keepout area; error
     @(125.5000 mm, 186.7500 mm): Track [Net-(D28-A)] on F.Cu, length 23.2500 mm
-    Exclusion zone is just for footprint design
 [items_not_allowed]: Items not allowed (keepout area)
-    Rule: keepout area; error (excluded)
+    Rule: keepout area; error
     @(139.5000 mm, 200.5000 mm): Track [Net-(D11-K)] on F.Cu, length 11.5000 mm
-    Exclusion zone is just for footprint design
 [items_not_allowed]: Items not allowed (keepout area)
-    Rule: keepout area; error (excluded)
+    Rule: keepout area; error
     @(215.0000 mm, 201.7500 mm): Track [Net-(D11-K)] on F.Cu, length 42.5000 mm
-    Exclusion zone is just for footprint design
-[shorting_items]: Items shorting two nets (nets Net-(D1-A) and )
-    Local override; error (excluded)
-    @(108.5000 mm, 24.7000 mm): Track [Net-(D1-A)] on F.Cu, length 1.6971 mm
-    @(107.3250 mm, 23.6000 mm): PTH pad TN [<no net>] of J1
-[shorting_items]: Items shorting two nets (nets  and Net-(D1-A))
-    Local override; error (excluded)
-    @(107.3250 mm, 23.6000 mm): PTH pad TN [<no net>] of J1
-    @(107.3000 mm, 23.5000 mm): Track [Net-(D1-A)] on F.Cu, length 2.3750 mm
-[shorting_items]: Items shorting two nets (nets  and Net-(D44-K))
-    Local override; error
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(283.6000 mm, 19.9000 mm): Track [Net-(D44-K)] on B.Cu, length 60.7000 mm
-[shorting_items]: Items shorting two nets (nets  and Net-(D45-K))
-    Local override; error
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(223.1000 mm, 19.2000 mm): Track [Net-(D45-K)] on B.Cu, length 61.7000 mm
-[shorting_items]: Items shorting two nets (nets Net-(J1-PadR) and )
-    Local override; error (excluded)
-    @(112.6000 mm, 23.6000 mm): Track [Net-(J1-PadR)] on F.Cu, length 0.1414 mm
-    @(112.3250 mm, 23.6000 mm): PTH pad RN [<no net>] of J1
-[shorting_items]: Items shorting two nets (nets  and Net-(J1-PadR))
-    Local override; error (excluded)
-    @(112.3250 mm, 23.6000 mm): PTH pad RN [<no net>] of J1
-    @(114.8250 mm, 23.6000 mm): Track [Net-(J1-PadR)] on F.Cu, length 2.2250 mm
-[shorting_items]: Items shorting two nets (nets Net-(D12-K) and )
-    Local override; error
-    @(100.8500 mm, 209.6000 mm): Track [Net-(D12-K)] on F.Cu, length 40.6000 mm
-    @(119.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[shorting_items]: Items shorting two nets (nets  and Net-(D39-K))
-    Local override; error
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(276.9000 mm, 19.7000 mm): Track [Net-(D39-K)] on F.Cu, length 51.3000 mm
-[shorting_items]: Items shorting two nets (nets  and Net-(D40-K))
-    Local override; error
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(246.4000 mm, 14.1000 mm): Track [Net-(D40-K)] on F.Cu, length 3.6000 mm
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(244.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(119.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(119.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(344.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(344.5500 mm, 627.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(19.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(19.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(19.5000 mm, 237.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(19.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(19.5500 mm, 627.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(344.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(344.5000 mm, 427.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(244.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5500 mm, 437.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(119.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(119.5000 mm, 237.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(19.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(119.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(119.5000 mm, 17.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(244.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5000 mm, 237.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(19.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(19.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(119.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(19.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(119.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(119.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(344.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(344.5000 mm, 237.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(244.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(119.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(344.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(344.5500 mm, 437.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(344.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(244.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(244.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(344.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(344.5000 mm, 207.0000 mm): NPTH pad of REF**
-[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2500 mm; actual 0.0000 mm)
-    Rule: board setup constraints hole; error
-    @(244.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5000 mm, 207.0000 mm): NPTH pad of REF**
 [courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error (excluded)
+    Rule: board setup constraints courtyard; error
     @(64.5000 mm, 43.5000 mm): Footprint R26
     @(61.2100 mm, 15.5000 mm): Footprint A1
-    Intentional
 [courtyards_overlap]: Courtyards overlap
     Rule: board setup constraints courtyard; error
-    @(244.5000 mm, 17.0000 mm): Footprint REF**
-    @(244.5000 mm, 17.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(119.5500 mm, 627.0000 mm): Footprint REF**
-    @(119.5500 mm, 627.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(344.5500 mm, 627.0000 mm): Footprint REF**
-    @(344.5500 mm, 627.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(19.5000 mm, 17.0000 mm): Footprint REF**
-    @(19.5000 mm, 17.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(19.5000 mm, 237.0000 mm): Footprint REF**
-    @(19.5000 mm, 237.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(19.5500 mm, 627.0000 mm): Footprint REF**
-    @(19.5500 mm, 627.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(344.5000 mm, 427.0000 mm): Footprint REF**
-    @(344.5000 mm, 427.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(244.5500 mm, 437.0000 mm): Footprint REF**
-    @(244.5500 mm, 437.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(119.5000 mm, 237.0000 mm): Footprint REF**
-    @(119.5000 mm, 237.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(19.5000 mm, 427.0000 mm): Footprint REF**
-    @(19.5000 mm, 427.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(119.5000 mm, 17.0000 mm): Footprint REF**
-    @(119.5000 mm, 17.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(244.5000 mm, 237.0000 mm): Footprint REF**
-    @(244.5000 mm, 237.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error (excluded)
     @(64.6000 mm, 46.0000 mm): Footprint R27
     @(61.2100 mm, 15.5000 mm): Footprint A1
-    inentional
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(19.5500 mm, 437.0000 mm): Footprint REF**
-    @(19.5500 mm, 437.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(119.5000 mm, 207.0000 mm): Footprint REF**
-    @(119.5000 mm, 207.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(19.5000 mm, 207.0000 mm): Footprint REF**
-    @(19.5000 mm, 207.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(119.5500 mm, 437.0000 mm): Footprint REF**
-    @(119.5500 mm, 437.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(344.5000 mm, 237.0000 mm): Footprint REF**
-    @(344.5000 mm, 237.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(244.5000 mm, 427.0000 mm): Footprint REF**
-    @(244.5000 mm, 427.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(119.5000 mm, 427.0000 mm): Footprint REF**
-    @(119.5000 mm, 427.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(344.5500 mm, 437.0000 mm): Footprint REF**
-    @(344.5500 mm, 437.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(344.5000 mm, 17.0000 mm): Footprint REF**
-    @(344.5000 mm, 17.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(244.5500 mm, 627.0000 mm): Footprint REF**
-    @(244.5500 mm, 627.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(344.5000 mm, 207.0000 mm): Footprint REF**
-    @(344.5000 mm, 207.0000 mm): Footprint REF**
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(244.5000 mm, 207.0000 mm): Footprint REF**
-    @(244.5000 mm, 207.0000 mm): Footprint REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5000 mm, 17.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(119.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(119.5500 mm, 627.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(344.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(344.5500 mm, 627.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(19.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(19.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(19.5000 mm, 237.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(19.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(19.5500 mm, 627.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(344.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(244.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5500 mm, 437.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(119.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(119.5000 mm, 237.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(19.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(119.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(119.5000 mm, 17.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(244.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5000 mm, 237.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(19.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(19.5500 mm, 437.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(119.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(19.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(119.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(119.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(344.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(344.5000 mm, 237.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(244.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5000 mm, 427.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(119.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(119.5000 mm, 427.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(344.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(344.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(344.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(244.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5500 mm, 627.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(344.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(344.5000 mm, 207.0000 mm): NPTH pad of REF**
-[holes_co_located]: Drilled holes co-located
-    Local override; warning
-    @(244.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-    @(244.5000 mm, 207.0000 mm): NPTH pad of REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(100.0000 mm, 50.7500 mm): Footprint C45
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(222.0000 mm, 420.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(244.2011 mm, 48.1882 mm): Footprint R49
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(64.5000 mm, 43.5000 mm): Footprint R26
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(243.8125 mm, 158.0000 mm): Footprint C22
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(174.2500 mm, 375.0200 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'PinSocket_2x05_P2.54mm_Horizontal' does not match copy in library 'Connector_PinSocket_2.54mm'.
     Local override; warning
     @(314.3600 mm, 199.0000 mm): Footprint J24
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(204.7500 mm, 118.0000 mm): Footprint C20
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(244.2011 mm, 27.7882 mm): Footprint R45
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(264.2500 mm, 310.0200 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'D_SOD-123' does not match copy in library 'Diode_SMD'.
     Local override; warning
     @(110.1500 mm, 27.7500 mm): Footprint D1
 [lib_footprint_mismatch]: Footprint 'SOIC-24W_7.5x15.4mm_P1.27mm' does not match copy in library 'Package_SO'.
     Local override; warning
     @(92.2500 mm, 127.5000 mm): Footprint U5
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(138.7500 mm, 265.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(206.8376 mm, 45.9459 mm): Footprint R42
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(326.5000 mm, 35.3000 mm): Footprint D42
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(170.1500 mm, 29.7000 mm): Footprint R31
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(277.2500 mm, 106.5000 mm): Footprint R21
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(233.7000 mm, 37.0000 mm): Footprint D31
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(287.0000 mm, 106.3500 mm): Footprint R76
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(298.0000 mm, 106.3500 mm): Footprint R25
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(296.7500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(204.2453 mm, 42.8884 mm): Footprint R41
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(41.1350 mm, 80.4750 mm): Footprint C39
-[lib_footprint_issues]: The current configuration does not include the footprint library 'AXS_LOGO_KICAD'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(71.4506 mm, 249.4245 mm): Footprint G***
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(282.9011 mm, 143.4882 mm): Footprint R73
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(303.7500 mm, 362.9500 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(146.5000 mm, 46.8500 mm): Footprint R9
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(273.3282 mm, 156.0989 mm): Footprint R69
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(134.0000 mm, 46.7500 mm): Footprint R8
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(180.0011 mm, 53.5118 mm): Footprint R36
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(173.3000 mm, 31.4000 mm): Footprint D8
-[lib_footprint_issues]: The current configuration does not include the footprint library 'benjiaomodular'.
-    Local override; warning
-    @(321.2473 mm, 115.4658 mm): Footprint RV26
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(281.5000 mm, 35.3000 mm): Footprint D38
+    @(303.7473 mm, 362.9658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'D_SOD-123' does not match copy in library 'Diode_SMD'.
     Local override; warning
     @(80.7500 mm, 48.5000 mm): Footprint D13
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
     @(303.7500 mm, 328.0000 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'AXS_LOGO_KICAD'.
+[lib_footprint_mismatch]: Footprint 'AXS_LOGO_FMASK_10X10' does not match copy in library 'AXS_LOGO_KICAD'.
     Local override; warning
     @(71.4506 mm, 249.4245 mm): Footprint G***
 [lib_footprint_mismatch]: Footprint 'QFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm' does not match copy in library 'Package_DFN_QFN'.
@@ -481,37 +73,13 @@
 [lib_footprint_mismatch]: Footprint 'CP_Radial_D6.3mm_P2.50mm' does not match copy in library 'Capacitor_THT'.
     Local override; warning
     @(88.5000 mm, 18.0000 mm): Footprint C33
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(99.5000 mm, 406.2700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
+    @(271.2473 mm, 362.9658 mm): Footprint REF**
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(271.2500 mm, 362.9500 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'WEASEL'.
-    Local override; warning
-    @(72.0000 mm, 356.0000 mm): Footprint G***
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(244.2500 mm, 375.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(169.3859 mm, 51.5045 mm): Footprint R35
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(192.5011 mm, 53.5118 mm): Footprint R37
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(163.7500 mm, 265.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(188.7500 mm, 28.3800 mm): Footprint SW2
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(323.4011 mm, 37.3882 mm): Footprint R56
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(271.2500 mm, 327.9500 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
+    @(271.2473 mm, 327.9658 mm): Footprint REF**
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
     @(291.5000 mm, 257.0000 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
@@ -520,84 +88,21 @@
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(80.5000 mm, 17.0000 mm): Footprint C32
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(64.6000 mm, 46.0000 mm): Footprint R27
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(271.2400 mm, 153.0000 mm): Footprint D55
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(182.0000 mm, 412.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(286.0000 mm, 141.4000 mm): Footprint D59
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(278.4011 mm, 37.3882 mm): Footprint R52
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(279.4859 mm, 122.1045 mm): Footprint R65
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(173.7641 mm, 32.9455 mm): Footprint R32
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(173.3000 mm, 28.0000 mm): Footprint D6
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(272.9400 mm, 153.0000 mm): Footprint D56
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(188.7500 mm, 248.4000 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(183.1000 mm, 53.9000 mm): Footprint D16
+    @(188.7500 mm, 248.3800 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'TSOT-23-6' does not match copy in library 'Package_TO_SOT_SMD'.
     Local override; warning
     @(95.0000 mm, 52.0000 mm): Footprint U12
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(289.3000 mm, 110.6000 mm): Footprint D64
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(282.9011 mm, 145.1882 mm): Footprint R74
-[lib_footprint_issues]: The current configuration does not include the footprint library 'AXS_LOGO_KICAD'.
+[lib_footprint_mismatch]: Footprint 'AXS_LOGO_FMASK_10X10' does not match copy in library 'AXS_LOGO_KICAD'.
     Local override; warning
     @(71.4500 mm, 249.4000 mm): Footprint G***
 [lib_footprint_mismatch]: Footprint 'C_0603_1608Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(92.0000 mm, 52.2500 mm): Footprint C43
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(203.6000 mm, 46.8000 mm): Footprint D22
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(186.7500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(231.7500 mm, 375.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(147.6359 mm, 108.3455 mm): Footprint R63
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(113.0000 mm, 45.0000 mm): Footprint R2
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(141.2500 mm, 327.9500 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(151.2500 mm, 265.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(206.7500 mm, 375.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(142.0000 mm, 406.2700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(303.7473 mm, 108.0000 mm): Footprint SW15
+    @(141.2473 mm, 327.9658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(161.2500 mm, 158.0000 mm): Footprint C16
@@ -610,102 +115,18 @@
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(296.1875 mm, 93.0000 mm): Footprint C25
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(233.7500 mm, 28.3800 mm): Footprint SW3
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(323.8000 mm, 358.0000 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'benjiaomodular'.
-    Local override; warning
-    @(321.2473 mm, 145.4658 mm): Footprint RV27
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(148.0000 mm, 110.2000 mm): Footprint D51
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(200.4850 mm, 31.1382 mm): Footprint R40
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(289.3000 mm, 107.2000 mm): Footprint D63
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(135.2500 mm, 106.6000 mm): Footprint R18
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(125.5000 mm, 106.0000 mm): Footprint D46
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(278.4011 mm, 39.0882 mm): Footprint R53
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(323.8000 mm, 328.0000 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(158.0500 mm, 53.9000 mm): Footprint D14
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(114.5000 mm, 413.2700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(249.5000 mm, 412.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(161.7500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(251.7500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(145.6000 mm, 53.9000 mm): Footprint D9
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(282.0000 mm, 107.1000 mm): Footprint D57
 [lib_footprint_mismatch]: Footprint 'QFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm' does not match copy in library 'Package_DFN_QFN'.
     Local override; warning
     @(218.1375 mm, 39.2500 mm): Footprint U2
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(264.5000 mm, 420.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(324.2000 mm, 34.4500 mm): Footprint R55
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(153.2500 mm, 92.7500 mm): Footprint C4
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(203.6000 mm, 45.1100 mm): Footprint D21
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(83.5000 mm, 92.7500 mm): Footprint R7
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(158.0000 mm, 27.0000 mm): Footprint R5
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(271.2473 mm, 107.9658 mm): Footprint SW9
-[lib_footprint_issues]: The current configuration does not include the footprint library 'benjiaomodular'.
-    Local override; warning
-    @(243.7473 mm, 115.4658 mm): Footprint RV21
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(149.2500 mm, 375.0200 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(242.3125 mm, 118.0000 mm): Footprint C23
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(323.7500 mm, 390.0000 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(158.7500 mm, 327.9500 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(161.7500 mm, 375.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(200.4850 mm, 29.4382 mm): Footprint R39
+    @(158.7473 mm, 327.9658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'SOIC-24W_7.5x15.4mm_P1.27mm' does not match copy in library 'Package_SO'.
     Local override; warning
     @(91.5000 mm, 97.2500 mm): Footprint U4
@@ -721,135 +142,42 @@
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(173.5000 mm, 93.0000 mm): Footprint C6
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(125.1141 mm, 113.4955 mm): Footprint R62
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(228.0000 mm, 27.1000 mm): Footprint R13
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(247.3000 mm, 47.8000 mm): Footprint D36
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(266.2500 mm, 28.3800 mm): Footprint SW5
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(282.0000 mm, 110.5000 mm): Footprint D58
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(219.2500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(296.5000 mm, 132.2000 mm): Footprint D62
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(203.6000 mm, 48.5100 mm): Footprint D30
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(237.0000 mm, 412.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(141.2473 mm, 107.9658 mm): Footprint SW8
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(209.5000 mm, 421.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(277.2500 mm, 124.1000 mm): Footprint R19
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(172.3125 mm, 118.0000 mm): Footprint C15
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(279.2000 mm, 34.4500 mm): Footprint R51
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(95.0000 mm, 55.0000 mm): Footprint C42
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(195.6000 mm, 53.9000 mm): Footprint D17
 [lib_footprint_mismatch]: Footprint 'D_SOD-123' does not match copy in library 'Diode_SMD'.
     Local override; warning
     @(80.7500 mm, 53.5000 mm): Footprint D12
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(309.2500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(125.5000 mm, 109.4000 mm): Footprint D48
 [lib_footprint_mismatch]: Footprint 'Fuse_1812_4532Metric' does not match copy in library 'Fuse'.
     Local override; warning
     @(99.7500 mm, 31.5000 mm): Footprint F1
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(194.5000 mm, 412.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(176.2000 mm, 328.0000 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(202.2500 mm, 90.2500 mm): Footprint C8
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(174.2500 mm, 310.0200 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(218.7500 mm, 93.0000 mm): Footprint C9
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(176.5000 mm, 266.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(114.8250 mm, 28.2500 mm): Footprint R1
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(279.7500 mm, 89.2500 mm): Footprint C24
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(316.5000 mm, 37.0000 mm): Footprint SW13
-[lib_footprint_issues]: The current configuration does not include the footprint library 'benjiaomodular'.
-    Local override; warning
-    @(206.2473 mm, 115.4658 mm): Footprint RV18
 [lib_footprint_mismatch]: Footprint 'C_0603_1608Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(98.0000 mm, 51.5000 mm): Footprint C44
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(125.5000 mm, 111.1000 mm): Footprint D49
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(206.2500 mm, 158.0000 mm): Footprint C18
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(85.9100 mm, 136.5000 mm): Footprint C2
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(55.5000 mm, 121.0000 mm): Footprint R85
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(203.5839 mm, 30.7500 mm): Footprint D20
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(273.0000 mm, 89.6875 mm): Footprint C12
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(148.3000 mm, 30.8000 mm): Footprint D5
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(305.9000 mm, 43.6500 mm): Footprint R58
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(37.2500 mm, 132.0000 mm): Footprint R80
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(85.0000 mm, 106.2500 mm): Footprint C1
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PJ307-TRS'.
-    Local override; warning
-    @(33.0000 mm, 19.0500 mm): Footprint J2
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(173.3000 mm, 29.7000 mm): Footprint D7
 [lib_footprint_mismatch]: Footprint 'R_0603_1608Metric' does not match copy in library 'Resistor_SMD'.
     Local override; warning
     @(88.2500 mm, 57.5000 mm): Footprint R86
@@ -859,21 +187,9 @@
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(321.1875 mm, 93.0000 mm): Footprint C27
-[lib_footprint_issues]: The current configuration does not include the footprint library 'WEASEL'.
+[lib_footprint_mismatch]: Footprint 'WEASEL_FMASK_fullsize' does not match copy in library 'WEASEL'.
     Local override; warning
-    @(181.5811 mm, 531.9189 mm): Footprint G***
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(279.7511 mm, 105.8618 mm): Footprint R70
-[lib_footprint_issues]: The current configuration does not include the footprint library 'benjiaomodular'.
-    Local override; warning
-    @(173.7473 mm, 115.4658 mm): Footprint RV15
-[lib_footprint_issues]: The current configuration does not include the footprint library 'WEASEL'.
-    Local override; warning
-    @(181.5811 mm, 531.9189 mm): Footprint G***
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(184.0000 mm, 46.8500 mm): Footprint R12
+    @(181.5811 mm, 533.9189 mm): Footprint G***
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(41.1350 mm, 110.2500 mm): Footprint C37
@@ -883,270 +199,72 @@
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(41.1350 mm, 95.2500 mm): Footprint C38
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(60.7500 mm, 119.0000 mm): Footprint R82
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(123.2000 mm, 105.1500 mm): Footprint R59
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(123.2000 mm, 108.5500 mm): Footprint R60
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(204.3500 mm, 52.0447 mm): Footprint R43
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(326.5000 mm, 37.0000 mm): Footprint D43
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(163.7500 mm, 248.2500 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(129.5000 mm, 420.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(219.2500 mm, 375.0200 mm): Footprint REF**
+    @(163.7500 mm, 248.3800 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'SOIC-16_3.9x9.9mm_P1.27mm' does not match copy in library 'Package_SO'.
     Local override; warning
     @(47.6350 mm, 114.2250 mm): Footprint U7
 [lib_footprint_mismatch]: Footprint 'SOIC-16_3.9x9.9mm_P1.27mm' does not match copy in library 'Package_SO'.
     Local override; warning
     @(47.6350 mm, 84.2250 mm): Footprint U9
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(145.2011 mm, 27.7882 mm): Footprint R3
-[lib_footprint_issues]: The current configuration does not include the footprint library 'DIYSynthMNL'.
-    Local override; warning
-    @(176.2500 mm, 45.8800 mm): Footprint SW19
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(251.2500 mm, 93.0000 mm): Footprint C11
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(277.2500 mm, 141.5000 mm): Footprint R20
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(145.2011 mm, 29.4882 mm): Footprint R28
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(298.0125 mm, 125.6750 mm): Footprint C41
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(296.7000 mm, 43.6500 mm): Footprint R54
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(231.4000 mm, 36.1500 mm): Footprint R44
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(323.4011 mm, 39.0882 mm): Footprint R57
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(136.7500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(299.0000 mm, 44.5000 mm): Footprint D41
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(266.3000 mm, 37.0000 mm): Footprint D37
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(286.0000 mm, 143.1000 mm): Footprint D60
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(315.7000 mm, 257.0000 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(99.5000 mm, 420.7700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(247.3000 mm, 30.8000 mm): Footprint D34
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(245.0000 mm, 43.7500 mm): Footprint R48
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(266.2500 mm, 45.8800 mm): Footprint SW6
+    @(316.5000 mm, 257.0000 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(308.6875 mm, 93.0000 mm): Footprint C26
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(206.7500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(321.7500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(281.5000 mm, 38.7000 mm): Footprint D40
 [lib_footprint_mismatch]: Footprint 'D_SOD-123' does not match copy in library 'Diode_SMD'.
     Local override; warning
     @(80.7500 mm, 51.0000 mm): Footprint D11
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(308.2000 mm, 44.5000 mm): Footprint D45
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(112.9000 mm, 51.9375 mm): Footprint C34
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(59.0000 mm, 119.6500 mm): Footprint R83
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(326.5000 mm, 38.7000 mm): Footprint D44
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(163.7500 mm, 28.3800 mm): Footprint SW1
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(136.7500 mm, 375.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(280.7000 mm, 124.5000 mm): Footprint D52
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PJ307-TRS'.
-    Local override; warning
-    @(109.8250 mm, 18.6000 mm): Footprint J1
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(263.2011 mm, 37.3882 mm): Footprint R50
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(200.4850 mm, 27.7382 mm): Footprint R38
 [lib_footprint_mismatch]: Footprint 'L_0805_2012Metric' does not match copy in library 'Inductor_SMD'.
     Local override; warning
     @(100.2500 mm, 61.2500 mm): Footprint FB1
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(233.7500 mm, 45.8800 mm): Footprint SW4
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(233.7500 mm, 248.4000 mm): Footprint REF**
+    @(233.7500 mm, 248.3800 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(218.7500 mm, 158.0000 mm): Footprint C19
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
     Local override; warning
-    @(203.5839 mm, 27.3500 mm): Footprint D18
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(295.2859 mm, 129.8045 mm): Footprint R75
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(271.2500 mm, 345.4500 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(244.2011 mm, 29.4882 mm): Footprint R46
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(37.2500 mm, 130.2500 mm): Footprint R79
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(247.3000 mm, 44.6000 mm): Footprint D35
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(123.0737 mm, 111.8763 mm): Footprint R61
+    @(271.2473 mm, 345.4658 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'QFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm' does not match copy in library 'Package_DFN_QFN'.
     Local override; warning
     @(114.5500 mm, 56.2625 mm): Footprint U1
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(303.7473 mm, 142.9658 mm): Footprint SW14
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(203.5839 mm, 29.0500 mm): Footprint D19
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(260.2500 mm, 27.1000 mm): Footprint R15
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(152.7500 mm, 106.5000 mm): Footprint R17
-[lib_footprint_issues]: The current configuration does not include the footprint library 'benjiaomodular'.
+[lib_footprint_mismatch]: Footprint 'Potentiometer_RV09' does not match copy in library 'benjiaomodular'.
     Local override; warning
     @(321.2500 mm, 177.4750 mm): Footprint RV28
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(271.2473 mm, 125.4658 mm): Footprint SW10
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(280.7000 mm, 127.8000 mm): Footprint D53
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(231.2500 mm, 93.0000 mm): Footprint C10
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(83.2500 mm, 17.0000 mm): Footprint C31
-[lib_footprint_issues]: The current configuration does not include the footprint library 'WEASEL'.
-    Local override; warning
-    @(181.4583 mm, 531.8307 mm): Footprint G***
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(100.0000 mm, 59.0000 mm): Footprint C46
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(244.2011 mm, 31.1882 mm): Footprint R47
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(57.2500 mm, 120.4000 mm): Footprint R84
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(271.2473 mm, 142.9658 mm): Footprint SW11
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Experimental_FP'.
-    Local override; warning
-    @(158.7473 mm, 107.9658 mm): Footprint SW7
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(41.1350 mm, 125.2750 mm): Footprint C36
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(154.9511 mm, 54.2882 mm): Footprint R34
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(222.0000 mm, 406.2700 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'DIYSynthMNL'.
-    Local override; warning
-    @(163.7500 mm, 45.8800 mm): Footprint SW18
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(269.5400 mm, 153.0000 mm): Footprint D54
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(271.6282 mm, 156.0989 mm): Footprint R68
 [lib_footprint_mismatch]: Footprint 'SOIC-16_3.9x9.9mm_P1.27mm' does not match copy in library 'Package_SO'.
     Local override; warning
     @(47.6350 mm, 99.2250 mm): Footprint U8
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(171.5000 mm, 46.6000 mm): Footprint R11
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(145.0000 mm, 156.1875 mm): Footprint C14
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(315.7500 mm, 115.3125 mm): Footprint C28
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(159.0000 mm, 46.6000 mm): Footprint R10
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(125.5000 mm, 107.7000 mm): Footprint D47
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(283.7000 mm, 140.5500 mm): Footprint R72
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_LED'.
-    Local override; warning
-    @(148.3000 mm, 29.1000 mm): Footprint D4
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(84.4100 mm, 123.0000 mm): Footprint R4
-[lib_footprint_issues]: The current configuration does not include the footprint library 'PCM_4ms_Resistor'.
-    Local override; warning
-    @(183.0000 mm, 27.0000 mm): Footprint R6
-[lib_footprint_issues]: The current configuration does not include the footprint library 'SimpleSynthPanel'.
-    Local override; warning
-    @(231.7500 mm, 310.0200 mm): Footprint REF**
-[lib_footprint_issues]: The current configuration does not include the footprint library 'DIYSynthMNL'.
-    Local override; warning
-    @(138.7500 mm, 45.8800 mm): Footprint SW16
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(186.2500 mm, 93.0000 mm): Footprint C7
@@ -1159,282 +277,16 @@
 [lib_footprint_mismatch]: Footprint 'C_1206_3216Metric_Pad1.33x1.80mm_HandSolder' does not match copy in library 'Capacitor_SMD'.
     Local override; warning
     @(160.5000 mm, 92.7500 mm): Footprint C5
+[lib_footprint_mismatch]: Footprint 'Panel Jack' does not match copy in library 'SimpleSynthPanel'.
+    Local override; warning
+    @(233.7500 mm, 265.8800 mm): Footprint REF**
 [lib_footprint_mismatch]: Footprint 'SOT-23' does not match copy in library 'Package_TO_SOT_SMD'.
     Local override; warning
     @(89.2500 mm, 54.0000 mm): Footprint Q1
-[invalid_outline]: Board has malformed outline (self-intersecting)
-    Local override; error (excluded)
-    @(345.5000 mm, 432.0000 mm): Segment on Edge.Cuts
-    @(18.5500 mm, 436.0000 mm): Arc on Edge.Cuts
-[invalid_outline]: Board has malformed outline (self-intersecting)
-    Local override; error (excluded)
-    @(345.5000 mm, 428.0000 mm): Arc on Edge.Cuts
-    @(18.5500 mm, 432.0000 mm): Segment on Edge.Cuts
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(301.5261 mm, 116.4100 mm): PCB text 'R25' on F.Silkscreen
 [text_thickness]: Text thickness out of range (TrueType font characters with insufficient stroke weight)
     Rule: board setup constraints silk text thickness; warning
     @(123.2500 mm, 240.2500 mm): PCB text 'SEQUENTIAL VOLTAGE SOURCE
 ' on F.Silkscreen
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(244.2411 mm, 46.4482 mm): Reference field of R49
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(67.2500 mm, 43.5000 mm): Reference field of R26
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(244.2411 mm, 26.0482 mm): Reference field of R45
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(206.7976 mm, 47.6859 mm): Reference field of R42
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(168.9982 mm, 28.4074 mm): Reference field of R31
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(277.2672 mm, 109.0783 mm): Reference field of R21
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(285.7381 mm, 105.1233 mm): Reference field of R76
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(296.2600 mm, 106.3100 mm): Reference field of R25
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(204.3240 mm, 41.5708 mm): Reference field of R41
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(280.2546 mm, 143.5655 mm): Reference field of R73
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(145.2291 mm, 46.8482 mm): Reference field of R9
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(274.6943 mm, 156.0906 mm): Reference field of R69
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(132.2600 mm, 46.7100 mm): Reference field of R8
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(180.0059 mm, 54.8783 mm): Reference field of R36
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(171.1259 mm, 51.5445 mm): Reference field of R35
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(192.5659 mm, 54.9140 mm): Reference field of R37
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(322.6025 mm, 36.1023 mm): Reference field of R56
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(67.2000 mm, 46.0000 mm): Reference field of R27
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(277.2105 mm, 36.1010 mm): Reference field of R52
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(281.2259 mm, 122.1445 mm): Reference field of R65
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(173.7241 mm, 34.6855 mm): Reference field of R32
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(282.9576 mm, 146.5991 mm): Reference field of R74
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(150.3075 mm, 108.3870 mm): Reference field of R63
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(113.0195 mm, 43.7097 mm): Reference field of R2
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6000 mm)
-    Rule: board setup constraints silk text height; warning
-    @(112.9466 mm, 46.3379 mm): Value field of R2 (10k_0402)
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(200.5055 mm, 32.5184 mm): Reference field of R40
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(133.5100 mm, 106.5600 mm): Reference field of R18
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(278.4154 mm, 40.4646 mm): Reference field of R53
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(322.9238 mm, 34.4340 mm): Reference field of R55
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(81.0000 mm, 92.7500 mm): Reference field of R7
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(156.2600 mm, 26.9600 mm): Reference field of R5
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(197.8267 mm, 29.4916 mm): Reference field of R39
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(126.4669 mm, 113.4649 mm): Reference field of R62
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(226.2600 mm, 27.0600 mm): Reference field of R13
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(278.6071 mm, 124.9005 mm): Reference field of R19
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(277.9048 mm, 34.3738 mm): Reference field of R51
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(116.1723 mm, 28.1850 mm): Reference field of R1
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6000 mm)
-    Rule: board setup constraints silk text height; warning
-    @(113.5000 mm, 29.0000 mm): Value field of R1 (220R)
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(55.5000 mm, 118.2500 mm): Reference field of R85
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(304.6210 mm, 43.6620 mm): Reference field of R58
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(34.6000 mm, 131.9000 mm): Reference field of R80
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(281.1465 mm, 105.0324 mm): Reference field of R70
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(182.6922 mm, 46.8134 mm): Reference field of R12
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(60.8500 mm, 116.3500 mm): Reference field of R82
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(121.9258 mm, 105.1443 mm): Reference field of R59
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(121.9104 mm, 108.5254 mm): Reference field of R60
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(202.6100 mm, 52.0047 mm): Reference field of R43
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(145.2411 mm, 26.0482 mm): Reference field of R3
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(278.7500 mm, 141.4000 mm): Reference field of R20
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(142.5299 mm, 29.5235 mm): Reference field of R28
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(295.4034 mm, 43.5919 mm): Reference field of R54
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(230.0984 mm, 36.0908 mm): Reference field of R44
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(323.4753 mm, 40.4873 mm): Reference field of R57
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(243.7006 mm, 43.7657 mm): Reference field of R48
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(59.1000 mm, 117.0000 mm): Reference field of R83
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(263.2411 mm, 35.6482 mm): Reference field of R50
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(200.5250 mm, 25.9982 mm): Reference field of R38
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(297.0259 mm, 129.8445 mm): Reference field of R75
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(241.5582 mm, 29.5216 mm): Reference field of R46
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(34.6000 mm, 130.1500 mm): Reference field of R79
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(121.7681 mm, 111.7980 mm): Reference field of R61
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(258.5100 mm, 27.0600 mm): Reference field of R15
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(152.9000 mm, 103.9000 mm): Reference field of R17
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(244.2777 mm, 32.5991 mm): Reference field of R47
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(57.2500 mm, 117.7500 mm): Reference field of R84
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(152.3325 mm, 54.3347 mm): Reference field of R34
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(270.3399 mm, 157.3270 mm): Reference field of R68
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(170.1823 mm, 46.5103 mm): Reference field of R11
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(157.7006 mm, 46.5701 mm): Reference field of R10
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(282.4375 mm, 139.3078 mm): Reference field of R72
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(181.2600 mm, 26.9600 mm): Reference field of R6
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(169.7227 mm, 26.7309 mm): Reference field of R30
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(278.9411 mm, 109.1482 mm): Reference field of R71
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(277.1556 mm, 129.0218 mm): Reference field of R66
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(139.8002 mm, 53.9540 mm): Reference field of R33
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(268.7664 mm, 156.6881 mm): Reference field of R67
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(309.0100 mm, 35.5600 mm): Reference field of R23
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(258.5100 mm, 44.5600 mm): Reference field of R16
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(296.0100 mm, 141.5600 mm): Reference field of R24
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(287.1052 mm, 112.3459 mm): Reference field of R77
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(299.0000 mm, 35.6000 mm): Reference field of R22
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(300.2449 mm, 118.0952 mm): Reference field of R78
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(34.6000 mm, 133.6500 mm): Reference field of R81
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(145.8741 mm, 112.5555 mm): Reference field of R64
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(145.2027 mm, 32.5531 mm): Reference field of R29
-[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6500 mm)
-    Rule: board setup constraints silk text height; warning
-    @(226.0100 mm, 44.4600 mm): Reference field of R14
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(21.5000 mm, 19.0000 mm): Arc on F.Silkscreen
@@ -1452,10 +304,10 @@
     @(18.5000 mm, 425.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 439.0000 mm): Arc on F.Silkscreen
+    @(21.5500 mm, 441.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(18.5500 mm, 625.0000 mm): Segment on F.Silkscreen
+    @(18.5500 mm, 627.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
@@ -1473,31 +325,31 @@
     @(21.5000 mm, 425.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 436.0000 mm): Segment on F.Silkscreen
+    @(21.5500 mm, 438.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 439.0000 mm): Segment on F.Silkscreen
+    @(21.5500 mm, 441.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 439.0000 mm): Segment on F.Silkscreen
+    @(21.5500 mm, 441.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 625.2500 mm): Segment on F.Silkscreen
+    @(21.5500 mm, 627.2500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5500 mm, 625.0000 mm): Arc on F.Silkscreen
+    @(21.5500 mm, 627.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(125.5000 mm, 326.0000 mm): Circle on F.Silkscreen
+    @(125.5000 mm, 321.1500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(125.5000 mm, 327.7000 mm): Circle on F.Silkscreen
+    @(125.5000 mm, 325.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(125.5000 mm, 329.4000 mm): Circle on F.Silkscreen
+    @(125.5000 mm, 330.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(125.5000 mm, 331.1000 mm): Circle on F.Silkscreen
+    @(125.5000 mm, 334.8000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(132.0000 mm, 244.5000 mm): Segment on F.Silkscreen
@@ -1557,31 +409,31 @@
     @(142.0000 mm, 250.7500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(145.6000 mm, 273.9000 mm): Circle on F.Silkscreen
+    @(145.4000 mm, 273.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.0000 mm, 326.8000 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 246.9000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.0000 mm, 330.2000 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 251.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.3000 mm, 247.4000 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 256.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.3000 mm, 249.1000 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 325.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(148.3000 mm, 250.8000 mm): Circle on F.Silkscreen
+    @(148.3000 mm, 330.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(152.2614 mm, 326.9658 mm): Curve on F.Silkscreen
+    @(153.5614 mm, 325.8658 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(156.7614 mm, 327.9658 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(158.0500 mm, 273.9000 mm): Circle on F.Silkscreen
+    @(157.8500 mm, 273.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(161.7473 mm, 248.2842 mm): Curve on F.Silkscreen
@@ -1593,25 +445,25 @@
     @(161.7473 mm, 248.2842 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(170.6000 mm, 273.9000 mm): Circle on F.Silkscreen
+    @(170.4000 mm, 273.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(172.4973 mm, 334.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(173.3000 mm, 248.0000 mm): Circle on F.Silkscreen
+    @(173.3000 mm, 246.9000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(173.3000 mm, 249.7000 mm): Circle on F.Silkscreen
+    @(173.3000 mm, 251.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(173.3000 mm, 251.4000 mm): Circle on F.Silkscreen
+    @(173.3000 mm, 256.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(179.9973 mm, 334.4658 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(183.1000 mm, 273.9000 mm): Circle on F.Silkscreen
+    @(182.9000 mm, 273.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(186.7500 mm, 248.2500 mm): Curve on F.Silkscreen
@@ -1623,55 +475,61 @@
     @(186.7500 mm, 248.2500 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(195.5500 mm, 273.9000 mm): Circle on F.Silkscreen
+    @(195.4000 mm, 273.5000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(203.5500 mm, 247.3500 mm): Circle on F.Silkscreen
+    @(201.5839 mm, 246.9000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(203.5500 mm, 249.0500 mm): Circle on F.Silkscreen
+    @(201.5839 mm, 251.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(203.5500 mm, 250.7500 mm): Circle on F.Silkscreen
+    @(201.5839 mm, 256.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(203.6000 mm, 265.1000 mm): Circle on F.Silkscreen
+    @(201.6000 mm, 265.8500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(203.6000 mm, 266.8000 mm): Circle on F.Silkscreen
+    @(201.6000 mm, 270.4000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(203.6000 mm, 268.5000 mm): Circle on F.Silkscreen
+    @(201.6000 mm, 274.9500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(204.9973 mm, 334.4316 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(208.2500 mm, 258.0000 mm): Segment on F.Silkscreen
+    @(208.2500 mm, 260.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(209.4375 mm, 258.0000 mm): Segment on F.Silkscreen
+    @(209.4375 mm, 260.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(211.3125 mm, 256.0000 mm): Segment on F.Silkscreen
+    @(211.3125 mm, 258.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(211.3125 mm, 256.0000 mm): Segment on F.Silkscreen
+    @(211.3125 mm, 258.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(212.4973 mm, 334.4316 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(214.5000 mm, 256.0000 mm): Segment on F.Silkscreen
+    @(214.0000 mm, 259.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(214.5000 mm, 256.0000 mm): Segment on F.Silkscreen
+    @(214.0000 mm, 259.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(217.0000 mm, 256.0000 mm): Segment on F.Silkscreen
+    @(214.5000 mm, 258.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(222.1875 mm, 258.0000 mm): Segment on F.Silkscreen
+    @(214.5000 mm, 258.9500 mm): Segment on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(217.0000 mm, 258.9500 mm): Segment on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(222.1875 mm, 260.9500 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(231.7500 mm, 248.3800 mm): Curve on F.Silkscreen
@@ -1681,6 +539,15 @@
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(231.7500 mm, 248.3800 mm): Curve on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(231.7500 mm, 265.8800 mm): Curve on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(231.7500 mm, 265.8800 mm): Curve on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(231.7500 mm, 265.8800 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(233.7000 mm, 257.0000 mm): Circle on F.Silkscreen
@@ -1692,19 +559,19 @@
     @(243.5000 mm, 239.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 247.4000 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 246.9000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 249.1000 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 251.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 250.8000 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 256.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 264.6000 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 263.6000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(247.3000 mm, 267.8000 mm): Circle on F.Silkscreen
+    @(247.3000 mm, 268.1500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(249.9973 mm, 334.4658 mm): Segment on F.Silkscreen
@@ -1767,10 +634,16 @@
     @(264.2500 mm, 248.5000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
+    @(264.2500 mm, 266.0000 mm): Curve on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(264.2500 mm, 266.0000 mm): Curve on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
     @(266.3000 mm, 257.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(269.2500 mm, 363.0000 mm): Curve on F.Silkscreen
+    @(266.6900 mm, 374.3000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(269.2500 mm, 363.0000 mm): Curve on F.Silkscreen
@@ -1779,13 +652,10 @@
     @(269.2500 mm, 363.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(269.5400 mm, 373.0000 mm): Circle on F.Silkscreen
+    @(269.2500 mm, 363.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(271.2400 mm, 373.0000 mm): Circle on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(272.9400 mm, 373.0000 mm): Circle on F.Silkscreen
+    @(271.2400 mm, 374.3000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(273.2238 mm, 328.1445 mm): Curve on F.Silkscreen
@@ -1794,46 +664,49 @@
     @(273.2492 mm, 345.5000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(276.7492 mm, 344.5000 mm): Curve on F.Silkscreen
+    @(275.7459 mm, 343.2000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(277.7238 mm, 327.1445 mm): Curve on F.Silkscreen
+    @(275.7900 mm, 374.3000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(280.7000 mm, 344.5000 mm): Circle on F.Silkscreen
+    @(276.2342 mm, 325.7445 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(280.7000 mm, 347.8000 mm): Circle on F.Silkscreen
+    @(280.7000 mm, 343.2000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(281.5000 mm, 255.3000 mm): Circle on F.Silkscreen
+    @(280.7000 mm, 347.7000 mm): Circle on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(281.5000 mm, 252.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(281.5000 mm, 257.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(281.5000 mm, 258.7000 mm): Circle on F.Silkscreen
+    @(281.5000 mm, 261.5500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(282.0000 mm, 327.1000 mm): Circle on F.Silkscreen
+    @(282.0000 mm, 325.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(282.0000 mm, 330.5000 mm): Circle on F.Silkscreen
+    @(282.0000 mm, 330.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(286.0000 mm, 361.4000 mm): Circle on F.Silkscreen
+    @(286.0000 mm, 358.4200 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(286.0000 mm, 363.1000 mm): Circle on F.Silkscreen
+    @(286.0000 mm, 362.9700 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(286.0000 mm, 364.8000 mm): Circle on F.Silkscreen
+    @(286.0000 mm, 367.5200 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(289.3000 mm, 327.2000 mm): Circle on F.Silkscreen
+    @(289.3000 mm, 325.7000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(289.3000 mm, 330.6000 mm): Circle on F.Silkscreen
+    @(289.3000 mm, 330.2500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(291.5000 mm, 253.5000 mm): Segment on F.Silkscreen
@@ -1842,10 +715,7 @@
     @(296.5000 mm, 352.2000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(299.0000 mm, 264.5000 mm): Circle on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(301.7473 mm, 363.0000 mm): Curve on F.Silkscreen
+    @(299.0000 mm, 266.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(301.7473 mm, 363.0000 mm): Segment on F.Silkscreen
@@ -1854,16 +724,28 @@
     @(301.7473 mm, 363.0000 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
+    @(301.7473 mm, 363.0000 mm): Curve on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
     @(301.8792 mm, 328.0342 mm): Curve on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(301.8792 mm, 328.0342 mm): Curve on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(303.7473 mm, 365.0000 mm): Curve on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(303.7473 mm, 365.0000 mm): Segment on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(303.7473 mm, 365.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(303.8000 mm, 337.3000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(308.2000 mm, 264.5000 mm): Circle on F.Silkscreen
+    @(308.2000 mm, 266.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(316.5000 mm, 253.5000 mm): Segment on F.Silkscreen
@@ -1896,13 +778,13 @@
     @(329.2442 mm, 373.2914 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(326.5000 mm, 255.3000 mm): Circle on F.Silkscreen
+    @(326.5000 mm, 252.4500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(326.5000 mm, 257.0000 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(326.5000 mm, 258.7000 mm): Circle on F.Silkscreen
+    @(326.5000 mm, 261.5500 mm): Circle on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(329.2442 mm, 373.2914 mm): Arc on F.Silkscreen
@@ -1935,13 +817,13 @@
     @(342.5000 mm, 428.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5500 mm, 439.0000 mm): Arc on F.Silkscreen
+    @(342.5500 mm, 441.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5500 mm, 439.0000 mm): Segment on F.Silkscreen
+    @(342.5500 mm, 441.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5500 mm, 628.0000 mm): Segment on F.Silkscreen
+    @(342.5500 mm, 630.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(345.5000 mm, 19.0000 mm): Segment on F.Silkscreen
@@ -1956,10 +838,10 @@
     @(342.5000 mm, 425.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(345.5500 mm, 439.0000 mm): Segment on F.Silkscreen
+    @(345.5500 mm, 441.0000 mm): Segment on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(342.5500 mm, 625.0000 mm): Arc on F.Silkscreen
+    @(342.5500 mm, 627.0000 mm): Arc on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(301.5261 mm, 116.4100 mm): PCB text 'R25' on F.Silkscreen
@@ -1968,13 +850,16 @@
     @(244.2500 mm, 240.2500 mm): PCB text 'PULSAR' on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(175.3500 mm, 352.4200 mm): Rectangle of REF** on F.Silkscreen
+    @(249.4500 mm, 49.9000 mm): Segment of R49 on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(265.3500 mm, 287.4200 mm): Rectangle of REF** on F.Silkscreen
+    @(175.3500 mm, 352.8000 mm): Rectangle of REF** on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(297.8500 mm, 287.4200 mm): Rectangle of REF** on F.Silkscreen
+    @(265.3500 mm, 287.8000 mm): Rectangle of REF** on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(297.8500 mm, 287.8000 mm): Rectangle of REF** on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(71.2798 mm, 246.3875 mm): Polygon of G*** on F.Silkscreen
@@ -1995,393 +880,16 @@
     @(71.6724 mm, 248.5119 mm): Polygon of G*** on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(245.3500 mm, 352.4200 mm): Rectangle of REF** on F.Silkscreen
+    @(245.3500 mm, 352.8000 mm): Rectangle of REF** on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(205.7590 mm, 46.8000 mm): Segment of D22 on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(205.7590 mm, 47.1175 mm): Segment of D22 on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(187.8500 mm, 287.4200 mm): Rectangle of REF** on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(232.8500 mm, 352.4200 mm): Rectangle of REF** on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(207.8500 mm, 352.4200 mm): Rectangle of REF** on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(162.8500 mm, 287.4200 mm): Rectangle of REF** on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(252.8500 mm, 287.4200 mm): Rectangle of REF** on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(205.2510 mm, 45.6180 mm): Segment of D21 on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(205.7590 mm, 45.4275 mm): Segment of D21 on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(150.3500 mm, 352.4200 mm): Rectangle of REF** on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(162.8500 mm, 352.4200 mm): Rectangle of REF** on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(220.3500 mm, 287.4200 mm): Rectangle of REF** on F.Silkscreen
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error (excluded)
-    @(108.5000 mm, 24.7000 mm): Track [Net-(D1-A)] on F.Cu, length 1.6971 mm
-    @(107.3250 mm, 23.6000 mm): PTH pad TN [<no net>] of J1
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error (excluded)
-    @(107.3000 mm, 23.5000 mm): Track [Net-(D1-A)] on F.Cu, length 2.3750 mm
-    @(107.3250 mm, 23.6000 mm): PTH pad TN [<no net>] of J1
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error (excluded)
-    @(112.6000 mm, 23.6000 mm): Track [Net-(J1-PadR)] on F.Cu, length 0.1414 mm
-    @(112.3250 mm, 23.6000 mm): PTH pad RN [<no net>] of J1
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error (excluded)
-    @(114.8250 mm, 23.6000 mm): Track [Net-(J1-PadR)] on F.Cu, length 2.2250 mm
-    @(112.3250 mm, 23.6000 mm): PTH pad RN [<no net>] of J1
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(100.8500 mm, 209.6000 mm): Track [Net-(D12-K)] on F.Cu, length 40.6000 mm
-    @(119.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(276.9000 mm, 19.7000 mm): Track [Net-(D39-K)] on F.Cu, length 51.3000 mm
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(223.1000 mm, 19.2000 mm): Track [Net-(D45-K)] on B.Cu, length 61.7000 mm
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(119.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(119.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(344.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(344.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5000 mm, 237.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5000 mm, 237.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5000 mm, 237.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5000 mm, 237.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(19.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(19.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(244.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(244.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(119.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(119.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(119.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(119.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5000 mm, 17.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 17.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(244.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(244.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5000 mm, 427.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 427.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5000 mm, 237.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5000 mm, 237.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(19.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5500 mm, 627.0000 mm): NPTH pad of REF**
-    @(19.5500 mm, 627.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5000 mm, 237.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(19.5000 mm, 237.0000 mm): NPTH pad of REF**
-    @(19.5000 mm, 237.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(344.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5500 mm, 437.0000 mm): NPTH pad of REF**
-    @(344.5500 mm, 437.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(344.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(344.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(244.5000 mm, 207.0000 mm): NPTH pad of REF**
-    @(244.5000 mm, 207.0000 mm): PTH pad 1 [<no net>] of REF**
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(101.0000 mm, 385.0000 mm): Segment on F.Silkscreen
-    @(93.5000 mm, 384.7500 mm): PCB text 'sequencer  ------------- 1
-
-envelope generator  -- 2' on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(93.5000 mm, 384.7500 mm): PCB text 'sequencer  ------------- 1
-
-envelope generator  -- 2' on F.Silkscreen
-    @(107.2500 mm, 388.2500 mm): Segment on F.Silkscreen
+    @(282.8500 mm, 123.1500 mm): Segment of R65 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(117.2500 mm, 389.2500 mm): Segment on F.Silkscreen
     @(135.2500 mm, 384.7500 mm): PCB text '3 -------------------------  pulsar
 
 4 --  random voltage generator' on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.0300 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.1500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.2681 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.3862 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.5043 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(313.6224 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.7405 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.8586 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(313.9767 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(314.0948 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(314.2129 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(314.3309 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(314.4490 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(314.5671 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(314.6852 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(314.8033 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(314.9214 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(315.0395 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(315.1576 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(315.2757 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(315.3938 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(315.5119 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(315.6300 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(318.1700 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(320.7100 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(323.2500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(325.8500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; warning
-    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(40.5338 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(38.1700 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
@@ -2394,6 +902,38 @@ envelope generator  -- 2' on F.Silkscreen
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
     @(38.4081 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(43.3100 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(40.4157 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(40.5338 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(40.6519 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(40.7700 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(45.8500 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(48.3900 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(50.9900 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
@@ -2461,63 +1001,111 @@ envelope generator  -- 2' on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(40.4157 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+    @(313.0300 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(40.6519 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+    @(313.5043 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(313.6224 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(40.7700 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+    @(313.7405 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(43.3100 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+    @(313.8586 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(45.8500 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+    @(313.9767 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(48.3900 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+    @(314.0948 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
-    @(50.9900 mm, 211.5900 mm): Segment of J23 on F.Silkscreen
+    @(314.2129 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 15.9100 mm): Segment of C33 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(314.3309 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 15.9500 mm): Segment of C33 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(314.4490 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 15.9900 mm): Segment of C33 on F.Silkscreen
+    @(314.5671 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 16.0300 mm): Segment of C33 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(314.6852 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 16.0700 mm): Segment of C33 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(314.8033 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 16.1100 mm): Segment of C33 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(314.9214 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 16.1900 mm): Segment of C33 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(315.0395 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(89.5400 mm, 16.1500 mm): Segment of C33 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(315.1576 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(315.2757 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(313.1500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(313.2681 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(313.3862 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(315.3938 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(315.5119 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(315.6300 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(318.1700 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(320.7100 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(323.2500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(342.5000 mm, 208.0000 mm): Segment on F.Silkscreen
+    @(325.8500 mm, 211.6300 mm): Segment of J24 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
@@ -2569,6 +1157,10 @@ envelope generator  -- 2' on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(102.5000 mm, 12.5500 mm): Segment of J22 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
     @(89.5400 mm, 15.8300 mm): Segment of C33 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
@@ -2577,19 +1169,39 @@ envelope generator  -- 2' on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(102.5000 mm, 12.5500 mm): Segment of J22 on F.Silkscreen
+    @(89.5400 mm, 15.9100 mm): Segment of C33 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(103.8250 mm, 26.3000 mm): Segment of J1 on F.Silkscreen
+    @(89.5400 mm, 15.9500 mm): Segment of C33 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(115.8250 mm, 15.3000 mm): Segment of J1 on F.Silkscreen
+    @(89.5400 mm, 15.9900 mm): Segment of C33 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
-    @(62.4100 mm, 14.1000 mm): Segment of A1 on F.Silkscreen
+    @(89.5400 mm, 16.0300 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(89.5400 mm, 16.0700 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(89.5400 mm, 16.1100 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(89.5400 mm, 16.1900 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(89.5400 mm, 16.1500 mm): Segment of C33 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(205.3500 mm, 54.6500 mm): Segment of R43 on F.Silkscreen
+    @(205.2500 mm, 51.5500 mm): Segment of R42 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
@@ -2609,6 +1221,10 @@ envelope generator  -- 2' on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
     @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(62.4100 mm, 14.1000 mm): Segment of A1 on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
     @(75.2100 mm, 14.1000 mm): Segment of A1 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
@@ -2616,82 +1232,26 @@ envelope generator  -- 2' on F.Silkscreen
     @(77.7300 mm, 14.1000 mm): Segment of A1 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(147.2000 mm, 107.5600 mm): Segment of D50 on F.Silkscreen
-    @(146.7859 mm, 107.6455 mm): Segment of R63 on F.Silkscreen
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(103.8250 mm, 26.3000 mm): Segment of J1 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(205.9876 mm, 45.2459 mm): Segment of R42 on F.Silkscreen
-    @(205.8225 mm, 45.1100 mm): Segment of D21 on F.Silkscreen
+    @(21.5000 mm, 16.0000 mm): Segment on F.Silkscreen
+    @(115.8250 mm, 15.3000 mm): Segment of J1 on F.Silkscreen
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; warning
-    @(172.9141 mm, 32.2455 mm): Segment of R32 on F.Silkscreen
-    @(172.5000 mm, 32.1600 mm): Segment of D8 on F.Silkscreen
+    @(101.0000 mm, 385.0000 mm): Segment on F.Silkscreen
+    @(93.5000 mm, 384.7500 mm): PCB text 'sequencer  ------------- 1
 
-** Found 16 unconnected pads **
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(237.0000 mm, 43.6300 mm): Track [EG_MODESELECT] on B.Cu, length 6.1300 mm
-    @(230.5000 mm, 43.6300 mm): PTH pad 1 [EG_MODESELECT] of SW4
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(303.0625 mm, 125.2500 mm): Pad 25 [DGND] of U11 on F.Cu
-    @(295.4875 mm, 124.6250 mm): Track [DGND] on F.Cu, length 1.4849 mm
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(167.0000 mm, 26.1300 mm): PTH pad 1 [SEQ_TRIGGERSELECT] of SW1
-    @(160.5000 mm, 26.1300 mm): PTH pad 1 [SEQ_TRIGGERSELECT] of SW1
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(192.0000 mm, 26.1300 mm): PTH pad 1 [SEQ_STAGES] of SW2
-    @(185.5000 mm, 26.1300 mm): PTH pad 1 [SEQ_STAGES] of SW2
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(237.0000 mm, 26.1300 mm): PTH pad 1 [EG_TRIGGERSELECT] of SW3
-    @(232.5000 mm, 32.2500 mm): Track [EG_TRIGGERSELECT] on B.Cu, length 4.1200 mm
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(263.0000 mm, 24.7500 mm): Track [PLSR_TRIGGERSELECT] on B.Cu, length 1.3800 mm
-    @(269.5000 mm, 26.1300 mm): PTH pad 1 [PLSR_TRIGGERSELECT] of SW5
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(265.2500 mm, 24.2500 mm): Track [PLSR_MODE] on B.Cu, length 17.1300 mm
-    @(269.5000 mm, 43.6300 mm): PTH pad 1 [PLSR_MODE] of SW6
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(157.7500 mm, 112.0000 mm): Track [MODOSC_MODULATIONMODE] on B.Cu, length 5.7500 mm
-    @(161.9973 mm, 105.7158 mm): PTH pad 1 [MODOSC_MODULATIONMODE] of SW7
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(140.2500 mm, 112.5000 mm): Track [MODOSC_WAVEFORMTOGGLE] on F.Cu, length 4.5315 mm
-    @(144.4973 mm, 105.7158 mm): PTH pad 1 [MODOSC_WAVEFORMTOGGLE] of SW8
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(270.7500 mm, 125.9685 mm): Track [COMPLEXOSC_POLARITY] on B.Cu, length 3.0315 mm
-    @(274.4973 mm, 123.2158 mm): PTH pad 1 [COMPLEXOSC_POLARITY] of SW10
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(262.5000 mm, 135.2185 mm): Track [COMPLEXOSC_WAVETOGGLE] on B.Cu, length 7.7744 mm
-    @(274.4973 mm, 140.7158 mm): PTH pad 1 [COMPLEXOSC_WAVETOGGLE] of SW11
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(274.4973 mm, 105.7158 mm): PTH pad 1 [OSCILLATOR_MIDITOGGLE] of SW9
-    @(267.9973 mm, 105.7158 mm): PTH pad 1 [OSCILLATOR_MIDITOGGLE] of SW9
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(294.7500 mm, 34.7500 mm): PTH pad 1 [LPG_GATE1MODE] of SW12
-    @(282.7500 mm, 34.7500 mm): Track [LPG_GATE1MODE] on B.Cu, length 5.5000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(319.7500 mm, 34.7500 mm): PTH pad 1 [LPG_GATE2MODE] of SW13
-    @(300.2500 mm, 34.7500 mm): Track [LPG_GATE2MODE] on B.Cu, length 13.0000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(306.9973 mm, 140.7158 mm): PTH pad 1 [RNDMVOLTAGE_TRIG] of SW14
-    @(302.7500 mm, 142.9685 mm): Track [RNDMVOLTAGE_TRIG] on B.Cu, length 3.1858 mm
-[unconnected_items]: Missing connection between items
-    Local override; error (excluded)
-    @(306.9973 mm, 105.7500 mm): PTH pad 1 [CLOCK_SYNCTOGGLE] of SW15
-    @(303.7500 mm, 107.0000 mm): Track [CLOCK_SYNCTOGGLE] on B.Cu, length 2.1213 mm
+envelope generator  -- 2' on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; warning
+    @(93.5000 mm, 384.7500 mm): PCB text 'sequencer  ------------- 1
+
+envelope generator  -- 2' on F.Silkscreen
+    @(107.2500 mm, 388.2500 mm): Segment on F.Silkscreen
+
+** Found 0 unconnected pads **
 
 ** Found 0 Footprint errors **
 
