@@ -219,7 +219,7 @@
 	(net 94 "LGP2LEVEL")
 	(net 95 "unconnected-(U3-NC-Pad4)")
 	(net 96 "unconnected-(U3-NC-Pad1)")
-	(net 97 "unconnected-(U3-VO1-Pad7)")
+	(net 97 "/OPTO_B")
 	(net 98 "unconnected-(SW16-C-Pad3)")
 	(net 99 "unconnected-(SW17-C-Pad3)")
 	(net 100 "unconnected-(SW18-C-Pad3)")
@@ -50078,7 +50078,7 @@
 				)
 			)
 		)
-		(property "Value" "10k_0402"
+		(property "Value" "1k_0402"
 			(at 0.069655 -1.448153 0)
 			(layer "F.SilkS")
 			(uuid "273f1052-e651-498e-9f2d-96fda9ba95f2")
@@ -50101,7 +50101,7 @@
 				)
 			)
 		)
-		(property "Description" "10k, 1%, 1/16W, 0603"
+		(property "Description" "1k, 1%, 1/16W, 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -50113,7 +50113,7 @@
 				)
 			)
 		)
-		(property "Specifications" "10k, 1%, 1/10W, 0402"
+		(property "Specifications" "1k, 1%, 1/10W, 0402"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -50139,7 +50139,7 @@
 				)
 			)
 		)
-		(property "Part Number" "RT0402FRE0710KL"
+		(property "Part Number" "RT0402FRE071KL"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -50152,7 +50152,7 @@
 				)
 			)
 		)
-		(property "Display" "10k"
+		(property "Display" "1k"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -50178,7 +50178,7 @@
 				)
 			)
 		)
-		(property "Part Number 2" "RT0402DRE0710KL"
+		(property "Part Number 2" "RT0402DRE071KL"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -50191,7 +50191,7 @@
 				)
 			)
 		)
-		(property "LCSC Part #" "C25804"
+		(property "LCSC Part #" "C21190"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -50283,6 +50283,253 @@
 			(net 41 "MIDI_INPUT")
 			(pintype "passive")
 			(uuid "031cdac6-07c8-4e87-b4b3-5cbbe1c4247e")
+		)
+		(embedded_fonts no)
+		(model "Resistors_SMD.3dshapes/R_0603.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0603_1608Metric.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+	)
+	(footprint "PCM_4ms_Resistor:R_0603"
+		(layer "F.Cu")
+		(uuid "4859c5a2-8aeb-441d-ba78-00243ca9d55f")
+		(at 112.01 42.65 180)
+		(descr "Resistor SMD 0603, reflow soldering, Vishay (see dcrcw.pdf)")
+		(tags "resistor 0603")
+		(property "Reference" "R87"
+			(at -0.027366 1.357576 0)
+			(layer "F.SilkS")
+			(uuid "c6ad214d-537b-4cbc-a940-5138bb7371de")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "10k_0402"
+			(at 0.069655 -1.448153 0)
+			(layer "F.SilkS")
+			(uuid "e3aeb7c9-769b-4c16-8f59-6e088b329cd1")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "929ea360-5402-497b-8a37-5100268b3ba0")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Description" "10k, 1%, 1/16W, 0603"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8f20219a-6505-418a-bc80-1d7f54cd2f46")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Specifications" "10k, 1%, 1/10W, 0402"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8e1810bf-2b19-46c2-ab70-c35ba7f6600f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "aa45550c-8dd3-4d0a-be09-11be35f8048b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Part Number" "RT0402FRE0710KL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "28dc55b1-d201-4ccf-aae4-a5ca375a5a55")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Display" "10k"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "986efae4-e339-429c-9051-19f00e4baf50")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer 2" "Yageo"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c61be2d5-a23f-4564-9117-acb55144cf4f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Part Number 2" "RT0402DRE0710KL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4a25b309-c6d5-41b5-9fef-0e50892f459a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC Part #" "C25804"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ffde2187-592a-4473-b7ec-7dc0294cdf7a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "R_*")
+		(path "/364173bc-1de1-4de0-aa82-86879628e6b8")
+		(sheetname "/")
+		(sheetfile "WEASEL_KiCad.kicad_sch")
+		(attr smd)
+		(fp_line
+			(start 0.85 0.7)
+			(end -0.85 0.7)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "0c07ce0d-3243-40cf-8f28-64a997e4c454")
+		)
+		(fp_line
+			(start -0.85 -0.7)
+			(end 0.85 -0.7)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "6b24d3fe-9b72-43c7-a542-93773050375b")
+		)
+		(fp_line
+			(start 1.6 -0.75)
+			(end 1.6 0.75)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(layer "F.CrtYd")
+			(uuid "72b88498-c5bd-49e3-97d4-5f6e3208abb8")
+		)
+		(fp_line
+			(start -1.6 0.75)
+			(end 1.6 0.75)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(layer "F.CrtYd")
+			(uuid "3120d154-f793-48ba-94a3-1fa26de1fc6d")
+		)
+		(fp_line
+			(start -1.6 -0.75)
+			(end 1.6 -0.75)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(layer "F.CrtYd")
+			(uuid "c5fc3351-3d3e-4612-ae6a-7410de5e4b30")
+		)
+		(fp_line
+			(start -1.6 -0.75)
+			(end -1.6 0.75)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(layer "F.CrtYd")
+			(uuid "a1639fe2-d213-4d05-9bee-0b8fe7fffd8a")
+		)
+		(pad "1" smd rect
+			(at -0.85 0 180)
+			(size 1 1)
+			(layers "F.Cu" "F.Mask" "F.Paste")
+			(net 97 "/OPTO_B")
+			(pintype "passive")
+			(uuid "3155f6f8-5cf4-4f5d-8cd5-d0e0336118bf")
+		)
+		(pad "2" smd rect
+			(at 0.85 0 180)
+			(size 1 1)
+			(layers "F.Cu" "F.Mask" "F.Paste")
+			(net 68 "DGND")
+			(pintype "passive")
+			(uuid "768f6fb9-944a-448b-9b01-4695e82f1326")
 		)
 		(embedded_fonts no)
 		(model "Resistors_SMD.3dshapes/R_0603.wrl"
@@ -71751,7 +71998,7 @@
 				)
 			)
 		)
-		(property "Value" "6N137"
+		(property "Value" "6N138"
 			(at 3.81 3.81 0)
 			(layer "F.SilkS")
 			(uuid "381b148b-80a1-4ec5-a56b-109b5fd06286")
@@ -71786,7 +72033,7 @@
 				)
 			)
 		)
-		(property "LCSC Part #" "C142297"
+		(property "LCSC Part #" "C571211"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -72009,9 +72256,9 @@
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net 97 "unconnected-(U3-VO1-Pad7)")
+			(net 97 "/OPTO_B")
 			(pinfunction "VO1")
-			(pintype "passive+no_connect")
+			(pintype "passive")
 			(uuid "e845da7b-e263-4261-be95-2f030a63e49d")
 		)
 		(pad "8" thru_hole oval
@@ -217643,6 +217890,30 @@
 		(layer "F.Cu")
 		(net 258)
 		(uuid "96c98ce5-9299-491e-b27e-87a36ee31976")
+	)
+	(segment
+		(start 112.86 39.52)
+		(end 112.86 42.65)
+		(width 0.25)
+		(layer "F.Cu")
+		(net 97)
+		(uuid "b609e39d-efaf-4693-84f4-927d47db572b")
+	)
+	(segment
+		(start 111.16 42.65)
+		(end 109.9 42.65)
+		(width 0.3)
+		(layer "F.Cu")
+		(net 68)
+		(uuid "49289a49-7183-4e12-9a49-7d2f86c6d2e3")
+	)
+	(via
+		(at 109.9 42.65)
+		(size 0.6)
+		(drill 0.3)
+		(layers "F.Cu" "B.Cu")
+		(net 68)
+		(uuid "13c2d4d7-1c72-488e-a320-4dc9c4594a72")
 	)
 	(zone
 		(net 103)
