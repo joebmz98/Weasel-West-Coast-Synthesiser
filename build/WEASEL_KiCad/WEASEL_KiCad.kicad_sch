@@ -5390,6 +5390,188 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "PCM_4ms_Resistor:1k_0402"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "1k_0402"
+				(at -2.54 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+				(at -2.54 -12.7 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "1k, 1%, 1/16W, 0603"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Specifications" "1k, 1%, 1/10W, 0402"
+				(at -2.54 -7.874 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+					(hide yes)
+				)
+			)
+			(property "Manufacturer" "Yageo"
+				(at -2.54 -9.398 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+					(hide yes)
+				)
+			)
+			(property "Part Number" "RT0402FRE071KL"
+				(at -2.54 -10.922 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+					(hide yes)
+				)
+			)
+			(property "Display" "1k"
+				(at 3.81 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer 2" "Yageo"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Part Number 2" "RT0402DRE071KL"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "10k 0402"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "1k_0402_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "1k_0402_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "PCM_Diode_Schottky_AKL:BAT43"
 			(pin_numbers
 				(hide yes)
@@ -9511,12 +9693,6 @@
 		(uuid "a9662498-ef2b-4e1d-abd8-44f9df3f862e")
 	)
 	(junction
-		(at 320.04 49.53)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ae0fa75f-4207-43b4-9dad-2505b882887a")
-	)
-	(junction
 		(at 529.59 158.75)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9939,10 +10115,6 @@
 	(no_connect
 		(at 604.52 171.45)
 		(uuid "bf05f6ed-57b7-457f-b01d-2eebaf6b86af")
-	)
-	(no_connect
-		(at 314.96 44.45)
-		(uuid "c99f80fd-f026-49ee-93ce-8eae3402329e")
 	)
 	(no_connect
 		(at 604.52 158.75)
@@ -29304,7 +29476,7 @@
 				)
 			)
 		)
-		(property "Value" "6N137"
+		(property "Value" "6N138"
 			(at 307.34 36.83 0)
 			(effects
 				(font
@@ -29339,7 +29511,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C142297"
+		(property "LCSC Part #" "C571211"
 			(at 314.706 54.61 0)
 			(effects
 				(font
@@ -52756,8 +52928,8 @@
 	)
 
 	(symbol
-		(lib_id "PCM_4ms_Resistor:10k_0402")
-		(at 320.04 45.72 0)
+		(lib_id "PCM_4ms_Resistor:1k_0402")
+		(at 325.12 45.72 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -52766,7 +52938,7 @@
 		(fields_autoplaced yes)
 		(uuid "cc446445-3f4b-4674-aad2-34673343e95c")
 		(property "Reference" "R2"
-			(at 322.58 44.4499 0)
+			(at 327.66 44.4499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52774,8 +52946,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10k_0402"
-			(at 317.5 45.72 90)
+		(property "Value" "1k_0402"
+			(at 322.58 45.72 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52784,7 +52956,7 @@
 			)
 		)
 		(property "Footprint" "PCM_4ms_Resistor:R_0603"
-			(at 317.5 58.42 0)
+			(at 322.58 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52794,7 +52966,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 320.04 45.72 0)
+			(at 325.12 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52802,8 +52974,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "10k, 1%, 1/16W, 0603"
-			(at 320.04 45.72 0)
+		(property "Description" "1k, 1%, 1/16W, 0603"
+			(at 325.12 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52811,8 +52983,8 @@
 				(hide yes)
 			)
 		)
-		(property "Specifications" "10k, 1%, 1/10W, 0402"
-			(at 317.5 53.594 0)
+		(property "Specifications" "1k, 1%, 1/10W, 0402"
+			(at 322.58 53.594 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52822,7 +52994,7 @@
 			)
 		)
 		(property "Manufacturer" "Yageo"
-			(at 317.5 55.118 0)
+			(at 322.58 55.118 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52831,8 +53003,8 @@
 				(hide yes)
 			)
 		)
-		(property "Part Number" "RT0402FRE0710KL"
-			(at 317.5 56.642 0)
+		(property "Part Number" "RT0402FRE071KL"
+			(at 322.58 56.642 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52841,8 +53013,8 @@
 				(hide yes)
 			)
 		)
-		(property "Display" "10k"
-			(at 322.58 46.9899 0)
+		(property "Display" "1k"
+			(at 327.66 46.9899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52851,7 +53023,7 @@
 			)
 		)
 		(property "Manufacturer 2" "Yageo"
-			(at 320.04 45.72 0)
+			(at 325.12 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52859,8 +53031,8 @@
 				(hide yes)
 			)
 		)
-		(property "Part Number 2" "RT0402DRE0710KL"
-			(at 320.04 45.72 0)
+		(property "Part Number 2" "RT0402DRE071KL"
+			(at 325.12 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -52868,8 +53040,8 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25804"
-			(at 317.5 58.42 0)
+		(property "LCSC Part #" "C21190"
+			(at 322.58 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -61481,6 +61653,252 @@
 			(justify left bottom)
 		)
 		(uuid "15cb27d5-5545-4024-ac37-4f31ab07b02b")
+	)
+	(wire
+		(pts
+			(xy 320.04 41.91) (xy 325.12 41.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b9ebfdc7-5eaf-42cf-8319-786fa1e86ea2")
+	)
+	(label "OPTO_B"
+		(at 314.96 44.45 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "678a0cca-75aa-40fe-b9b5-866d04fc4029")
+	)
+	(label "OPTO_B"
+		(at 337.82 33.02 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b13370ff-adb4-48a4-a200-864ae245f9fc")
+	)
+	(wire
+		(pts
+			(xy 337.82 40.64) (xy 337.82 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eeba3d4c-7564-459c-b657-73d1c56e83af")
+	)
+	(symbol
+		(lib_id "PCM_4ms_Resistor:10k_0402")
+		(at 337.82 36.83 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "364173bc-1de1-4de0-aa82-86879628e6b8")
+		(property "Reference" "R87"
+			(at 340.36 35.5599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10k_0402"
+			(at 335.28 36.83 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "PCM_4ms_Resistor:R_0603"
+			(at 335.28 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 337.82 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "10k, 1%, 1/16W, 0603"
+			(at 337.82 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Specifications" "10k, 1%, 1/10W, 0402"
+			(at 335.28 44.704 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 335.28 46.228 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Part Number" "RT0402FRE0710KL"
+			(at 335.28 47.752 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Display" "10k"
+			(at 340.36 38.0999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Manufacturer 2" "Yageo"
+			(at 337.82 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part Number 2" "RT0402DRE0710KL"
+			(at 337.82 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25804"
+			(at 335.28 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "98c7ba2b-3091-4cd1-bfdd-306bb419ae6a")
+		)
+		(pin "2"
+			(uuid "8a776ae5-c27d-470f-a35f-326214c385e2")
+		)
+		(instances
+			(project "WEASEL_KiCad"
+				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
+					(reference "R87")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 337.82 43.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "57e57bf1-5469-4b3e-80a9-439d7baee6c7")
+		(property "Reference" "#PWR0125"
+			(at 337.82 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "DGND"
+			(at 340.36 44.4499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 337.82 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 337.82 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 337.82 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "86f0b18c-778d-4073-9a85-4256322fe744")
+		)
+		(instances
+			(project "WEASEL_KiCad"
+				(path "/3720ecea-634e-451d-a5f4-988a924d60a3"
+					(reference "#PWR0125")
+					(unit 1)
+				)
+			)
+		)
 	)
 	(sheet_instances
 		(path "/"
