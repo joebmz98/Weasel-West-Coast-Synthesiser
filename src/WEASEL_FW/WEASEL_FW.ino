@@ -61,7 +61,7 @@ const char* FIRMWARE_VERSION = "1.0";
 #pragma GCC optimize("O2")
 
 // -- DEBUG --
-// 1 = print button presses / patch changes over USB serial
+// 1 = print button presses, patch changes and MIDI input over USB serial (115200 baud)
 #define WEASEL_DEBUG 0
 
 // ============================================
@@ -598,6 +598,9 @@ void handleNoteOff(byte channel, byte note, byte velocity);
 void handleMidiClock();
 void handleMidiStart();
 void handleMidiStop();
+#if WEASEL_DEBUG
+void handleMidiSysExDebug(byte* data, unsigned size);
+#endif
 
 // -- MATH HELPERS --
 // Exponential pitch scaling. The old Taylor approximation went NEGATIVE for exponents
@@ -1505,6 +1508,9 @@ void setup() {
   MIDI.setHandleClock(handleMidiClock);
   MIDI.setHandleStart(handleMidiStart);
   MIDI.setHandleStop(handleMidiStop);
+#if WEASEL_DEBUG
+  MIDI.setHandleSystemExclusive(handleMidiSysExDebug);
+#endif
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.turnThruOff();
   currentMidiNote = 60;
@@ -1687,7 +1693,35 @@ void updateParameters() {
 // ============================================
 // MIDI
 // ============================================
+#if WEASEL_DEBUG
+const char* DEBUG_NOTE_NAMES[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+void debugPrintNote(const char* label, byte channel, byte note, byte velocity) {
+  Serial.print(label);
+  Serial.print(" ch");
+  Serial.print(channel);
+  Serial.print(" ");
+  Serial.print(DEBUG_NOTE_NAMES[note % 12]);
+  Serial.print(note / 12 - 1);
+  Serial.print(" (");
+  Serial.print(note);
+  Serial.print(") vel ");
+  Serial.println(velocity);
+}
+
+// WEASEL ignores SysEx. Seeing it here with a controller that doesn't send SysEx means
+// bytes are being corrupted on the MIDI input (e.g. clock F8 arriving as F0).
+void handleMidiSysExDebug(byte* data, unsigned size) {
+  Serial.print("MIDI SysEx (");
+  Serial.print(size);
+  Serial.println(" bytes) - if your controller doesn't send SysEx, the MIDI input is corrupting bytes");
+}
+#endif
+
 void handleNoteOn(byte channel, byte note, byte velocity) {
+#if WEASEL_DEBUG
+  debugPrintNote(velocity > 0 ? "MIDI note on " : "MIDI note off", channel, note, velocity);
+#endif
   if (velocity > 0) {
     currentMidiNote = note;
     midiTriggerPending = true;
@@ -1703,6 +1737,9 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
+#if WEASEL_DEBUG
+  debugPrintNote("MIDI note off", channel, note, velocity);
+#endif
   midiNoteHeld = false;
 }
 
@@ -1733,6 +1770,15 @@ void checkMidiClockActivity() {
     midiClockActive = false;
     midiClockSamplesPerTick = 0;
   }
+#if WEASEL_DEBUG
+  // Report clock starting/stopping, whether or not clock sync is switched on
+  static bool debugClockRunning = false;
+  bool running = lastMidiClockTime > 0 && (millis() - lastMidiClockTime) <= MIDI_CLOCK_TIMEOUT;
+  if (running != debugClockRunning) {
+    debugClockRunning = running;
+    Serial.println(running ? "MIDI clock started" : "MIDI clock stopped");
+  }
+#endif
 }
 
 void updateClockDivision() {
