@@ -1,249 +1,255 @@
 # WEASEL
-### Buchla Music Easel Inspired Digital Synthesizer
+### Buchla Music Easel inspired digital west coast synthesiser
 
-**firmware version 0.1** | **hardware version 1.0**
-
----
+**firmware 1.0** | **hardware 1.0**
 
 Designed by **[.axs instruments](https://github.com/axsinstruments)**
+
+> ### 🔌 [Open the WEASEL web flasher & editor](https://joebmz98.github.io/Weasel-Flasher/)
+> Update the firmware, set the MIDI channel, store and recall presets, or play WEASEL in the browser.
+> Runs in Chrome or Edge on a computer, needs a micro-USB **data** cable, nothing to install.
+> Source and instructions: [joebmz98/Weasel-Flasher](https://github.com/joebmz98/Weasel-Flasher)
 
 ---
 
 ## Overview
 
-WEASEL is a digital synthesizer inspired by the iconic Buchla Music Easel, built around the Daisy Seed platform. It features a virtual patch bay that simulates a modular experience, allowing you to route modulation sources to destinations through an intuitive button matrix interface.
+WEASEL is a digital synthesiser inspired by the Buchla Music Easel, built around the
+Electro-Smith Daisy Seed. A front panel of faders, knobs, buttons and toggles sits over a
+single mainboard, and a **patch bay of 3.5 mm jacks** routes the four modulation sources to
+seven destinations with real patch cables, just like the Easel.
+
+Every mode is shown by a 3 mm LED shining straight up through the front panel, so the
+panel always tells you what the synth is doing.
 
 ---
 
 ## Features
 
-- **Complex Oscillator** with sine wave and morphable waveform (saw/triangle/square)
-- **Modulation Oscillator** with sine, triangle, saw, and square waveforms
-- **FM/AM Modulation** between oscillators
-- **Wavefolder** for complex timbre shaping
-- **Dual-channel Low Pass Gate (LPG)** with VCA/LP/COMBI modes
-- **Buchla-style ASR Envelope Generator**
-- **Pulsar Generator** (decaying envelope for rhythmic triggering)
-- **Sample & Hold / Random Voltage Generator**
-- **5-Step Sequencer** with per-step enable toggles
-- **Virtual Patch Bay** (4x7 button matrix) for routing:
-  - Sequencer CV → 7 destinations
-  - Envelope → 7 destinations
-  - Pulsar → 7 destinations
-  - Random Voltage → 7 destinations
-- **Internal Reverb**
-- **MIDI Input** for note control and triggering
+- **Complex oscillator**: sine plus a morphing saw / square / triangle, with timbre and polarity
+- **Wavefolder** on the complex oscillator
+- **Modulation oscillator**: sine, triangle, sawtooth and square, with FM or AM into the complex oscillator
+- **Dual low pass gate**: each channel switches between VCA, low pass and combination (classic Buchla LPG)
+- **Envelope generator**: attack / sustain / decay, in transient, sustain or oscillating mode
+- **Pulsar**: decaying pulse generator, triggered by the sequencer, MIDI, or free running
+- **Sequential voltage source**: 5-step sequencer with 3, 4 or 5 stages and a toggle per step
+- **Random voltage**: sample & hold, triggered by the sequencer, pulsar or MIDI
+- **Clock**: free running or synced to incoming MIDI clock
+- **Patch bay**: 12 source jacks (3 each for sequencer, envelope, pulsar, random) and 7 destination jacks
+- **Reverb**, master volume and stereo line out
+- **MIDI in** (3.5 mm TRS): notes, triggers, clock and start/stop
+- **Web editor** over USB: MIDI channel, presets of every panel mode, firmware updates
 
 ---
 
-## Hardware Requirements
+## Web flasher & editor
 
-| Component | Details |
-|-----------|---------|
-| **Microcontroller** | Daisy Seed |
-| **ADC Resolution** | 16-bit |
-| **Potentiometers** | 32 total (via 2x 16-channel multiplexers) |
-| **Button Matrix 1** | 4x7 (virtual patch bay) |
-| **Button Matrix 2** | 4x5 (mode selection & controls) |
-| **Audio Output** | Stereo line out |
-| **MIDI Input** | 3.5mm TRS (pin D14 / USART1 Rx) |
+The **[WEASEL web tools](https://joebmz98.github.io/Weasel-Flasher/)** have four pages:
 
-### Pin Mapping
+| Page | What it does | WEASEL needs to be |
+| --- | --- | --- |
+| **Update firmware** | Flashes a release or your own `.bin` over WebUSB | In DFU mode |
+| **MIDI settings** | MIDI in channel (1-16 or omni) and a MIDI in monitor | Running, with the USB editor firmware |
+| **Presets** | Stores and recalls every panel mode by name; import / export as JSON | Running, with the USB editor firmware |
+| **Play** | The WEASEL sound engine running in the browser | Not needed |
 
-**MUX1 (Pots 0-15)** – A0
+**Putting WEASEL in DFU mode:** hold **BOOT**, tap **RESET**, release **BOOT** on the Daisy Seed.
+Once the editor firmware is running you can also restart into DFU mode from the flasher page.
 
-| MUX Pin | Function |
-|---------|----------|
-| S0 | D0 |
-| S1 | D1 |
-| S2 | D2 |
-| S3 | D3 |
-
-**MUX2 (Pots 16-31)** – A1
-
-| MUX Pin | Function |
-|---------|----------|
-| S0 | D4 |
-| S1 | D5 |
-| S2 | D6 |
-| S3 | D7 |
+The MIDI settings and Presets pages need the firmware build with the USB editor link
+(`WeaselEditor.h`), which currently lives in the flasher repo under `firmware-src/`.
+Add `?demo` to any page's address to try it against a simulated WEASEL.
 
 ---
 
-## Potentiometer Functions
+## Hardware
 
-### MUX1 (Channels 0-15)
+### Boards
 
-| CH | Function |
-|----|----------|
-| 0 | Sequencer Step 1 CV |
-| 1 | Sequencer Step 2 CV |
-| 2 | Sequencer Step 3 CV |
-| 3 | Sequencer Step 4 CV |
-| 4 | Sequencer Step 5 CV |
-| 5 | Attack Time |
-| 6 | Sustain Duration |
-| 7 | Decay/Release Time |
-| 8 | Pulsar Period Modulation Control |
-| 9 | Pulsar Period |
-| 10 | Modulation Osc Freq Modulation Amount |
-| 11 | Modulation Osc Frequency |
-| 12 | Modulation Osc Fine Tune (±3 cents) |
-| 13 | Modulation Osc Modulation Amount Depth |
-| 14 | Modulation Osc Modulation Amount |
-| 15 | Complex Osc Frequency Modulation Amount |
+| Board | Folder | Notes |
+| --- | --- | --- |
+| **Mainboard** | `build/WEASEL_KiCad` | Daisy Seed, all pots, buttons, jacks, LEDs and power |
+| **Front panel** | `build/WEASEL_KiCad` | PCB panel: silkscreen artwork, cut-outs and 3.2 mm LED light holes |
+| **Back panel** | `build/WEASEL_KiCad` | PCB back plate |
+| **Keys board** | `build/WEASEL_KEYS_KiCad` | Capacitive touch keyboard (4x MPR121), connects over I2C. Firmware support is still to come |
 
-### MUX2 (Channels 16-31)
+The mainboard, front panel and back panel are drawn in one KiCad file and joined with
+**mouse bites**, so they are ordered as a single panel (about 335 x 604 mm) and snapped apart.
+All three share the same **M3** mounting hole pattern (3.2 mm plated holes), so the stack
+bolts together with M3 screws and standoffs.
 
-| CH | Function |
-|----|----------|
-| 16 | Complex Osc Frequency |
-| 17 | Complex Osc Fine Tune (±3 cents) |
-| 18 | Complex Osc Wavefolder Modulation Amount |
-| 19 | Complex Osc Wavefolder |
-| 20 | Complex Osc Timbre (morph) |
-| 21 | LPG1 Modulation Amount |
-| 22 | LPG1 Level |
-| 23 | LPG2 Modulation Amount |
-| 24 | LPG2 Level |
-| 25 | Clock Speed |
-| 26 | Reverb Mix |
-| 27-31 | Not Connected |
+### Mainboard parts
 
----
+| Part | Details |
+| --- | --- |
+| **Microcontroller** | Electro-Smith Daisy Seed (STM32H750) |
+| **Potentiometers** | 22 Bourns PTA2043 slide faders + 6 RV09 9 mm rotary pots, read by 2x CD74HC4067 16-channel multiplexers |
+| **Buttons** | 15 x 6x6 mm tactile switches, 13 mm tall so they reach through the front panel |
+| **Toggles** | 5 x MTS-102 mini toggles (sequencer step on/off) |
+| **Button inputs** | 4x 74HC165 shift registers (32-bit chain): 3 for panel buttons, 1 for the patch bay destinations |
+| **LEDs** | 52 x 3 mm through-hole LEDs, driven by 4x AW9523B (I2C 0x58-0x5B) in constant-current mode |
+| **Patch bay** | 19 x PJ398SM-style vertical mono jacks (tip / tip-normal / sleeve) |
+| **Audio out** | 3.5 mm stereo jack |
+| **MIDI in** | 3.5 mm TRS (Type A), 6N137 optocoupler |
+| **Power** | DC barrel jack, centre positive. AP63205 5 V buck regulator with reverse-polarity protection (P-FET), SMBJ24A TVS and a resettable fuse, so a wrong or centre-negative plug won't damage the Seed. Use 9-12 V DC (24 V absolute max) |
+| **Keys connector** | J23 / J24: 2x5 2.54 mm right-angle pin headers carrying 3.3 V, GND, I2C (SCL / SDA) and IRQ |
 
-## Button Matrix Functions
+#### LEDs
 
-### Matrix 1 (4x7) – Virtual Patch Bay
+The LEDs sit on the mainboard and shine up through 3.2 mm holes in the front panel. Fit them
+standing tall enough (or on spacers) that the lens reaches the panel. Brightness is set in
+firmware rather than by the resistors: the AW9523 sinks a regulated current from each LED
+(about half brightness by default). The 47R resistors to 3.3 V only limit the current.
 
-**Sources (Columns):**
-- Col 0: Sequencer CV
-- Col 1: Envelope
-- Col 2: Pulsar
-- Col 3: Random Voltage
+### Pin map
 
-**Destinations (Rows):**
-- Row 0: Pulsar Period
-- Row 1: Modulation Osc Frequency
-- Row 2: Modulation Osc Modulation Amount
-- Row 3: Complex Osc Pitch
-- Row 4: Complex Osc Wavefolder Amount
-- Row 5: LPG Channel 1 Level
-- Row 6: LPG Channel 2 Level
+| Function | Daisy pin |
+| --- | --- |
+| MUX select S0-S3 (both multiplexers share these) | D0, D1, D2, D3 |
+| MUX1 signal (pots 0-15) | A0 |
+| MUX2 signal (pots 16-31) | A1 |
+| 74HC165 SH/LD, CLK, QH | D7, D8, D9 |
+| I2C SCL / SDA (AW9523 LED drivers, keys board) | D11 / D12 |
+| MIDI RX (USART1) | D14 |
+| Patch bay sources: sequencer, envelope, pulsar, random | D17, D18, D19, D20 |
 
-### Matrix 2 (4x5) – Mode Controls
-
-| Position | Function |
-|----------|----------|
-| X0+Y0 | Sequencer Length Cycle (3/4/5 steps) |
-| X0+Y1 | Pulsar Mode Toggle (SEQ/MIDI/OSC) |
-| X0+Y2 | Complex Osc Polarity Invert |
-| X0+Y3 | Mod Osc LPG Mode Toggle (VCA/LP/COMBI) |
-| X0+Y4 | Sequencer Step 2 Toggle |
-| X1+Y0 | Sequencer Trigger Mode (CLOCK/PULSAR/MIDI) |
-| X1+Y1 | Pulsar Clock Mode |
-| X1+Y2 | MIDI Toggle (Complex + Mod Osc) |
-| X1+Y3 | Random Trigger Mode (SEQ/PULSAR/MIDI) |
-| X1+Y4 | Sequencer Step 3 Toggle |
-| X2+Y1 | Mod Waveform Cycle |
-| X2+Y2 | Complex Waveform Cycle |
-| X2+Y4 | Sequencer Step 4 Toggle |
-| X3+Y1 | FM/AM Toggle |
-| X3+Y2 | LPG Mode Toggle (VCA/LP/COMBI) |
-| X3+Y3 | Sequencer Step 1 Toggle |
-| X3+Y4 | Sequencer Step 5 Toggle |
+> **Prototype boards:** the first prototypes drove the second multiplexer from its own select
+> pins (D4, D5, D6, D10) and wired the LED anodes to the AW9523. The firmware still supports
+> both, see [Building the firmware](#building-the-firmware).
 
 ---
 
-## Installation & Setup
+## Controls
 
-### 1. Prerequisites
+### Pots and faders
 
-- [Arduino IDE](https://www.arduino.cc/en/software)
-- [DaisyDuino](https://github.com/electro-smith/DaisyDuino) – Daisy platform for Arduino
-- [MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library)
+| MUX1 | Function | MUX2 | Function |
+| --- | --- | --- | --- |
+| 0 | Sequencer stage 1 | 16 | Complex osc frequency |
+| 1 | Sequencer stage 2 | 17 | Complex osc fine tune (±3 cents) |
+| 2 | Sequencer stage 3 | 18 | Wavefolder modulation amount |
+| 3 | Sequencer stage 4 | 19 | Wavefolder |
+| 4 | Sequencer stage 5 | 20 | Complex osc timbre (morph) |
+| 5 | Envelope attack | 21 | LPG 1 modulation amount |
+| 6 | Envelope sustain | 22 | LPG 1 level |
+| 7 | Envelope decay | 23 | LPG 2 modulation amount |
+| 8 | Pulsar period modulation amount | 24 | LPG 2 level |
+| 9 | Pulsar period | 25 | Clock speed |
+| 10 | Mod osc frequency modulation amount | 26 | Reverb mix |
+| 11 | Mod osc frequency | 27 | Master volume |
+| 12 | Mod osc fine tune (±3 cents) | 28-31 | Not connected |
+| 13 | Mod osc modulation depth modulation amount | | |
+| 14 | Mod osc modulation depth | | |
+| 15 | Complex osc frequency modulation amount | | |
 
-### 2. Flashing the Firmware
+### Buttons and toggles
 
-1. Install DaisyDuino following the [official guide](https://github.com/electro-smith/DaisyDuino#installation)
-2. Clone this repository
-3. Open `weasel.ino` in Arduino IDE
-4. Select **Daisy Seed** as the board
-5. Upload the firmware
+Each button steps through its modes, and the LEDs beside it show the current one
+(`*` = power-on default).
 
-### 3. First Boot
+| Section | Button | Modes |
+| --- | --- | --- |
+| Sequential voltage source | Trigger select | clock\*, pulsar, midi |
+| | Stages | 5\*, 4, 3 |
+| | Step 1-5 (toggles) | each step on / off |
+| Envelope generator | Trigger select | sequencer\*, pulsar, midi |
+| | Mode | transient\*, sustain, oscillating |
+| Pulsar | Trigger select | sequencer\*, midi, free |
+| | Manual | fires a pulse |
+| Modulation oscillator | Waveform | sine\*, triangle, sawtooth, square |
+| | Modulation | fm\*, am |
+| Complex oscillator | Waveform | saw\*, square, triangle |
+| | Polarity | +\*, - |
+| | MIDI | off\*, on (follow MIDI notes) |
+| Dual low pass gate | Level 1 / level 2 mode | voltage controlled amp, lo pass filter, combination\* |
+| Random voltage | Trigger select | sequencer\*, pulsar, midi |
+| Clock | Mode | free\*, sync (MIDI clock) |
 
-- Connect audio output to the Daisy Seed's audio jack
-- Connect a MIDI source to the TRS input (optional)
-- Power via USB or external 5V
-- The synthesizer will start with default settings
+### Patch bay
 
----
+Plug a cable from any source jack to any destination jack. Each source has three jacks, so one
+source can drive several destinations at once.
 
-## Usage
-
-### Basic Signal Flow
-
-[Complex Osc] → [Wavefolder] → [LPG Ch1] → [Mixer] → [Output Filter] → [Reverb]
-[Mod Osc] ──────────────────→ [LPG Ch2] ↗
-     ↓
-  (FM/AM to Complex Osc)
-
-### Sequencer Operation
-
-- The 5-step sequencer advances based on the selected trigger mode (Clock/Pulsar/MIDI)
-- Each step's CV is set by its corresponding potentiometer
-- Per-step toggles allow disabling individual steps
-- Sequence length can be set to 3, 4, or 5 steps
-
-### Envelope (Buchla ASR Style)
-
-- **Attack**: Sets rise time
-- **Sustain**: Sets gate duration
-- **Release**: Sets fall time after gate ends
-
-### Pulsar Generator
-
-- Creates decaying envelopes for rhythmic triggering
-- Can be synced to sequencer, MIDI note-on, or run freely as an LFO
-
-### Low Pass Gate Modes
-
-- **VCA**: Amplitude only (no filtering)
-- **LP**: Low-pass filtering only
-- **COMBI**: Both VCA and filtering (classic Buchla LPG behavior)
+| Sources (3 jacks each) | Destinations |
+| --- | --- |
+| Sequencer, envelope, pulsar, random | Pulsar period, mod osc frequency, mod osc modulation, complex osc pitch, wavefolder, LPG 1 level, LPG 2 level |
 
 ---
 
-## MIDI Implementation
+## Signal flow
+
+```
+[Complex Osc] → [Wavefolder] → [LPG 1] ┐
+       ↑ FM / AM                        ├→ [Mixer] → [Output filter] → [Reverb] → [Master volume] → Out
+[Mod Osc] ───────────────────→ [LPG 2] ┘
+
+Sequencer · Envelope · Pulsar · Random ──(patch bay)──→ modulation destinations
+```
+
+---
+
+## MIDI
 
 | Function | Details |
-|----------|---------|
-| **Input** | 3.5mm TRS (Type A) |
-| **Baud Rate** | 31250 |
-| **Note On** | Triggers sequencer, pulsar, and random (depending on mode) |
-| **Note Pitch** | Controls Complex and/or Mod Osc frequencies when MIDI mode is enabled |
-
-**MIDI Pin:** Digital pin 30 (D14 / USART1 Rx)
+| --- | --- |
+| **Input** | 3.5 mm TRS (Type A), 31250 baud |
+| **Channel** | Omni by default; set 1-16 in the [web editor](https://joebmz98.github.io/Weasel-Flasher/editor.html) |
+| **Note on** | Triggers the sequencer, envelope, pulsar and random voltage when they're set to midi |
+| **Note pitch** | Plays the complex / mod oscillators when their MIDI mode is on |
+| **Clock, start / stop** | Syncs the sequencer when the clock is set to sync (received on any channel) |
 
 ---
 
-## Building from Source
+## Building the firmware
 
-### Dependencies
+The easiest way to update is the **[web flasher](https://joebmz98.github.io/Weasel-Flasher/#flash)**.
+To build it yourself:
 
-- `DaisyDuino` – Daisy hardware abstraction
-- `MIDI` – MIDI input handling
+1. Install the [Arduino IDE](https://www.arduino.cc/en/software), [DaisyDuino](https://github.com/electro-smith/DaisyDuino#installation) and the [MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library).
+2. Open `src/WEASEL_FW/WEASEL_FW.ino`.
+3. Set the board options at the top of the sketch:
+   - `WEASEL_LED_SINK_WIRING`: `1` for the current board (LED cathodes on the AW9523, dimmable), `0` for the prototype boards.
+   - `LED_BRIGHTNESS` (0-255) and `AW9523_ISEL` set the LED current.
+   - `SEQ_STEP_SWITCHES_LATCHING`: `1` for toggle switches on the sequencer steps, `0` for momentary buttons.
+4. Select **Daisy Seed** as the board. For the web editor, also set **Tools > USB support > CDC (generic 'Serial' supersede U(S)ART)**.
+5. Put the Seed in DFU mode and upload, or use **Sketch > Export Compiled Binary** and flash the `.bin` with the web flasher.
 
-### Compilation
+`src/tests/potentiometerTests` is a small sketch for checking the pots and multiplexers.
 
-The firmware is compatible with Arduino IDE. Select **Daisy Seed** from the boards menu and upload.
+---
+
+## Ordering the PCBs
+
+Production files are in `build/WEASEL_KiCad/production/`, made with the KiCad Fabrication Toolkit for JLCPCB:
+
+| File | Contents |
+| --- | --- |
+| `WEASEL.zip` | Gerbers and drill files for the mainboard, front panel and back panel |
+| `WEASEL_bom.csv` | BOM with LCSC part numbers |
+| `WEASEL_positions.csv` | Pick and place positions |
+
+The BOM leaves out parts that are fitted by hand: the **LEDs**, the **Daisy Seed**, the
+**MIDI / audio jacks (J1, J2)**, the **DC jack (J22)** and the **six 9 mm rotary pots**.
+Regenerate the production files from KiCad after any board change.
+
+---
+
+## Repository layout
+
+| Path | Contents |
+| --- | --- |
+| `src/WEASEL_FW/` | Firmware (Arduino / DaisyDuino) |
+| `src/tests/` | Hardware test sketches |
+| `build/WEASEL_KiCad/` | Mainboard and panels: schematic, PCB, footprints, DRC report, production files |
+| `build/WEASEL_KEYS_KiCad/` | Keys board |
+| `lib/` | KiCad libraries (Daisy Seed) |
+| `docs/` | Images, audio references and Buchla LPG research |
 
 ---
 
 ## License
 
-**MIT License** – Copyright (c) 2024 .axs instruments
+**MIT License**: Copyright (c) 2024 .axs instruments
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software.
 
@@ -251,10 +257,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-## Support & Contributions
+## Support & contributions
 
-- **Issues:** Open a GitHub ticket
-- **Custom Requests:** [axs.instruments@gmail.com](mailto:axs.instruments@gmail.com)
+- **Issues:** open a GitHub issue
+- **Custom requests:** [axs.instruments@gmail.com](mailto:axs.instruments@gmail.com)
 - **Contributions:** PRs welcome!
 
 ---
