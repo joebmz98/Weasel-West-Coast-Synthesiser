@@ -99,6 +99,9 @@ struct LiveStatus {
   bool clockSync = false;
   float bpm = 0.0f;
   uint8_t activity = 0;      // bumps on every MIDI message; the page blinks its data LED
+  // Sequencer clock (firmware 1.2+, sent as 4 extra STATUS bytes; older pages ignore them)
+  uint32_t stepPeriod10us = 0;  // internal clock: time per sequencer step, in 10 us units
+  uint8_t ticksPerStep = 0;     // MIDI sync: MIDI clock ticks (24 per quarter note) per step
 };
 
 class Editor {
@@ -246,12 +249,15 @@ class Editor {
     if (qspiOk_) storageState = storage_.GetState() == daisy::PersistentStorage<MidiSettings>::State::USER ? 2 : 1;
     uint8_t panel[PANEL_COUNT];
     panelBytes(panel);
-    uint8_t d[13] = {
+    uint32_t period = live.stepPeriod10us > 0x1FFFFF ? 0x1FFFFF : live.stepPeriod10us;  // 21 bits
+    uint8_t d[17] = {
       (uint8_t)(settings_ != saved_ ? 1 : 0), midiSum(settings_), midiSum(saved_), (uint8_t)(live.lastNote & 0x7F),
       (uint8_t)((live.noteHeld ? 1 : 0) | (live.anyNote ? 2 : 0)), (uint8_t)(live.lastChannel & 0x0F),
       (uint8_t)(live.lastVelocity & 0x7F), (uint8_t)((live.clockReceiving ? 1 : 0) | (live.clockSync ? 2 : 0)),
       (uint8_t)(bpm10 >> 7), (uint8_t)(bpm10 & 0x7F), (uint8_t)(live.activity & 0x7F), storageState,
       sum(panel, PANEL_COUNT),
+      (uint8_t)((period >> 14) & 0x7F), (uint8_t)((period >> 7) & 0x7F), (uint8_t)(period & 0x7F),
+      (uint8_t)(live.ticksPerStep & 0x7F),
     };
     send(0x46, d, sizeof(d));
   }

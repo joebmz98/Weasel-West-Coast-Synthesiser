@@ -2,7 +2,7 @@
 // ==== WEASEL ========== //
 // Buchla Music Easel     //
 // Inspired Digital Synth //
-// firmware version 1.1   //
+// firmware version 1.2   //
 // ********************** //
 // designed by            //
 // .axs instruments       //
@@ -51,7 +51,7 @@
 #include <Wire.h>          // I2C (AW9523 LED drivers)
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
-#define WEASEL_FIRMWARE_VERSION "1.1"  // also reported to the web pages
+#define WEASEL_FIRMWARE_VERSION "1.2"  // also reported to the web pages
 #include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 
@@ -1708,6 +1708,10 @@ void loop() {
   editor.live.clockReceiving = clockRunning;
   editor.live.clockSync = midiClockSync;
   editor.live.bpm = (clockRunning && midiClockSync) ? midiTempo : 0.0f;
+  // Sequencer clock for the monitor: the internal clock's actual step time, and the
+  // division the clock pot selects in MIDI sync mode
+  editor.live.stepPeriod10us = (uint32_t)((uint64_t)samplesPerTick * 100000ULL / (uint32_t)sampleRate);
+  editor.live.ticksPerStep = (uint8_t)currentDivision;
   editor.poll();
 
   // PANEL MEMORY: save the modes a few seconds after the last change
