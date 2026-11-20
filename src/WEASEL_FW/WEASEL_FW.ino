@@ -2,7 +2,7 @@
 // ==== WEASEL ========== //
 // Buchla Music Easel     //
 // Inspired Digital Synth //
-// firmware version 1.2   //
+// firmware version 1.1.1 //
 // ********************** //
 // designed by            //
 // .axs instruments       //
@@ -51,7 +51,7 @@
 #include <Wire.h>          // I2C (AW9523 LED drivers)
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
-#define WEASEL_FIRMWARE_VERSION "1.2"  // also reported to the web pages
+#define WEASEL_FIRMWARE_VERSION "1.1.1"  // also reported to the web pages
 #include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 

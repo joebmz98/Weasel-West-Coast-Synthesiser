@@ -99,7 +99,7 @@ struct LiveStatus {
   bool clockSync = false;
   float bpm = 0.0f;
   uint8_t activity = 0;      // bumps on every MIDI message; the page blinks its data LED
-  // Sequencer clock (firmware 1.2+, sent as 4 extra STATUS bytes; older pages ignore them)
+  // Sequencer clock (firmware 1.1.1+, sent as 4 extra STATUS bytes; older pages ignore them)
   uint32_t stepPeriod10us = 0;  // internal clock: time per sequencer step, in 10 us units
   uint8_t ticksPerStep = 0;     // MIDI sync: MIDI clock ticks (24 per quarter note) per step
 };
