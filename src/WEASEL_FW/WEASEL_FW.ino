@@ -818,10 +818,26 @@ void initPatchBay() {
   }
 }
 
+// FLOATING-INPUT GUARD
+// Each patch destination relies on its 10k pull-down to read LOW when no source drives it.
+// If that resistor isn't connected (bad joint, broken track), the input keeps the charge from
+// the last source that drove it, and the next sources in the scan read as "patched" too:
+// ghost connections that trigger in time with the sequencer. So before each source is driven,
+// every input is read with all sources LOW; a reading only counts as a connection if that
+// input was LOW just before. An input already HIGH with nothing driving it is flagged faulty.
+const uint8_t PATCH_FAULT_CLEAR_SCANS = 50;  // clean scans (~1s) before a fault flag clears
+uint8_t patchFaultHold[NUM_DESTINATIONS] = { 0 };  // >0 = input recently seen floating
+bool patchInputFaulty[NUM_DESTINATIONS] = { false };
+
 void scanPatchMatrix() {
   for (int s = 0; s < NUM_SOURCES; s++) {
     digitalWrite(sourcePins[s], LOW);
   }
+  delayMicroseconds(50);
+
+  // Baseline with nothing driven: every healthy input reads LOW here
+  uint8_t idle = readAllShiftRegisters() & 0xFF;
+  uint8_t floatingSeen = idle;
 
   for (int s = 0; s < NUM_SOURCES; s++) {
     digitalWrite(sourcePins[s], HIGH);
@@ -830,7 +846,8 @@ void scanPatchMatrix() {
     uint8_t sr4 = readAllShiftRegisters() & 0xFF;
 
     for (int d = 0; d < NUM_DESTINATIONS; d++) {
-      bool reading = (sr4 & (1 << d)) != 0;
+      // Only a LOW -> HIGH change caused by this source counts as a connection
+      bool reading = (sr4 & (1 << d)) && !(idle & (1 << d));
       if (reading) {
         if (patchCounter[s][d] < PATCH_DEBOUNCE_READS) patchCounter[s][d]++;
       } else {
@@ -842,8 +859,33 @@ void scanPatchMatrix() {
     digitalWrite(sourcePins[s], LOW);
     delayMicroseconds(50);
 
+    // Re-read with everything LOW again: the baseline for the next source
+    if (s < NUM_SOURCES - 1) {
+      idle = readAllShiftRegisters() & 0xFF;
+      floatingSeen |= idle;
+    }
+
     // Keep the MIDI input drained between source scans
     drainMidi();
+  }
+
+  // Fault flags (with a hold-off so a floating input doesn't flicker on and off)
+  for (int d = 0; d < NUM_DESTINATIONS; d++) {
+    if (floatingSeen & (1 << d)) {
+      patchFaultHold[d] = PATCH_FAULT_CLEAR_SCANS;
+    } else if (patchFaultHold[d] > 0) {
+      patchFaultHold[d]--;
+    }
+    bool faulty = patchFaultHold[d] > 0;
+#if WEASEL_DEBUG
+    if (faulty != patchInputFaulty[d]) {
+      Serial.print("Patch input ");
+      Serial.print(destNames[d]);
+      Serial.println(faulty ? " reads HIGH with nothing driving it - check its 10k pull-down and solder joints"
+                            : " OK again");
+    }
+#endif
+    patchInputFaulty[d] = faulty;
   }
 
 #if WEASEL_DEBUG
