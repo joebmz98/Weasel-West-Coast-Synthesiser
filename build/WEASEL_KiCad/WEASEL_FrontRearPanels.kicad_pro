@@ -58,44 +58,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        [
-          "courtyards_overlap|62905000|42755000|053ee889-5bc7-4883-babc-da58c86edb46|d677d8b2-b02d-4592-be72-c799667d2719",
-          "Intentional"
-        ],
-        [
-          "courtyards_overlap|63005000|45255000|344aa6c7-72e3-4e6b-a481-c635bdf230bd|d677d8b2-b02d-4592-be72-c799667d2719",
-          "inentional"
-        ],
-        [
-          "items_not_allowed|140574515|186750000|68bf3bf8-6c6d-4019-9fa4-ad77e17f068d|00000000-0000-0000-0000-000000000000",
-          "Exclusion zone is just for footprint design"
-        ],
-        [
-          "items_not_allowed|141123802|187500000|f62b23e7-449d-4e06-95cb-f6201f3667d7|00000000-0000-0000-0000-000000000000",
-          "Exclusion zone is just for footprint design"
-        ],
-        [
-          "items_not_allowed|143139115|185300000|54ea2085-e94d-4e2a-b753-d701eeb49999|00000000-0000-0000-0000-000000000000",
-          "Exclusion zone is just for footprint design"
-        ],
-        [
-          "items_not_allowed|143479047|200500000|7fa417ff-36e0-4678-961e-2fa381b078ac|00000000-0000-0000-0000-000000000000",
-          "Exclusion zone is just for footprint design"
-        ],
-        [
-          "items_not_allowed|168184581|193500000|17150a20-26fa-4bea-b3ae-f29e031cf6fc|00000000-0000-0000-0000-000000000000",
-          "Exclusion zone is just for footprint design"
-        ],
-        [
-          "items_not_allowed|196005375|192750000|13b7a28c-81b4-49f7-b7ec-24b35fbc0d66|00000000-0000-0000-0000-000000000000",
-          "Exclusion zone is just for footprint design"
-        ],
-        [
-          "items_not_allowed|220858323|201750000|8a776f54-3757-4a2f-be1f-d34fe91530c7|00000000-0000-0000-0000-000000000000",
-          "Exclusion zone is just for footprint design"
-        ]
-      ],
+      "drc_exclusions": [],
       "meta": {
         "version": 2
       },
@@ -501,7 +464,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "WEASEL_KiCad.kicad_pro",
+    "filename": "WEASEL_FrontRearPanels.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -537,7 +500,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "gbrs/WEASEL_allBoards_gbrs/",
+      "plot": "production/WEASEL_panels",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
