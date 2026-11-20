@@ -723,6 +723,39 @@ inline void filterPot(int i, int raw) {
 // Current schematic: U4 and U5 share MUX1_S0..S3 (D4/D5/D6/D10 are unconnected on the board).
 // Prototype boards: U5 still has its own MUX2_S0..S3 lines, so those are driven to the same
 // channel as well - the same code works on both boards.
+#if WEASEL_DEBUG
+// Pot names in potValues[] order, for the jump log below
+const char* DEBUG_POT_NAMES[TOTAL_POTS] = {
+  "SEQ STEP 1", "SEQ STEP 2", "SEQ STEP 3", "SEQ STEP 4", "SEQ STEP 5",
+  "ENV ATTACK", "ENV SUSTAIN", "ENV DECAY", "PULSAR CTRL", "PULSAR PERIOD",
+  "MODOSC FREQ CTRL", "MODOSC FREQ", "MODOSC FINE", "MODOSC MOD CTRL", "MODOSC MOD",
+  "COMPOSC FREQ CTRL",
+  "COMPOSC FREQ", "COMPOSC FINE", "COMPOSC WF CTRL", "COMPOSC WF", "COMPOSC TIMBRE",
+  "LPG1 CTRL", "LPG1 LEVEL", "LPG2 CTRL", "LPG2 LEVEL", "CLOCK", "REVERB MIX",
+  "MASTER VOLUME", "MUX2 C12", "MUX2 C13", "MUX2 C14", "MUX2 C15"
+};
+int debugLastRaw[TOTAL_POTS] = { 0 };
+
+// Logs any single-scan jump in a raw pot reading larger than ~6% of travel.
+// Turning a pot quickly will show up too; jumps while nobody touches the panel are glitches
+// (mux select line, ADC noise, a bad pot or wiring).
+void debugPotJump(int index, int raw) {
+  static bool primed = false;
+  if (primed && abs(raw - debugLastRaw[index]) > 4000) {
+    Serial.print("Pot jump: ");
+    Serial.print(DEBUG_POT_NAMES[index]);
+    Serial.print(index < NUM_POTS_PER_MUX ? " (MUX1 C" : " (MUX2 C");
+    Serial.print(index % NUM_POTS_PER_MUX);
+    Serial.print(") ");
+    Serial.print(debugLastRaw[index]);
+    Serial.print(" -> ");
+    Serial.println(raw);
+  }
+  debugLastRaw[index] = raw;
+  if (index == TOTAL_POTS - 1) primed = true;
+}
+#endif
+
 void readPotentiometers() {
   for (int ch = 0; ch < NUM_POTS_PER_MUX; ch++) {
     selectMuxChannel(ch, MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3);
@@ -732,6 +765,10 @@ void readPotentiometers() {
     int raw2 = analogRead(MUX2_SIG);
     filterPot(ch, raw1);
     filterPot(ch + NUM_POTS_PER_MUX, raw2);
+#if WEASEL_DEBUG
+    debugPotJump(ch, raw1);
+    debugPotJump(ch + NUM_POTS_PER_MUX, raw2);
+#endif
   }
   potFilterPrimed = true;
 }
