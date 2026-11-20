@@ -2,7 +2,7 @@
 // ==== WEASEL ========== //
 // Buchla Music Easel     //
 // Inspired Digital Synth //
-// firmware version 1.0   //
+// firmware version 1.1   //
 // ********************** //
 // designed by            //
 // .axs instruments       //
