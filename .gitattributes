@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Exported firmware: keep byte-exact (no line-ending conversion, no text diffs)
+*.hex -text -diff

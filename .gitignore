@@ -34,7 +34,11 @@ build/**/*.hex
 .pio/
 .pioenvs/
 .piolibdeps/
-src/**/build/
+# Arduino IDE build folders: ignore everything in them except the exported .hex
+# (Sketch > Export Compiled Binary), so a release build can be committed
+src/**/build/**
+!src/**/build/**/
+!src/**/build/**/*.ino.hex
 
 # --- Python ---
 __pycache__/
