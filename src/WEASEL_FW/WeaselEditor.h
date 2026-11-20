@@ -15,9 +15,10 @@
 // MIDI keeps using Serial1 (TRS in on D14).
 //
 // The receive channel lives at the top of the Seed's 8 MB QSPI flash, so
-// flashing new firmware into internal flash keeps it. Panel modes are not
-// stored here: the sketch hands them over through readPanel / writePanel, and
-// presets are kept by the web page.
+// flashing new firmware into internal flash keeps it. The sketch hands the
+// panel modes over through readPanel / writePanel (presets are kept by the web
+// page), and can keep the modes it powers up with in a separate QSPI block
+// through loadPanel / storePanel ("panel memory").
 
 #pragma once
 
@@ -38,7 +39,8 @@ namespace weasel {
 static const char *const FW_VERSION = WEASEL_FIRMWARE_VERSION;
 static const uint8_t PROTOCOL = 1;
 static const uint8_t OMNI = 16;
-static const uint32_t STORAGE_OFFSET = 0x7F0000;  // last 64 KB of the 8 MB QSPI chip
+static const uint32_t STORAGE_OFFSET = 0x7F0000;        // last 64 KB of the 8 MB QSPI chip
+static const uint32_t PANEL_STORAGE_OFFSET = 0x7E0000;  // the 64 KB below it: panel memory
 
 struct MidiSettings {
   uint8_t channel;      // 0-15 = MIDI channel 1-16, 16 = omni
@@ -70,6 +72,21 @@ enum PanelField : uint8_t {
   PANEL_COUNT
 };
 static const uint8_t PANEL_MAX[PANEL_COUNT] = { 2, 2, 2, 2, 2, 2, 3, 1, 2, 2, 1, 2, 1, 1 };
+
+// Panel memory: the modes to power up with. Kept in its own 4 KB QSPI sector so
+// saving it never touches the MIDI settings. `magic` is 0 until something has been
+// saved, so a fresh chip (or one erased by the factory defaults) restores nothing.
+static const uint8_t PANEL_MAGIC = 0x57;  // 'W'
+struct PanelStore {
+  uint8_t magic;                 // PANEL_MAGIC once saved
+  uint8_t count;                 // PANEL_COUNT when saved; anything else is ignored
+  uint8_t modes[PANEL_COUNT];    // wire order and values as PanelField
+  uint8_t reserved[16];          // room for later; always 0
+
+  bool operator!=(const PanelStore &o) const { return memcmp(this, &o, sizeof(*this)) != 0; }
+  bool operator==(const PanelStore &o) const { return !(*this != o); }
+};
+static const PanelStore PANEL_STORE_EMPTY = {};
 
 // Filled in by the sketch, reported to the MIDI IN monitor.
 struct LiveStatus {
@@ -107,6 +124,7 @@ class Editor {
     if (qspiOk_) {
       storage_.Init(DEFAULTS, STORAGE_OFFSET);
       saved_ = sanitize(storage_.GetSettings());
+      panelStorage_.Init(PANEL_STORE_EMPTY, PANEL_STORAGE_OFFSET);
     } else {
       saved_ = DEFAULTS;
     }
@@ -129,6 +147,37 @@ class Editor {
     activity();
   }
   void activity() { live.activity = (live.activity + 1) & 0x7F; }
+
+  // ---- panel memory ----
+  // Fills PANEL_COUNT bytes (clamped) and returns true if panel modes have been saved.
+  bool loadPanel(uint8_t *out) {
+    if (!qspiOk_) return false;
+    const PanelStore &s = panelStorage_.GetSettings();
+    if (s.magic != PANEL_MAGIC || s.count != PANEL_COUNT) return false;
+    for (uint8_t i = 0; i < PANEL_COUNT; i++) out[i] = s.modes[i] > PANEL_MAX[i] ? PANEL_MAX[i] : s.modes[i];
+    return true;
+  }
+
+  // Saves PANEL_COUNT bytes. Only erases and writes the QSPI sector when they differ from
+  // what is stored (takes up to ~0.3 s when it does). Returns false without QSPI.
+  bool storePanel(const uint8_t *in) {
+    if (!qspiOk_) return false;
+    PanelStore s = PANEL_STORE_EMPTY;
+    s.magic = PANEL_MAGIC;
+    s.count = PANEL_COUNT;
+    for (uint8_t i = 0; i < PANEL_COUNT; i++) s.modes[i] = in[i] > PANEL_MAX[i] ? PANEL_MAX[i] : in[i];
+    panelStorage_.GetSettings() = s;
+    panelStorage_.Save();
+    return true;
+  }
+
+  // Forget the saved panel modes (power up with the firmware defaults again).
+  bool clearPanel() {
+    if (!qspiOk_) return false;
+    panelStorage_.GetSettings() = PANEL_STORE_EMPTY;
+    panelStorage_.Save();
+    return true;
+  }
 
   // ---- call from loop() ----
   void poll() {
@@ -272,6 +321,7 @@ class Editor {
 
   daisy::QSPIHandle qspi_;
   daisy::PersistentStorage<MidiSettings> storage_{ qspi_ };
+  daisy::PersistentStorage<PanelStore> panelStorage_{ qspi_ };
   bool qspiOk_ = false;
   MidiSettings settings_ = DEFAULTS;
   MidiSettings saved_ = DEFAULTS;

@@ -51,7 +51,7 @@
 #include <Wire.h>          // I2C (AW9523 LED drivers)
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
-#define WEASEL_FIRMWARE_VERSION "1.0"  // also reported to the web pages
+#define WEASEL_FIRMWARE_VERSION "1.1"  // also reported to the web pages
 #include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 
@@ -416,6 +416,21 @@ const float OUTPUT_HEADROOM = 0.8f;  // doubled from 0.4 to make up for MIX_HEAD
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 // -- WEB EDITOR (MIDI CHANNEL + PANEL MODES, github.com/joebmz98/Weasel-Flasher) --
 weasel::Editor editor;
+
+// -- PANEL MEMORY --
+// The panel button modes (the same 14 the presets page handles) are saved to the Seed's
+// QSPI flash and restored at power-up. Not saved: the patch bay, and the sequencer step
+// switches (latching, so they always show their real position).
+// Saving waits until the modes have been left alone for PANEL_SAVE_DELAY_MS, so a run of
+// button presses is one write, and only writes if something actually changed.
+const unsigned long PANEL_SAVE_DELAY_MS = 3000;
+const unsigned long PANEL_CHECK_INTERVAL = 100;  // ms
+// Hold this button while powering up to forget the saved modes and start from the defaults
+#define PANEL_RESET_BUTTON BTN_PULSAR_MANUAL
+uint8_t panelLastSeen[weasel::PANEL_COUNT] = { 0 };
+unsigned long panelChangedAt = 0;
+unsigned long lastPanelCheck = 0;
+bool panelSavePending = false;
 // --
 bool quantizeToMidi = false;       // Enable/disable MIDI quantization mode
 float lastMidiNoteFreq = 261.63f;  // Last received MIDI note transpose ratio
@@ -1650,6 +1665,21 @@ void setup() {
   readButtons();
   readButtons();
   buttonLastHandled = buttonDebounced;  // don't treat buttons held at boot as presses
+
+  // -- PANEL MEMORY: power up with the modes from last time --
+  uint8_t savedPanel[weasel::PANEL_COUNT];
+  if (buttonIsDown(PANEL_RESET_BUTTON)) {
+    editor.clearPanel();
+#if WEASEL_DEBUG
+    Serial.println("Panel memory cleared (button held at power-up) - starting from defaults");
+#endif
+  } else if (editor.loadPanel(savedPanel)) {
+    writePanelModes(savedPanel);
+#if WEASEL_DEBUG
+    Serial.println("Panel memory: restored the saved modes");
+#endif
+  }
+  readPanelModes(panelLastSeen);
   updateLeds();
 
   // -- START AUDIO (last, so every DSP object is initialised first) --
@@ -1679,6 +1709,24 @@ void loop() {
   editor.live.clockSync = midiClockSync;
   editor.live.bpm = (clockRunning && midiClockSync) ? midiTempo : 0.0f;
   editor.poll();
+
+  // PANEL MEMORY: save the modes a few seconds after the last change
+  if (now - lastPanelCheck >= PANEL_CHECK_INTERVAL) {
+    lastPanelCheck = now;
+    uint8_t panelNow[weasel::PANEL_COUNT];
+    readPanelModes(panelNow);
+    if (memcmp(panelNow, panelLastSeen, sizeof(panelNow)) != 0) {
+      memcpy(panelLastSeen, panelNow, sizeof(panelNow));
+      panelChangedAt = now;
+      panelSavePending = true;
+    } else if (panelSavePending && now - panelChangedAt >= PANEL_SAVE_DELAY_MS) {
+      panelSavePending = false;
+      editor.storePanel(panelNow);  // erases/writes QSPI only if different from what's stored
+#if WEASEL_DEBUG
+      Serial.println("Panel memory: saved");
+#endif
+    }
+  }
 
   // BUTTONS
   if (now - lastButtonRead >= BUTTON_READ_INTERVAL) {
