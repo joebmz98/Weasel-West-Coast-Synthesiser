@@ -374,6 +374,11 @@ static uint32_t oscGateSamples = 0;
 
 // -- ENVELOPE STATE --
 volatile bool midiNoteHeld = false;  // True while a MIDI note is physically held
+// Held MIDI notes, oldest first. The gate only closes when the LAST held note is released,
+// and releasing the newest note falls back to the previous one (last-note priority).
+const uint8_t MAX_HELD_NOTES = 16;
+uint8_t heldNotes[MAX_HELD_NOTES];
+uint8_t heldNoteCount = 0;
 
 // -- PULSAR ENV --
 enum PulsarMode { PULSAR_MODE_SEQ,
@@ -598,6 +603,9 @@ void handleNoteOff(byte channel, byte note, byte velocity);
 void handleMidiClock();
 void handleMidiStart();
 void handleMidiStop();
+void handleControlChange(byte channel, byte number, byte value);
+void configureMidiInterruptPriority();
+void drainMidi();
 #if WEASEL_DEBUG
 void handleMidiSysExDebug(byte* data, unsigned size);
 #endif
@@ -798,7 +806,7 @@ void scanPatchMatrix() {
     delayMicroseconds(50);
 
     // Keep the MIDI input drained between source scans
-    while (MIDI.read()) {}
+    drainMidi();
   }
 
 #if WEASEL_DEBUG
@@ -1159,6 +1167,13 @@ float processLpg(LpgChannel& ch, float in, float ctrlTarget, LpgMode mode,
 void AudioCallback(float** in, float** out, size_t size) {
   startParamRamps();  // pick up any new pot values for this block
 
+  // A note-on sets every module's MIDI trigger flag, but only modules in MIDI mode use theirs.
+  // Clear the rest so switching a module to MIDI later doesn't fire one stale trigger.
+  if (currentSeqTriggerMode != SEQ_TRIGGER_MIDI) midiTriggerPending = false;
+  if (currentEnvTriggerMode != ENV_TRIGGER_MIDI) envMidiTrigger = false;
+  if (currentPulsarMode != PULSAR_MODE_MIDI) pulsarMidiTrigger = false;
+  if (currentRandomMode != RANDOM_MODE_MIDI) randomMidiTrigger = false;
+
 
   for (size_t i = 0; i < size; i++) {
 
@@ -1200,7 +1215,9 @@ void AudioCallback(float** in, float** out, size_t size) {
       if (seqStepEnabled[seqCurrentStep]) {
         activeSeqCV = seqStepCV[seqCurrentStep];
         activeSeqStep = seqCurrentStep;  // disabled steps leave the previous step lit
-      } else {
+      } else if (currentEnvTriggerMode == ENV_TRIGGER_SEQ) {
+        // A disabled step is a rest, so it ends the envelope's gate - but only when the EG
+        // follows the sequencer. Otherwise it cut MIDI/pulsar-triggered notes short at random.
         gateRemainingSamples = 0;
       }
     }
@@ -1508,6 +1525,7 @@ void setup() {
   MIDI.setHandleClock(handleMidiClock);
   MIDI.setHandleStart(handleMidiStart);
   MIDI.setHandleStop(handleMidiStop);
+  MIDI.setHandleControlChange(handleControlChange);
 #if WEASEL_DEBUG
   MIDI.setHandleSystemExclusive(handleMidiSysExDebug);
 #endif
@@ -1533,6 +1551,7 @@ void setup() {
 
   // -- START AUDIO (last, so every DSP object is initialised first) --
   DAISY.begin(AudioCallback);
+  configureMidiInterruptPriority();  // after DAISY.begin(), which sets the audio DMA priorities
 
 #if WEASEL_DEBUG
   Serial.print("WEASEL firmware ");
@@ -1547,7 +1566,7 @@ void loop() {
   unsigned long now = millis();
 
   // MIDI
-  while (MIDI.read()) {}
+  drainMidi();
   checkMidiClockActivity();
 
   // BUTTONS
@@ -1718,21 +1737,84 @@ void handleMidiSysExDebug(byte* data, unsigned size) {
 }
 #endif
 
+// ============================================
+// MIDI INPUT
+// ============================================
+// The audio callback runs inside the SAI DMA interrupt for a whole block (~1.3ms at 64
+// samples), which DaisyDuino sets to priority 0. The MIDI UART interrupt was priority 1, so
+// it couldn't run during the callback, and the UART only holds one received byte. At
+// 31250 baud a new byte arrives every 320us, so bytes landing mid-callback overwrote each
+// other (UART overrun) and were lost: missed note-ons, missed note-offs (stuck notes).
+// Give the UART the top priority and drop the audio DMA one step. The UART interrupt
+// only copies one byte into a buffer, so audio timing is unaffected.
+void configureMidiInterruptPriority() {
+  const IRQn_Type audioDma[] = { DMA1_Stream0_IRQn, DMA1_Stream1_IRQn,    // SAI1
+                                 DMA1_Stream3_IRQn, DMA1_Stream4_IRQn };  // SAI2
+  for (unsigned i = 0; i < sizeof(audioDma) / sizeof(audioDma[0]); i++) {
+    HAL_NVIC_SetPriority(audioDma[i], 1, 0);
+  }
+  HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+}
+
+// MIDI.read() parses one byte per call, and returns false until a message is complete, so
+// `while (MIDI.read())` stopped at the first byte of every note and took three passes of the
+// main loop to read one. Read everything that has arrived instead.
+void drainMidi() {
+  while (Serial1.available()) {
+    MIDI.read();
+  }
+}
+
+void heldNoteRemove(byte note) {
+  for (uint8_t i = 0; i < heldNoteCount; i++) {
+    if (heldNotes[i] == note) {
+      for (uint8_t j = i; j + 1 < heldNoteCount; j++) heldNotes[j] = heldNotes[j + 1];
+      heldNoteCount--;
+      return;
+    }
+  }
+}
+
+void midiNoteOn(byte note) {
+  heldNoteRemove(note);  // a repeated note moves to the top
+  if (heldNoteCount == MAX_HELD_NOTES) heldNoteRemove(heldNotes[0]);  // forget the oldest
+  heldNotes[heldNoteCount++] = note;
+
+  currentMidiNote = note;
+  midiTriggerPending = true;
+  lastMidiNoteFreq = getMidiTransposeRatio(note);
+  midiNoteReceived = true;
+  midiNoteHeld = true;
+  pulsarMidiTrigger = true;
+  randomMidiTrigger = true;
+  envMidiTrigger = true;
+}
+
+void midiNoteOff(byte note) {
+  bool wasNewest = (heldNoteCount > 0 && heldNotes[heldNoteCount - 1] == note);
+  heldNoteRemove(note);
+  if (heldNoteCount == 0) {
+    midiNoteHeld = false;
+  } else if (wasNewest) {
+    // Fall back to the previous held note: pitch only, the gate stays open, no retrigger
+    currentMidiNote = heldNotes[heldNoteCount - 1];
+    lastMidiNoteFreq = getMidiTransposeRatio(currentMidiNote);
+  }
+}
+
+void allMidiNotesOff() {
+  heldNoteCount = 0;
+  midiNoteHeld = false;
+}
+
 void handleNoteOn(byte channel, byte note, byte velocity) {
 #if WEASEL_DEBUG
   debugPrintNote(velocity > 0 ? "MIDI note on " : "MIDI note off", channel, note, velocity);
 #endif
   if (velocity > 0) {
-    currentMidiNote = note;
-    midiTriggerPending = true;
-    lastMidiNoteFreq = getMidiTransposeRatio(note);
-    midiNoteReceived = true;
-    midiNoteHeld = true;
-    pulsarMidiTrigger = true;
-    randomMidiTrigger = true;
-    envMidiTrigger = true;
+    midiNoteOn(note);
   } else {
-    midiNoteHeld = false;  // Note-on with velocity 0 = note-off
+    midiNoteOff(note);  // Note-on with velocity 0 = note-off
   }
 }
 
@@ -1740,7 +1822,17 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
 #if WEASEL_DEBUG
   debugPrintNote("MIDI note off", channel, note, velocity);
 #endif
-  midiNoteHeld = false;
+  midiNoteOff(note);
+}
+
+// CC 120 (All Sound Off) and CC 123 (All Notes Off): clear any stuck notes
+void handleControlChange(byte channel, byte number, byte value) {
+  if (number == 120 || number == 123) {
+    allMidiNotesOff();
+#if WEASEL_DEBUG
+    Serial.println("MIDI all notes off");
+#endif
+  }
 }
 
 void handleMidiClock() {
