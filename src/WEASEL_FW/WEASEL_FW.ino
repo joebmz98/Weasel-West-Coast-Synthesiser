@@ -51,17 +51,20 @@
 #include <Wire.h>          // I2C (AW9523 LED drivers)
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
+#define WEASEL_FIRMWARE_VERSION "1.0"  // also reported to the web pages
+#include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 
 using namespace daisysp;
 
 // -- FIRMWARE VERSION --
-const char* FIRMWARE_VERSION = "1.0";
+const char* FIRMWARE_VERSION = WEASEL_FIRMWARE_VERSION;
 
 #pragma GCC optimize("O2")
 
 // -- DEBUG --
 // 1 = print button presses, patch changes and MIDI input over USB serial (115200 baud)
+// The web editor pages use the same USB port: leave this at 0 when using them.
 #define WEASEL_DEBUG 0
 
 // ============================================
@@ -411,6 +414,8 @@ const float OUTPUT_HEADROOM = 0.8f;  // doubled from 0.4 to make up for MIX_HEAD
 
 // -- MIDI --
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
+// -- WEB EDITOR (MIDI CHANNEL + PANEL MODES, github.com/joebmz98/Weasel-Flasher) --
+weasel::Editor editor;
 // --
 bool quantizeToMidi = false;       // Enable/disable MIDI quantization mode
 float lastMidiNoteFreq = 261.63f;  // Last received MIDI note transpose ratio
@@ -604,6 +609,8 @@ void handleMidiClock();
 void handleMidiStart();
 void handleMidiStop();
 void handleControlChange(byte channel, byte number, byte value);
+void readPanelModes(uint8_t* out);
+void writePanelModes(const uint8_t* in);
 void configureMidiInterruptPriority();
 void drainMidi();
 #if WEASEL_DEBUG
@@ -1031,6 +1038,24 @@ void updateLeds() {
 // ============================================
 // BUTTON FUNCTIONS
 // ============================================
+// -- WAVEFORM SELECTION (shared by the panel buttons and the web presets page) --
+// index: 0 SIN, 1 TRI, 2 SAW, 3 SQUARE (panel order)
+void setModWaveform(int index) {
+  modWaveformIndex = index;
+  if (index == 0) modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
+  else if (index == 1) modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
+  else if (index == 2) modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SAW);
+  else modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SQUARE);
+}
+
+// index: 0 TRI, 1 SAW, 2 SQUARE (firmware order; the button steps SAW -> SQUARE -> TRI)
+void setComplexWaveform(int index) {
+  morphWaveformIndex = index;
+  if (index == 0) complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
+  else if (index == 1) complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SAW);
+  else complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SQUARE);
+}
+
 void handleButtonPress(uint8_t bit) {
   switch (bit) {
     // --- SR1 ---
@@ -1074,11 +1099,7 @@ void handleButtonPress(uint8_t bit) {
 
     case BTN_MODOSC_WAVE:
       // SIN -> TRI -> SAW -> SQUARE
-      modWaveformIndex = (modWaveformIndex + 1) % 4;
-      if (modWaveformIndex == 0) modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
-      else if (modWaveformIndex == 1) modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
-      else if (modWaveformIndex == 2) modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SAW);
-      else modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SQUARE);
+      setModWaveform((modWaveformIndex + 1) % 4);
       break;
 
     case BTN_COMPOSC_POLARITY:
@@ -1086,11 +1107,8 @@ void handleButtonPress(uint8_t bit) {
       break;
 
     case BTN_COMPOSC_WAVE:
-      // TRI -> SAW -> SQUARE
-      morphWaveformIndex = (morphWaveformIndex + 1) % 3;
-      if (morphWaveformIndex == 0) complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
-      else if (morphWaveformIndex == 1) complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SAW);
-      else complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SQUARE);
+      // Boots on SAW, then SAW -> SQUARE -> TRI (index 1 -> 2 -> 0)
+      setComplexWaveform((morphWaveformIndex + 1) % 3);
       break;
 
     case BTN_QUANTIZE_MIDI:
@@ -1608,8 +1626,14 @@ void setup() {
 #if WEASEL_DEBUG
   MIDI.setHandleSystemExclusive(handleMidiSysExDebug);
 #endif
-  MIDI.begin(MIDI_CHANNEL_OMNI);
+  MIDI.begin(MIDI_CHANNEL_OMNI);  // channel filtering is done in the handlers (web editor setting)
   MIDI.turnThruOff();
+
+  // -- WEB EDITOR: MIDI channel (kept in QSPI), panel modes, restart into DFU --
+  editor.onBootloader = []() { hw.ResetToBootloader(); };
+  editor.readPanel = readPanelModes;
+  editor.writePanel = writePanelModes;
+  editor.begin();
   currentMidiNote = 60;
   midiTriggerPending = false;
 
@@ -1647,6 +1671,14 @@ void loop() {
   // MIDI
   drainMidi();
   checkMidiClockActivity();
+
+  // WEB EDITOR: report MIDI state, answer requests from the USB port
+  bool clockRunning = lastMidiClockTime > 0 && (millis() - lastMidiClockTime) <= MIDI_CLOCK_TIMEOUT;
+  editor.live.noteHeld = midiNoteHeld;
+  editor.live.clockReceiving = clockRunning;
+  editor.live.clockSync = midiClockSync;
+  editor.live.bpm = (clockRunning && midiClockSync) ? midiTempo : 0.0f;
+  editor.poll();
 
   // BUTTONS
   if (now - lastButtonRead >= BUTTON_READ_INTERVAL) {
@@ -1887,6 +1919,9 @@ void allMidiNotesOff() {
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
+  if (!editor.acceptsChannel(channel)) return;  // MIDI receive channel (web editor)
+  if (velocity > 0) editor.noteIn(channel, note, velocity);
+  else editor.activity();
 #if WEASEL_DEBUG
   debugPrintNote(velocity > 0 ? "MIDI note on " : "MIDI note off", channel, note, velocity);
 #endif
@@ -1898,6 +1933,8 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
+  if (!editor.acceptsChannel(channel)) return;
+  editor.activity();
 #if WEASEL_DEBUG
   debugPrintNote("MIDI note off", channel, note, velocity);
 #endif
@@ -1906,6 +1943,7 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
 
 // CC 120 (All Sound Off) and CC 123 (All Notes Off): clear any stuck notes
 void handleControlChange(byte channel, byte number, byte value) {
+  if (!editor.acceptsChannel(channel)) return;
   if (number == 120 || number == 123) {
     allMidiNotesOff();
 #if WEASEL_DEBUG
@@ -1970,4 +2008,78 @@ void handleMidiStart() {
 void handleMidiStop() {
   seqSampleCounter = 0;
   midiClockTicks = 0;
+}
+
+// ============================================
+// PANEL MODES FOR THE WEB PRESETS PAGE
+// ============================================
+// Byte order and meaning: weasel::PanelField in WeaselEditor.h (PANEL_FIELDS in the
+// Weasel-Flasher's protocol.js). Every value is the position in the order the panel button
+// steps through. Not included: the patch bay and the sequencer step switches (latching,
+// so the panel always shows their real position).
+
+// Complex waveform: the panel steps SAW -> SQUARE -> TRI, the firmware stores TRI=0, SAW=1, SQUARE=2
+inline uint8_t complexWaveToPanel(int index) { return (uint8_t)((index + 2) % 3); }
+inline int complexWaveFromPanel(uint8_t value) { return (value + 1) % 3; }
+
+void readPanelModes(uint8_t* out) {
+  out[weasel::P_SEQ_TRIGGER] = (uint8_t)currentSeqTriggerMode;
+  out[weasel::P_SEQ_STAGES] = (uint8_t)(5 - seqMaxSteps);
+  out[weasel::P_ENV_TRIGGER] = (uint8_t)currentEnvTriggerMode;
+  out[weasel::P_ENV_MODE] = (uint8_t)currentEnvMode;
+  out[weasel::P_PULSAR_TRIGGER] = (uint8_t)currentPulsarMode;
+  out[weasel::P_RANDOM_TRIGGER] = (uint8_t)currentRandomMode;
+  out[weasel::P_MOD_WAVE] = (uint8_t)modWaveformIndex;
+  out[weasel::P_MOD_TYPE] = useAmplitudeMod ? 1 : 0;
+  out[weasel::P_LPG2_MODE] = (uint8_t)modOscLpgMode;
+  out[weasel::P_COMPLEX_WAVE] = complexWaveToPanel(morphWaveformIndex);
+  out[weasel::P_POLARITY] = complexOscInverted ? 1 : 0;
+  out[weasel::P_LPG1_MODE] = (uint8_t)foldedLpgMode;
+  out[weasel::P_MIDI_FOLLOW] = quantizeToMidi ? 1 : 0;
+  out[weasel::P_CLOCK_MODE] = midiClockSync ? 1 : 0;
+}
+
+// Same effect as pressing each button until its mode is reached. Values arrive clamped.
+void writePanelModes(const uint8_t* in) {
+  currentSeqTriggerMode = static_cast<SeqTriggerMode>(in[weasel::P_SEQ_TRIGGER]);
+
+  int steps = 5 - in[weasel::P_SEQ_STAGES];
+  if (steps != seqMaxSteps) {
+    seqMaxSteps = steps;
+    seqCurrentStep %= seqMaxSteps;
+  }
+
+  currentEnvTriggerMode = static_cast<EnvTriggerMode>(in[weasel::P_ENV_TRIGGER]);
+  EnvelopeMode envMode = static_cast<EnvelopeMode>(in[weasel::P_ENV_MODE]);
+  if (envMode != currentEnvMode) {
+    currentEnvMode = envMode;
+    if (currentEnvMode == ENV_MODE_OSCILLATE) envRetriggerFlag = false;
+  }
+
+  currentPulsarMode = static_cast<PulsarMode>(in[weasel::P_PULSAR_TRIGGER]);
+  currentRandomMode = static_cast<RandomMode>(in[weasel::P_RANDOM_TRIGGER]);
+
+  if (in[weasel::P_MOD_WAVE] != modWaveformIndex) setModWaveform(in[weasel::P_MOD_WAVE]);
+  useAmplitudeMod = in[weasel::P_MOD_TYPE] != 0;
+  modOscLpgMode = static_cast<LpgMode>(in[weasel::P_LPG2_MODE]);
+
+  int complexWave = complexWaveFromPanel(in[weasel::P_COMPLEX_WAVE]);
+  if (complexWave != morphWaveformIndex) setComplexWaveform(complexWave);
+  complexOscInverted = in[weasel::P_POLARITY] != 0;
+  foldedLpgMode = static_cast<LpgMode>(in[weasel::P_LPG1_MODE]);
+
+  bool follow = in[weasel::P_MIDI_FOLLOW] != 0;
+  if (follow && !quantizeToMidi) midiNoteReceived = false;
+  quantizeToMidi = follow;
+
+  bool sync = in[weasel::P_CLOCK_MODE] != 0;
+  if (sync && !midiClockSync) {
+    seqCurrentStep = 0;
+    seqSampleCounter = 0;
+    midiClockTicks = 0;
+    midiClockSync = true;
+    updateClockDivision();
+  } else {
+    midiClockSync = sync;
+  }
 }
