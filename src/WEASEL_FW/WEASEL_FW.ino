@@ -51,17 +51,20 @@
 #include <Wire.h>          // I2C (AW9523 LED drivers)
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
+#define WEASEL_FIRMWARE_VERSION "1.0"  // also reported to the web pages
+#include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 
 using namespace daisysp;
 
 // -- FIRMWARE VERSION --
-const char* FIRMWARE_VERSION = "1.0";
+const char* FIRMWARE_VERSION = WEASEL_FIRMWARE_VERSION;
 
 #pragma GCC optimize("O2")
 
 // -- DEBUG --
 // 1 = print button presses, patch changes and MIDI input over USB serial (115200 baud)
+// The web editor pages use the same USB port: leave this at 0 when using them.
 #define WEASEL_DEBUG 0
 
 // ============================================
@@ -411,6 +414,8 @@ const float OUTPUT_HEADROOM = 0.8f;  // doubled from 0.4 to make up for MIX_HEAD
 
 // -- MIDI --
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
+// -- WEB EDITOR (MIDI CHANNEL + PANEL MODES, github.com/joebmz98/Weasel-Flasher) --
+weasel::Editor editor;
 // --
 bool quantizeToMidi = false;       // Enable/disable MIDI quantization mode
 float lastMidiNoteFreq = 261.63f;  // Last received MIDI note transpose ratio
@@ -604,6 +609,8 @@ void handleMidiClock();
 void handleMidiStart();
 void handleMidiStop();
 void handleControlChange(byte channel, byte number, byte value);
+void readPanelModes(uint8_t* out);
+void writePanelModes(const uint8_t* in);
 void configureMidiInterruptPriority();
 void drainMidi();
 #if WEASEL_DEBUG
@@ -723,6 +730,39 @@ inline void filterPot(int i, int raw) {
 // Current schematic: U4 and U5 share MUX1_S0..S3 (D4/D5/D6/D10 are unconnected on the board).
 // Prototype boards: U5 still has its own MUX2_S0..S3 lines, so those are driven to the same
 // channel as well - the same code works on both boards.
+#if WEASEL_DEBUG
+// Pot names in potValues[] order, for the jump log below
+const char* DEBUG_POT_NAMES[TOTAL_POTS] = {
+  "SEQ STEP 1", "SEQ STEP 2", "SEQ STEP 3", "SEQ STEP 4", "SEQ STEP 5",
+  "ENV ATTACK", "ENV SUSTAIN", "ENV DECAY", "PULSAR CTRL", "PULSAR PERIOD",
+  "MODOSC FREQ CTRL", "MODOSC FREQ", "MODOSC FINE", "MODOSC MOD CTRL", "MODOSC MOD",
+  "COMPOSC FREQ CTRL",
+  "COMPOSC FREQ", "COMPOSC FINE", "COMPOSC WF CTRL", "COMPOSC WF", "COMPOSC TIMBRE",
+  "LPG1 CTRL", "LPG1 LEVEL", "LPG2 CTRL", "LPG2 LEVEL", "CLOCK", "REVERB MIX",
+  "MASTER VOLUME", "MUX2 C12", "MUX2 C13", "MUX2 C14", "MUX2 C15"
+};
+int debugLastRaw[TOTAL_POTS] = { 0 };
+
+// Logs any single-scan jump in a raw pot reading larger than ~6% of travel.
+// Turning a pot quickly will show up too; jumps while nobody touches the panel are glitches
+// (mux select line, ADC noise, a bad pot or wiring).
+void debugPotJump(int index, int raw) {
+  static bool primed = false;
+  if (primed && abs(raw - debugLastRaw[index]) > 4000) {
+    Serial.print("Pot jump: ");
+    Serial.print(DEBUG_POT_NAMES[index]);
+    Serial.print(index < NUM_POTS_PER_MUX ? " (MUX1 C" : " (MUX2 C");
+    Serial.print(index % NUM_POTS_PER_MUX);
+    Serial.print(") ");
+    Serial.print(debugLastRaw[index]);
+    Serial.print(" -> ");
+    Serial.println(raw);
+  }
+  debugLastRaw[index] = raw;
+  if (index == TOTAL_POTS - 1) primed = true;
+}
+#endif
+
 void readPotentiometers() {
   for (int ch = 0; ch < NUM_POTS_PER_MUX; ch++) {
     selectMuxChannel(ch, MUX1_S0, MUX1_S1, MUX1_S2, MUX1_S3);
@@ -732,6 +772,10 @@ void readPotentiometers() {
     int raw2 = analogRead(MUX2_SIG);
     filterPot(ch, raw1);
     filterPot(ch + NUM_POTS_PER_MUX, raw2);
+#if WEASEL_DEBUG
+    debugPotJump(ch, raw1);
+    debugPotJump(ch + NUM_POTS_PER_MUX, raw2);
+#endif
   }
   potFilterPrimed = true;
 }
@@ -781,10 +825,26 @@ void initPatchBay() {
   }
 }
 
+// FLOATING-INPUT GUARD
+// Each patch destination relies on its 10k pull-down to read LOW when no source drives it.
+// If that resistor isn't connected (bad joint, broken track), the input keeps the charge from
+// the last source that drove it, and the next sources in the scan read as "patched" too:
+// ghost connections that trigger in time with the sequencer. So before each source is driven,
+// every input is read with all sources LOW; a reading only counts as a connection if that
+// input was LOW just before. An input already HIGH with nothing driving it is flagged faulty.
+const uint8_t PATCH_FAULT_CLEAR_SCANS = 50;  // clean scans (~1s) before a fault flag clears
+uint8_t patchFaultHold[NUM_DESTINATIONS] = { 0 };  // >0 = input recently seen floating
+bool patchInputFaulty[NUM_DESTINATIONS] = { false };
+
 void scanPatchMatrix() {
   for (int s = 0; s < NUM_SOURCES; s++) {
     digitalWrite(sourcePins[s], LOW);
   }
+  delayMicroseconds(50);
+
+  // Baseline with nothing driven: every healthy input reads LOW here
+  uint8_t idle = readAllShiftRegisters() & 0xFF;
+  uint8_t floatingSeen = idle;
 
   for (int s = 0; s < NUM_SOURCES; s++) {
     digitalWrite(sourcePins[s], HIGH);
@@ -793,7 +853,8 @@ void scanPatchMatrix() {
     uint8_t sr4 = readAllShiftRegisters() & 0xFF;
 
     for (int d = 0; d < NUM_DESTINATIONS; d++) {
-      bool reading = (sr4 & (1 << d)) != 0;
+      // Only a LOW -> HIGH change caused by this source counts as a connection
+      bool reading = (sr4 & (1 << d)) && !(idle & (1 << d));
       if (reading) {
         if (patchCounter[s][d] < PATCH_DEBOUNCE_READS) patchCounter[s][d]++;
       } else {
@@ -805,8 +866,33 @@ void scanPatchMatrix() {
     digitalWrite(sourcePins[s], LOW);
     delayMicroseconds(50);
 
+    // Re-read with everything LOW again: the baseline for the next source
+    if (s < NUM_SOURCES - 1) {
+      idle = readAllShiftRegisters() & 0xFF;
+      floatingSeen |= idle;
+    }
+
     // Keep the MIDI input drained between source scans
     drainMidi();
+  }
+
+  // Fault flags (with a hold-off so a floating input doesn't flicker on and off)
+  for (int d = 0; d < NUM_DESTINATIONS; d++) {
+    if (floatingSeen & (1 << d)) {
+      patchFaultHold[d] = PATCH_FAULT_CLEAR_SCANS;
+    } else if (patchFaultHold[d] > 0) {
+      patchFaultHold[d]--;
+    }
+    bool faulty = patchFaultHold[d] > 0;
+#if WEASEL_DEBUG
+    if (faulty != patchInputFaulty[d]) {
+      Serial.print("Patch input ");
+      Serial.print(destNames[d]);
+      Serial.println(faulty ? " reads HIGH with nothing driving it - check its 10k pull-down and solder joints"
+                            : " OK again");
+    }
+#endif
+    patchInputFaulty[d] = faulty;
   }
 
 #if WEASEL_DEBUG
@@ -952,6 +1038,24 @@ void updateLeds() {
 // ============================================
 // BUTTON FUNCTIONS
 // ============================================
+// -- WAVEFORM SELECTION (shared by the panel buttons and the web presets page) --
+// index: 0 SIN, 1 TRI, 2 SAW, 3 SQUARE (panel order)
+void setModWaveform(int index) {
+  modWaveformIndex = index;
+  if (index == 0) modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
+  else if (index == 1) modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
+  else if (index == 2) modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SAW);
+  else modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SQUARE);
+}
+
+// index: 0 TRI, 1 SAW, 2 SQUARE (firmware order; the button steps SAW -> SQUARE -> TRI)
+void setComplexWaveform(int index) {
+  morphWaveformIndex = index;
+  if (index == 0) complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
+  else if (index == 1) complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SAW);
+  else complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SQUARE);
+}
+
 void handleButtonPress(uint8_t bit) {
   switch (bit) {
     // --- SR1 ---
@@ -995,11 +1099,7 @@ void handleButtonPress(uint8_t bit) {
 
     case BTN_MODOSC_WAVE:
       // SIN -> TRI -> SAW -> SQUARE
-      modWaveformIndex = (modWaveformIndex + 1) % 4;
-      if (modWaveformIndex == 0) modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
-      else if (modWaveformIndex == 1) modulationOsc.SetWaveform(modulationOsc.WAVE_TRI);
-      else if (modWaveformIndex == 2) modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SAW);
-      else modulationOsc.SetWaveform(modulationOsc.WAVE_POLYBLEP_SQUARE);
+      setModWaveform((modWaveformIndex + 1) % 4);
       break;
 
     case BTN_COMPOSC_POLARITY:
@@ -1007,11 +1107,8 @@ void handleButtonPress(uint8_t bit) {
       break;
 
     case BTN_COMPOSC_WAVE:
-      // TRI -> SAW -> SQUARE
-      morphWaveformIndex = (morphWaveformIndex + 1) % 3;
-      if (morphWaveformIndex == 0) complexOscMorph.SetWaveform(complexOscMorph.WAVE_TRI);
-      else if (morphWaveformIndex == 1) complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SAW);
-      else complexOscMorph.SetWaveform(complexOscMorph.WAVE_POLYBLEP_SQUARE);
+      // Boots on SAW, then SAW -> SQUARE -> TRI (index 1 -> 2 -> 0)
+      setComplexWaveform((morphWaveformIndex + 1) % 3);
       break;
 
     case BTN_QUANTIZE_MIDI:
@@ -1215,7 +1312,9 @@ void AudioCallback(float** in, float** out, size_t size) {
       if (seqStepEnabled[seqCurrentStep]) {
         activeSeqCV = seqStepCV[seqCurrentStep];
         activeSeqStep = seqCurrentStep;  // disabled steps leave the previous step lit
-      } else {
+      } else if (currentEnvTriggerMode == ENV_TRIGGER_SEQ) {
+        // A disabled step is a rest, so it ends the envelope's gate - but only when the EG
+        // follows the sequencer. Otherwise it cut MIDI/pulsar-triggered notes short at random.
         gateRemainingSamples = 0;
       }
     }
@@ -1527,8 +1626,14 @@ void setup() {
 #if WEASEL_DEBUG
   MIDI.setHandleSystemExclusive(handleMidiSysExDebug);
 #endif
-  MIDI.begin(MIDI_CHANNEL_OMNI);
+  MIDI.begin(MIDI_CHANNEL_OMNI);  // channel filtering is done in the handlers (web editor setting)
   MIDI.turnThruOff();
+
+  // -- WEB EDITOR: MIDI channel (kept in QSPI), panel modes, restart into DFU --
+  editor.onBootloader = []() { hw.ResetToBootloader(); };
+  editor.readPanel = readPanelModes;
+  editor.writePanel = writePanelModes;
+  editor.begin();
   currentMidiNote = 60;
   midiTriggerPending = false;
 
@@ -1566,6 +1671,14 @@ void loop() {
   // MIDI
   drainMidi();
   checkMidiClockActivity();
+
+  // WEB EDITOR: report MIDI state, answer requests from the USB port
+  bool clockRunning = lastMidiClockTime > 0 && (millis() - lastMidiClockTime) <= MIDI_CLOCK_TIMEOUT;
+  editor.live.noteHeld = midiNoteHeld;
+  editor.live.clockReceiving = clockRunning;
+  editor.live.clockSync = midiClockSync;
+  editor.live.bpm = (clockRunning && midiClockSync) ? midiTempo : 0.0f;
+  editor.poll();
 
   // BUTTONS
   if (now - lastButtonRead >= BUTTON_READ_INTERVAL) {
@@ -1806,6 +1919,9 @@ void allMidiNotesOff() {
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
+  if (!editor.acceptsChannel(channel)) return;  // MIDI receive channel (web editor)
+  if (velocity > 0) editor.noteIn(channel, note, velocity);
+  else editor.activity();
 #if WEASEL_DEBUG
   debugPrintNote(velocity > 0 ? "MIDI note on " : "MIDI note off", channel, note, velocity);
 #endif
@@ -1817,6 +1933,8 @@ void handleNoteOn(byte channel, byte note, byte velocity) {
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
+  if (!editor.acceptsChannel(channel)) return;
+  editor.activity();
 #if WEASEL_DEBUG
   debugPrintNote("MIDI note off", channel, note, velocity);
 #endif
@@ -1825,6 +1943,7 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
 
 // CC 120 (All Sound Off) and CC 123 (All Notes Off): clear any stuck notes
 void handleControlChange(byte channel, byte number, byte value) {
+  if (!editor.acceptsChannel(channel)) return;
   if (number == 120 || number == 123) {
     allMidiNotesOff();
 #if WEASEL_DEBUG
@@ -1889,4 +2008,78 @@ void handleMidiStart() {
 void handleMidiStop() {
   seqSampleCounter = 0;
   midiClockTicks = 0;
+}
+
+// ============================================
+// PANEL MODES FOR THE WEB PRESETS PAGE
+// ============================================
+// Byte order and meaning: weasel::PanelField in WeaselEditor.h (PANEL_FIELDS in the
+// Weasel-Flasher's protocol.js). Every value is the position in the order the panel button
+// steps through. Not included: the patch bay and the sequencer step switches (latching,
+// so the panel always shows their real position).
+
+// Complex waveform: the panel steps SAW -> SQUARE -> TRI, the firmware stores TRI=0, SAW=1, SQUARE=2
+inline uint8_t complexWaveToPanel(int index) { return (uint8_t)((index + 2) % 3); }
+inline int complexWaveFromPanel(uint8_t value) { return (value + 1) % 3; }
+
+void readPanelModes(uint8_t* out) {
+  out[weasel::P_SEQ_TRIGGER] = (uint8_t)currentSeqTriggerMode;
+  out[weasel::P_SEQ_STAGES] = (uint8_t)(5 - seqMaxSteps);
+  out[weasel::P_ENV_TRIGGER] = (uint8_t)currentEnvTriggerMode;
+  out[weasel::P_ENV_MODE] = (uint8_t)currentEnvMode;
+  out[weasel::P_PULSAR_TRIGGER] = (uint8_t)currentPulsarMode;
+  out[weasel::P_RANDOM_TRIGGER] = (uint8_t)currentRandomMode;
+  out[weasel::P_MOD_WAVE] = (uint8_t)modWaveformIndex;
+  out[weasel::P_MOD_TYPE] = useAmplitudeMod ? 1 : 0;
+  out[weasel::P_LPG2_MODE] = (uint8_t)modOscLpgMode;
+  out[weasel::P_COMPLEX_WAVE] = complexWaveToPanel(morphWaveformIndex);
+  out[weasel::P_POLARITY] = complexOscInverted ? 1 : 0;
+  out[weasel::P_LPG1_MODE] = (uint8_t)foldedLpgMode;
+  out[weasel::P_MIDI_FOLLOW] = quantizeToMidi ? 1 : 0;
+  out[weasel::P_CLOCK_MODE] = midiClockSync ? 1 : 0;
+}
+
+// Same effect as pressing each button until its mode is reached. Values arrive clamped.
+void writePanelModes(const uint8_t* in) {
+  currentSeqTriggerMode = static_cast<SeqTriggerMode>(in[weasel::P_SEQ_TRIGGER]);
+
+  int steps = 5 - in[weasel::P_SEQ_STAGES];
+  if (steps != seqMaxSteps) {
+    seqMaxSteps = steps;
+    seqCurrentStep %= seqMaxSteps;
+  }
+
+  currentEnvTriggerMode = static_cast<EnvTriggerMode>(in[weasel::P_ENV_TRIGGER]);
+  EnvelopeMode envMode = static_cast<EnvelopeMode>(in[weasel::P_ENV_MODE]);
+  if (envMode != currentEnvMode) {
+    currentEnvMode = envMode;
+    if (currentEnvMode == ENV_MODE_OSCILLATE) envRetriggerFlag = false;
+  }
+
+  currentPulsarMode = static_cast<PulsarMode>(in[weasel::P_PULSAR_TRIGGER]);
+  currentRandomMode = static_cast<RandomMode>(in[weasel::P_RANDOM_TRIGGER]);
+
+  if (in[weasel::P_MOD_WAVE] != modWaveformIndex) setModWaveform(in[weasel::P_MOD_WAVE]);
+  useAmplitudeMod = in[weasel::P_MOD_TYPE] != 0;
+  modOscLpgMode = static_cast<LpgMode>(in[weasel::P_LPG2_MODE]);
+
+  int complexWave = complexWaveFromPanel(in[weasel::P_COMPLEX_WAVE]);
+  if (complexWave != morphWaveformIndex) setComplexWaveform(complexWave);
+  complexOscInverted = in[weasel::P_POLARITY] != 0;
+  foldedLpgMode = static_cast<LpgMode>(in[weasel::P_LPG1_MODE]);
+
+  bool follow = in[weasel::P_MIDI_FOLLOW] != 0;
+  if (follow && !quantizeToMidi) midiNoteReceived = false;
+  quantizeToMidi = follow;
+
+  bool sync = in[weasel::P_CLOCK_MODE] != 0;
+  if (sync && !midiClockSync) {
+    seqCurrentStep = 0;
+    seqSampleCounter = 0;
+    midiClockTicks = 0;
+    midiClockSync = true;
+    updateClockDivision();
+  } else {
+    midiClockSync = sync;
+  }
 }
