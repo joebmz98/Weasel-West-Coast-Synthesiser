@@ -42,15 +42,22 @@ static const uint8_t OMNI = 16;
 static const uint32_t STORAGE_OFFSET = 0x7F0000;        // last 64 KB of the 8 MB QSPI chip
 static const uint32_t PANEL_STORAGE_OFFSET = 0x7E0000;  // the 64 KB below it: panel memory
 
+// MidiSettings.pitchExclude bits: oscillators that ignore the MIDI note's pitch.
+// 0 (the factory value, and what older firmware left here) = both follow.
+static const uint8_t PITCH_EXCLUDE_COMPLEX = 1;     // complex osc (LPG 1)
+static const uint8_t PITCH_EXCLUDE_MODULATION = 2;  // modulation osc (LPG 2)
+static const uint8_t PITCH_EXCLUDE_MAX = 3;
+
 struct MidiSettings {
-  uint8_t channel;      // 0-15 = MIDI channel 1-16, 16 = omni
-  uint8_t reserved[3];  // room for later settings; always 0
+  uint8_t channel;       // 0-15 = MIDI channel 1-16, 16 = omni
+  uint8_t pitchExclude;  // firmware 1.1.3+: PITCH_EXCLUDE_* bits (was reserved, always 0)
+  uint8_t reserved[2];   // room for later settings; always 0
 
   bool operator!=(const MidiSettings &o) const { return memcmp(this, &o, sizeof(*this)) != 0; }
   bool operator==(const MidiSettings &o) const { return !(*this != o); }
 };
 
-static const MidiSettings DEFAULTS = { OMNI, { 0, 0, 0 } };
+static const MidiSettings DEFAULTS = { OMNI, 0, { 0, 0 } };
 
 // Panel modes, in wire order (protocol.js PANEL_FIELDS). Each is an index into
 // the order a press of that button steps through.
@@ -137,6 +144,21 @@ class Editor {
 
   const MidiSettings &settings() const { return settings_; }
 
+  // Oscillators that ignore the MIDI note's pitch (PITCH_EXCLUDE_* bits)
+  uint8_t pitchExclude() const { return settings_.pitchExclude; }
+
+  // Set from the panel (MIDI shift + LPG buttons). Applies live and is kept in QSPI at once,
+  // like a panel change; any unsaved change made on the web page (the channel) stays unsaved.
+  void setPitchExclude(uint8_t mask) {
+    mask &= PITCH_EXCLUDE_MAX;
+    settings_.pitchExclude = mask;
+    if (saved_.pitchExclude != mask) {
+      MidiSettings s = saved_;
+      s.pitchExclude = mask;
+      store(s, false);  // erases one 4 KB QSPI block (up to ~0.3 s)
+    }
+  }
+
   // channel as the Arduino MIDI library gives it: 1-16
   bool acceptsChannel(uint8_t channel) const {
     return settings_.channel == OMNI || settings_.channel + 1 == channel;
@@ -214,15 +236,16 @@ class Editor {
     RPL_NAK = 0x7F,
     NAK_UNKNOWN = 1, NAK_LENGTH = 2, NAK_MAGIC = 3, NAK_STORAGE = 5,
   };
-  static const uint8_t MIDI_COUNT = 1;
+  static const uint8_t MIDI_COUNT = 2;  // channel, pitchExclude (1.1.3+)
 
   static MidiSettings sanitize(const MidiSettings &s) {
     MidiSettings o = DEFAULTS;
     o.channel = s.channel > OMNI ? OMNI : s.channel;
+    o.pitchExclude = s.pitchExclude > PITCH_EXCLUDE_MAX ? 0 : s.pitchExclude;
     return o;
   }
 
-  uint8_t midiSum(const MidiSettings &s) const { uint8_t b = s.channel; return sum(&b, 1); }
+  uint8_t midiSum(const MidiSettings &s) const { uint8_t b[MIDI_COUNT] = { s.channel, s.pitchExclude }; return sum(b, MIDI_COUNT); }
 
   void panelBytes(uint8_t *out) {
     memset(out, 0, PANEL_COUNT);
@@ -240,7 +263,7 @@ class Editor {
   }
 
   void nak(uint8_t cmd, uint8_t reason) { uint8_t d[2] = { (uint8_t)(cmd & 0x7F), reason }; send(RPL_NAK, d, 2); }
-  void sendSettings() { uint8_t d = settings_.channel; send(0x42, &d, 1); }
+  void sendSettings() { uint8_t d[MIDI_COUNT] = { settings_.channel, settings_.pitchExclude }; send(0x42, d, MIDI_COUNT); }
   void sendPanel() { uint8_t d[PANEL_COUNT]; panelBytes(d); send(0x44, d, PANEL_COUNT); }
 
   void sendStatus() {
@@ -288,8 +311,10 @@ class Editor {
       }
       case CMD_GET_MIDI: sendSettings(); break;
       case CMD_SET_MIDI:
-        if (pn != MIDI_COUNT) { nak(cmd, NAK_LENGTH); break; }
+        // 1 byte (pages from before 1.1.3: channel only) or MIDI_COUNT bytes
+        if (pn < 1 || pn > MIDI_COUNT) { nak(cmd, NAK_LENGTH); break; }
         settings_.channel = p[0] > OMNI ? OMNI : p[0];   // live straight away; kept only after SAVE
+        if (pn >= 2) settings_.pitchExclude = p[1] > PITCH_EXCLUDE_MAX ? PITCH_EXCLUDE_MAX : p[1];
         sendSettings();
         break;
       case CMD_GET_PANEL: sendPanel(); break;

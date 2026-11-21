@@ -43,3 +43,5 @@ src/**/build/**
 # --- Python ---
 __pycache__/
 *.pyc
+tools/button_test/gen.h
+tools/button_test/button_test

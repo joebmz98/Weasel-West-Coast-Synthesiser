@@ -2,7 +2,7 @@
 // ==== WEASEL ========== //
 // Buchla Music Easel     //
 // Inspired Digital Synth //
-// firmware version 1.1.2 //
+// firmware version 1.1.3 //
 // ********************** //
 // designed by            //
 // .axs instruments       //
@@ -52,7 +52,7 @@
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
 #include "buchla_lpg.h"    // BUCHLA 292 LPG MODEL (VACTROL + AUDIO CIRCUIT)
-#define WEASEL_FIRMWARE_VERSION "1.1.2"  // also reported to the web pages
+#define WEASEL_FIRMWARE_VERSION "1.1.3"  // also reported to the web pages
 #include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 
@@ -189,8 +189,32 @@ const uint8_t SEQ_STEP_BITS[5] = { BTN_SEQ_STEP1, BTN_SEQ_STEP2, BTN_SEQ_STEP3, 
 uint32_t buttonRawPrev = 0;      // previous raw read (for 2-read debounce)
 uint32_t buttonDebounced = 0;    // stable button state
 uint32_t buttonLastHandled = 0;  // state at last edge-processing pass
+uint32_t buttonConsumed = 0;     // buttons whose release must do nothing (used in a shift combo, or held at boot)
+bool buttonsArmed = false;       // false during setup(): track state, take no actions
 unsigned long lastButtonRead = 0;
 const unsigned long BUTTON_READ_INTERVAL = 10;  // ms -> 10-20ms effective debounce
+
+// Mode buttons act on RELEASE (press then let go), so a button can also be held as a
+// shift. The manual pulsar trigger still fires on press, as a performance trigger.
+//
+// MIDI shift: hold MIDI for SHIFT_HOLD_MS and the LPG 1 and LPG 2 mode LEDs flash.
+// While they flash, LPG 1 / LPG 2 toggle whether the complex / modulation oscillator
+// follows the MIDI note's pitch (flashing = follows, steady = ignores MIDI pitch).
+// The change applies when MIDI is released, and that release does NOT toggle MIDI on/off.
+// Any other button pressed while MIDI is held is ignored, and also cancels the MIDI toggle.
+#define SHIFT_BUTTON BTN_QUANTIZE_MIDI
+const unsigned long SHIFT_HOLD_MS = 1000;
+const unsigned long SHIFT_FLASH_MS = 150;  // LED flash half-period
+unsigned long shiftDownAt = 0;
+bool shiftActive = false;      // held long enough: LPG LEDs flashing, LPG buttons edit
+bool shiftUsed = false;        // another button was pressed during this hold
+uint8_t shiftPitchExclude = 0; // pending pitch-follow mask (bit0 complex/LPG1, bit1 modulation/LPG2)
+// Buttons that can take part in a shift combo (not the latching step switches)
+#if SEQ_STEP_SWITCHES_LATCHING
+const uint32_t SHIFTABLE_MASK = BUTTON_MASK & ~((1UL << BTN_SEQ_STEP1) | (1UL << BTN_SEQ_STEP2) | (1UL << BTN_SEQ_STEP3) | (1UL << BTN_SEQ_STEP4) | (1UL << BTN_SEQ_STEP5));
+#else
+const uint32_t SHIFTABLE_MASK = BUTTON_MASK;
+#endif
 
 // ============================================
 // PATCH BAY (4 sources x 7 destinations, read on SR4 D0-D6)
@@ -273,7 +297,11 @@ const LedLocation LED_RANDOM_MODE[] = { { 2, 1, 5 }, { 2, 1, 6 }, { 2, 1, 7 } };
 const LedLocation LED_CLOCK_SYNC[] = { { 3, 0, 1 }, { 3, 0, 2 } };               // FREE, MIDI SYNC
 // Sequencer step LEDs (U1 @ 0x58): D9 = P0_6, D14 = P0_7, D15 = P1_0, D16 = P1_1, D17 = P1_2
 const LedLocation LED_SEQ_STEP[] = { { 0, 0, 6 }, { 0, 0, 7 }, { 0, 1, 0 }, { 0, 1, 1 }, { 0, 1, 2 } };  // STEP 1..5
-// LPG mode LEDs not yet assigned - add groups here and in buildLedFrame() when known
+// LPG mode LEDs (U2 @ 0x59, from the current schematic): LPG 1 = D38 LO PASS (P1_0),
+// D39 COMBI (P1_1), D40 VCA (P1_2); LPG 2 = D42 LO PASS (P1_4), D43 COMBI (P1_5), D44 VCA (P1_6).
+// D41 / D45 (P1_3 / P1_7) are the LPG trigger indicators, not used yet.
+const LedLocation LED_LPG1_MODE[] = { { 1, 1, 2 }, { 1, 1, 0 }, { 1, 1, 1 } };  // VCA, LP, COMBI
+const LedLocation LED_LPG2_MODE[] = { { 1, 1, 6 }, { 1, 1, 4 }, { 1, 1, 5 } };  // VCA, LP, COMBI
 
 uint8_t ledFrame[NUM_CHIPS][2] = { { 0 } };     // desired state [chip][port]
 uint8_t ledWritten[NUM_CHIPS][2] = { { 0 } };   // last state sent to the chip
@@ -1006,6 +1034,16 @@ void buildLedFrame() {
   SET_LED(LED_RANDOM_MODE, currentRandomMode);
   SET_LED(LED_CLOCK_SYNC, midiClockSync ? 1 : 0);
   SET_LED(LED_SEQ_STEP, activeSeqStep);
+
+  // LPG modes. In the MIDI shift, a channel that follows MIDI pitch flashes all its mode
+  // LEDs; one that ignores MIDI pitch shows its mode steady.
+  bool flashOn = ((millis() / SHIFT_FLASH_MS) & 1) == 0;
+  bool flash1 = shiftActive && !(shiftPitchExclude & weasel::PITCH_EXCLUDE_COMPLEX);
+  bool flash2 = shiftActive && !(shiftPitchExclude & weasel::PITCH_EXCLUDE_MODULATION);
+  for (int i = 0; i < 3; i++) {
+    if (flash1 ? flashOn : (i == (int)foldedLpgMode)) SET_LED(LED_LPG1_MODE, i);
+    if (flash2 ? flashOn : (i == (int)modOscLpgMode)) SET_LED(LED_LPG2_MODE, i);
+  }
 }
 
 // Only writes chips whose outputs changed
@@ -1165,12 +1203,71 @@ void readButtons() {
   if (raw == buttonRawPrev) buttonDebounced = raw;
   buttonRawPrev = raw;
 
-  uint32_t pressed = buttonDebounced & ~buttonLastHandled;  // rising edges
+  uint32_t pressed = buttonDebounced & ~buttonLastHandled;   // rising edges
+  uint32_t released = ~buttonDebounced & buttonLastHandled;  // falling edges
   buttonLastHandled = buttonDebounced;
 
+  if (!buttonsArmed) {
+    // setup(): anything down now is ignored until it has been let go
+    buttonConsumed = buttonDebounced;
+    pressed = released = 0;
+  }
+
+  // -- presses --
   while (pressed) {
     uint8_t bit = __builtin_ctz(pressed);
     pressed &= pressed - 1;
+
+    if (bit == SHIFT_BUTTON) {
+      shiftDownAt = millis();
+      shiftActive = false;
+      shiftUsed = false;
+      shiftPitchExclude = editor.pitchExclude();
+      continue;
+    }
+    if (buttonIsDown(SHIFT_BUTTON) && !(buttonConsumed & (1UL << SHIFT_BUTTON)) && ((1UL << bit) & SHIFTABLE_MASK)) {
+      // Pressed while MIDI is held: a shift combo, never a normal press or release
+      shiftUsed = true;
+      buttonConsumed |= (1UL << bit);
+      if (shiftActive) {
+        if (bit == BTN_LPG1_MODE) shiftPitchExclude ^= weasel::PITCH_EXCLUDE_COMPLEX;
+        else if (bit == BTN_LPG2_MODE) shiftPitchExclude ^= weasel::PITCH_EXCLUDE_MODULATION;
+      }
+      continue;
+    }
+    if (bit == BTN_PULSAR_MANUAL) handleButtonPress(bit);  // performance trigger: on press
+  }
+
+  // -- MIDI shift: held long enough? --
+  if (buttonIsDown(SHIFT_BUTTON) && !(buttonConsumed & (1UL << SHIFT_BUTTON)) && !shiftActive
+      && millis() - shiftDownAt >= SHIFT_HOLD_MS) {
+    shiftActive = true;
+  }
+
+  // -- releases --
+  while (released) {
+    uint8_t bit = __builtin_ctz(released);
+    released &= released - 1;
+    uint32_t mask = 1UL << bit;
+
+    if (buttonConsumed & mask) {  // part of a combo, or held since power-up
+      buttonConsumed &= ~mask;
+      if (bit == SHIFT_BUTTON) shiftActive = false;
+      continue;
+    }
+    if (bit == SHIFT_BUTTON) {
+      if (shiftActive || shiftUsed) {
+        // End of a shift: apply the pitch-follow choice, leave MIDI on/off alone
+        if (shiftPitchExclude != editor.pitchExclude()) editor.setPitchExclude(shiftPitchExclude);
+      } else {
+        handleButtonPress(bit);  // a plain press and release: toggle MIDI
+      }
+      shiftActive = false;
+      shiftUsed = false;
+      continue;
+    }
+    if (bit == BTN_PULSAR_MANUAL) continue;     // already fired on press
+    if (!(mask & SHIFTABLE_MASK)) continue;     // latching step switches: read by level below
     handleButtonPress(bit);
   }
 
@@ -1242,6 +1339,11 @@ float processLpg(weasel::BuchlaLpg& lpg, float in, float ctrl, LpgMode mode) {
 
 void AudioCallback(float** in, float** out, size_t size) {
   startParamRamps();  // pick up any new pot values for this block
+
+  // Which oscillators follow the MIDI note's pitch (web editor / MIDI shift + LPG buttons)
+  const uint8_t pitchExclude = editor.pitchExclude();
+  const bool complexOscFollowsMidi = !(pitchExclude & weasel::PITCH_EXCLUDE_COMPLEX);
+  const bool modOscFollowsMidi = !(pitchExclude & weasel::PITCH_EXCLUDE_MODULATION);
 
   // A note-on sets every module's MIDI trigger flag, but only modules in MIDI mode use theirs.
   // Clear the rest so switching a module to MIDI later doesn't fire one stale trigger.
@@ -1431,7 +1533,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     // MODULATION OSCILLATOR
     float modExp = (modulationFreqCoeff * 5.0f) + smModulationFine;
     float modFinalFreq = pitchExp2(smModulationOscPitchOct + modExp);
-    if (quantizeToMidi && midiNoteReceived) {
+    if (quantizeToMidi && midiNoteReceived && modOscFollowsMidi) {
       // Pot frequency is the C4 reference, transposed by the MIDI note
       modFinalFreq *= lastMidiNoteFreq;
     }
@@ -1453,7 +1555,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     float compExp = (complexOscFreqCoeff + fmSignal) * 5.0f + smComplexOscFine;
     float compFinalFreq;
 
-    if (quantizeToMidi && midiNoteReceived) {
+    if (quantizeToMidi && midiNoteReceived && complexOscFollowsMidi) {
       compFinalFreq = pitchExp2(smComplexOscPitchOct + compExp) * lastMidiNoteFreq;
     } else if (!quantizeToMidi && complexOscMidiEnabled) {
       float rawNote = 24.0f + (potNorm(POT_COMPOSC_FREQ) * 72.0f);
@@ -1631,7 +1733,7 @@ void setup() {
   }
   readButtons();
   readButtons();
-  buttonLastHandled = buttonDebounced;  // don't treat buttons held at boot as presses
+  buttonsArmed = true;  // buttons held at boot do nothing, on press or on release
 
   // -- PANEL MEMORY: power up with the modes from last time --
   uint8_t savedPanel[weasel::PANEL_COUNT];

@@ -144,8 +144,9 @@ firmware rather than by the resistors: the AW9523 sinks a regulated current from
 
 ### Buttons and toggles
 
-Each button steps through its modes, and the LEDs beside it show the current one
-(`*` = power-on default).
+Each button steps through its modes when you press **and release** it, and the LEDs beside
+it show the current one (`*` = power-on default). The pulsar's manual button fires as soon as
+it's pressed.
 
 | Section | Button | Modes |
 | --- | --- | --- |
@@ -164,6 +165,21 @@ Each button steps through its modes, and the LEDs beside it show the current one
 | Dual low pass gate | Level 1 / level 2 mode | voltage controlled amp, lo pass filter, combination\* |
 | Random voltage | Trigger select | sequencer\*, pulsar, midi |
 | Clock | Mode | free\*, sync (MIDI clock) |
+
+### Shift functions (firmware 1.1.3+)
+
+**MIDI pitch per oscillator.** By default the MIDI note sets the pitch of both oscillators. To
+choose which ones follow it:
+
+1. Hold the complex oscillator's **MIDI** button for 1 second. The LPG 1 and LPG 2 mode LEDs flash.
+2. Press **LPG 1** (complex oscillator) or **LPG 2** (modulation oscillator) to switch that
+   oscillator in or out of MIDI pitch. Flashing = follows the MIDI note; steady (showing the
+   channel's mode as normal) = keeps its own pitch. Press again to switch it back.
+3. Let go of **MIDI**. The choice applies then, and is kept after power-off. Letting go after a
+   shift never toggles MIDI on or off; press and release MIDI again for that.
+
+While MIDI is held, other buttons are ignored. The same setting is in the
+[web editor](https://joebmz98.github.io/Weasel-Flasher/editor.html) under **MIDI pitch**.
 
 ### Patch bay
 
@@ -195,7 +211,7 @@ Sequencer · Envelope · Pulsar · Random ──(patch bay)──→ modulation 
 | **Input** | 3.5 mm TRS (Type A), 31250 baud |
 | **Channel** | Omni by default; set 1-16 in the [web editor](https://joebmz98.github.io/Weasel-Flasher/editor.html) |
 | **Note on** | Triggers the sequencer, envelope, pulsar and random voltage when they're set to midi |
-| **Note pitch** | Plays the complex / mod oscillators when their MIDI mode is on |
+| **Note pitch** | Plays the complex and mod oscillators when MIDI is on; each can be left out (see [Shift functions](#shift-functions-firmware-113) or the web editor) |
 | **Clock, start / stop** | Syncs the sequencer when the clock is set to sync (received on any channel) |
 
 ---
@@ -241,6 +257,7 @@ Regenerate the production files from KiCad after any board change.
 | `src/WEASEL_FW/` | Firmware (Arduino / DaisyDuino) |
 | `src/tests/` | Hardware test sketches |
 | `tools/lpg_test/` | Desktop test harness for the LPG model |
+| `tools/button_test/` | Desktop test of the panel buttons and the MIDI shift (`sh tools/button_test/run.sh`) |
 | `build/WEASEL_KiCad/` | Mainboard and panels: schematic, PCB, footprints, DRC report, production files |
 | `build/WEASEL_KEYS_KiCad/` | Keys board |
 | `lib/` | KiCad libraries (Daisy Seed) |
