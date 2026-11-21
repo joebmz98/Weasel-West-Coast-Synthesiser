@@ -1286,9 +1286,15 @@ void AudioCallback(float** in, float** out, size_t size) {
       }
     }
 
+    // seqStepTriggered = the sequencer clock ticked and the sequencer advanced.
+    // seqStepFired     = the step it landed on is enabled, so it sends a trigger.
+    // Everything the sequencer triggers (EG, pulsar, random in SEQ mode) uses
+    // seqStepFired, so a disabled step is a true rest: no CV change and no trigger.
+    bool seqStepFired = false;
     if (seqStepTriggered) {
       seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps;
       if (seqStepEnabled[seqCurrentStep]) {
+        seqStepFired = true;
         activeSeqCV = seqStepCV[seqCurrentStep];
         activeSeqStep = seqCurrentStep;  // disabled steps leave the previous step lit
       } else if (currentEnvTriggerMode == ENV_TRIGGER_SEQ) {
@@ -1305,7 +1311,7 @@ void AudioCallback(float** in, float** out, size_t size) {
       pulsarTrigger = true;
       manualPulsarTrigger = false;
     } else if (currentPulsarMode == PULSAR_MODE_SEQ) {
-      pulsarTrigger = seqStepTriggered;
+      pulsarTrigger = seqStepFired;
     } else if (currentPulsarMode == PULSAR_MODE_OSC) {
       if (!pulsar.IsRunning()) pulsarTrigger = true;
     } else if (currentPulsarMode == PULSAR_MODE_MIDI) {
@@ -1326,7 +1332,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     // --- 3. RANDOM TRIGGER LOGIC ---
     bool randomTrigger = false;
     if (currentRandomMode == RANDOM_MODE_SEQ) {
-      randomTrigger = seqStepTriggered;
+      randomTrigger = seqStepFired;
     } else if (currentRandomMode == RANDOM_MODE_PULSAR) {
       randomTrigger = pulsarTrigger;
     } else if (currentRandomMode == RANDOM_MODE_MIDI) {
@@ -1344,7 +1350,7 @@ void AudioCallback(float** in, float** out, size_t size) {
     bool envTrigger = false;
 
     if (currentEnvTriggerMode == ENV_TRIGGER_SEQ) {
-      if (seqStepTriggered) envTrigger = true;
+      if (seqStepFired) envTrigger = true;
     } else if (currentEnvTriggerMode == ENV_TRIGGER_MIDI) {
       if (envMidiTrigger) {
         envTrigger = true;

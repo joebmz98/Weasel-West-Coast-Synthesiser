@@ -32,7 +32,7 @@ panel always tells you what the synth is doing.
 - **Dual low pass gate**: each channel switches between VCA, low pass and combination. Since firmware 1.1.2 this is a circuit model of the Buchla 292 (vactrol plus audio circuit, after Parker & D'Angelo, DAFx-13), with the mode switch reconfiguring the modelled circuit as on the original
 - **Envelope generator**: attack / sustain / decay, in transient, sustain or oscillating mode
 - **Pulsar**: decaying pulse generator, triggered by the sequencer, MIDI, or free running
-- **Sequential voltage source**: 5-step sequencer with 3, 4 or 5 stages and a toggle per step
+- **Sequential voltage source**: 5-step sequencer with 3, 4 or 5 stages and a toggle per step. A step that is off is a rest: it holds the previous CV and sends no trigger to the envelope, pulsar or random source
 - **Random voltage**: sample & hold, triggered by the sequencer, pulsar or MIDI
 - **Clock**: free running or synced to incoming MIDI clock
 - **Patch bay**: 12 source jacks (3 each for sequencer, envelope, pulsar, random) and 7 destination jacks
