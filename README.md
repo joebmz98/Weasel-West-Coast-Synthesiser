@@ -270,6 +270,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Built with the [Daisy Platform](https://www.electro-smith.com/daisy) by Electro-Smith.
 
+### Low pass gate model
+
+The low pass gates (firmware 1.1.2 and later, `src/WEASEL_FW/buchla_lpg.cpp`) are a model of the Buchla 292, built on:
+
+- **Julian Parker & Stefano D'Angelo**, [*A Digital Model of the Buchla Lowpass-Gate*](https://dafx.de/paper-archive/details/uqLQLFI9j52bBmv10UKKMg), Proc. DAFx-13, Maynooth, 2013: the circuit analysis, the three-mode component values and the vactrol model
+- **Josh Rohs**, *A Matlab Implementation of the Buchla Lopass Gate*, McGill University MUMT618, 2018 (supervised by Gary Scavone; copy in `docs/references/`): the level-dependent vactrol response (rho)
+- **Segfault1602**, [`sfdsp::BuchlaLPG` in libdsp](https://github.com/Segfault1602/libdsp/blob/main/src/buchla_lpg.cpp) (MIT License, Copyright (c) 2023 Segfault1602): the C++ implementation the WEASEL version is adapted from
+- **Don Buchla**, for the original 292 Lopass Gate and the Music Easel that WEASEL is inspired by
+
 PCBway very kindly offered to sponsor this project and have sent me some more stock for the shop. Thank you to PCBway for supporting this passion project of mine. Emily from the marketing department reached out to me when I first launched the product and store and very kindly offered to sponsor the project. Both working with them and using their services was really easy. All I needed to do was export my PCB gerber files, drag and drop them on the 'PCB Instant Quote' page and send it off for approval. I received my order a week later and was very happy with the quality of the PCBs. Thank you again PCBway for your support.
 
 You can find their website here: https://www.pcbway.com/
