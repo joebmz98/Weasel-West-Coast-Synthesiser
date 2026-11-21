@@ -2,7 +2,7 @@
 // ==== WEASEL ========== //
 // Buchla Music Easel     //
 // Inspired Digital Synth //
-// firmware version 1.1.1 //
+// firmware version 1.1.2 //
 // ********************** //
 // designed by            //
 // .axs instruments       //
@@ -51,7 +51,8 @@
 #include <Wire.h>          // I2C (AW9523 LED drivers)
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
-#define WEASEL_FIRMWARE_VERSION "1.1.1"  // also reported to the web pages
+#include "buchla_lpg.h"    // BUCHLA 292 LPG MODEL (VACTROL + AUDIO CIRCUIT)
+#define WEASEL_FIRMWARE_VERSION "1.1.2"  // also reported to the web pages
 #include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 
@@ -298,9 +299,9 @@ Oscillator modulationOsc;    // MODULATION OSCILLATOR
 Adsr env;  // ENV GENERATOR
 // -- PULSAR GENERATOR
 Adsr pulsar;  // ENV GENERATOR FOR PULSAR
-// -- LOW-PASS - LPG
-Svf lpGateFilter1;  // FILTER FOR LPG CHAN1
-Svf lpGateFilter2;  // FILTER FOR LPG CHAN2
+// -- LOW PASS GATES (Buchla 292 model)
+weasel::BuchlaLpg lpGate1;  // LPG CHAN1 - COMPLEX OSC
+weasel::BuchlaLpg lpGate2;  // LPG CHAN2 - MODULATION OSC
 // -- OUTPUT ANALOGUE FILTER
 MoogLadder outputFilter;
 // -- REVERB
@@ -349,8 +350,6 @@ enum LpgMode { LPG_MODE_VCA,
                LPG_MODE_COMBI };
 LpgMode foldedLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
 LpgMode modOscLpgMode = LPG_MODE_COMBI;  // Default to COMBI mode
-#define LPG_TABLE_SIZE 64
-float lpgFreqTable[LPG_TABLE_SIZE];
 
 
 // -- ENVELOPE [BUCHLA ASD/ASR] --
@@ -479,24 +478,23 @@ float rawModulationValues[7] = { 0 };  // Pre-calculated modulation values
 float ln2 = 0.69314718056f;            // ln(2) for fast exp approximations
 
 // -- PARAMETER SMOOTHING (audio-rate copies of pot-driven values) --
-// -- LPG STATE --
-// Vactrol-style response on the LPG control: fast rise, slower fall. Smooths the
-// patch-bay modulation so the gate no longer chatters or steps.
-const float LPG_RISE_COEFF = 0.04f;   // ~0.5ms
-const float LPG_FALL_COEFF = 0.004f;  // ~5ms
-const float LPG_CTRL_MAX = 0.90f;
-const uint8_t LPG_PARAM_INTERVAL = 4;  // recompute SVF coefficients every 4 samples
-// SVF cubic drive. DaisySP defaults this to 0.5, which audibly saturates near full level.
-// 0 = clean. Raise a little (e.g. 0.05-0.1) if you want some grit back.
-const float LPG_SVF_DRIVE = 0.0f;
-
-struct LpgChannel {
-  Svf* filter;
-  float ctrl;
-  uint8_t paramCounter;
-};
-LpgChannel lpg1 = { &lpGateFilter1, 0.0f, 0 };
-LpgChannel lpg2 = { &lpGateFilter2, 0.0f, 0 };
+// -- LPG SETTINGS --
+// The gates are a model of the Buchla 292 circuit (buchla_lpg.cpp): a vactrol
+// driving the 292's audio circuit, with VCA / Lopass / Both set by switching the
+// circuit's components the way the real mode switch does.
+// Panel control (level pot + patch-bay modulation, 0..1) maps linearly onto the
+// 292's 0..10.7V control input.
+const float LPG_CV_VOLTS = 10.7f;
+// Vactrol settle times in seconds. 12ms / 250ms are the modelled VTL5C3-style
+// values. Shorten LPG_VACTROL_OFF (e.g. 0.05) for snappier sequenced gates.
+const float LPG_VACTROL_ON = 0.012f;
+const float LPG_VACTROL_OFF = 0.25f;
+// How much a harder hit opens faster and rings longer (0 = none, 0.9 = model default)
+const float LPG_VACTROL_RHO = 0.9f;
+// Lopass mode resonance as a fraction of the self-oscillation limit.
+// 0.8 gives the ~+4.5dB "small resonant bump" of the real 292; 1.0 would self-oscillate.
+const float LPG1_LOPASS_RES = 0.8f;
+const float LPG2_LOPASS_RES = 0.8f;
 
 // POT SMOOTHING, two stages per parameter, run at audio rate:
 //  1. Linear ramp from the previous pot reading to the new one, spread over the time
@@ -661,17 +659,6 @@ inline float softKnee(float x) {
   float over = (a - t) / (1.0f - t);
   float y = t + (1.0f - t) * (over / (1.0f + over));
   return (x < 0.0f) ? -y : y;
-}
-
-inline float fast_lpg_freq(float ctrl) {
-  if (ctrl < 0.0f) ctrl = 0.0f;
-  if (ctrl > 1.0f) ctrl = 1.0f;
-
-  float idx = ctrl * (LPG_TABLE_SIZE - 1);
-  int i = (int)idx;
-  if (i >= LPG_TABLE_SIZE - 1) return lpgFreqTable[LPG_TABLE_SIZE - 1];
-  float frac = idx - i;
-  return lpgFreqTable[i] + frac * (lpgFreqTable[i + 1] - lpgFreqTable[i]);
 }
 
 // NaN and bad float detection
@@ -1231,49 +1218,26 @@ void updateMatrixModulation(float envSig, float pulsarEnvSig) {
 // ============================================
 // AUDIO PROCESSING
 // ============================================
-// One Buchla-style LPG channel. Replaces the old per-channel code, which:
-//  - hard-muted below a tiny threshold (chattering on/off as modulation hovered near zero),
-//  - only retuned the filter when the control moved by > 0.002 (audible steps),
-//  - and ran the SVF at its default drive of 0.5 (distortion).
-float processLpg(LpgChannel& ch, float in, float ctrlTarget, LpgMode mode,
-                 bool squaredVca, float combiRes) {
-  if (ctrlTarget < 0.0f) ctrlTarget = 0.0f;
-  if (ctrlTarget > LPG_CTRL_MAX) ctrlTarget = LPG_CTRL_MAX;
-
-  // Vactrol-style smoothing
-  float coeff = (ctrlTarget > ch.ctrl) ? LPG_RISE_COEFF : LPG_FALL_COEFF;
-  ch.ctrl += coeff * (ctrlTarget - ch.ctrl);
-  float ctrl = ch.ctrl;
-
-  if (mode == LPG_MODE_VCA) {
-    return in * (squaredVca ? ctrl * ctrl : ctrl);
+// Panel LPG mode -> 292 circuit mode
+inline weasel::BuchlaLpg::Mode toLpgCircuitMode(LpgMode mode) {
+  switch (mode) {
+    case LPG_MODE_VCA: return weasel::BuchlaLpg::MODE_VCA;
+    case LPG_MODE_LP: return weasel::BuchlaLpg::MODE_LOPASS;
+    case LPG_MODE_COMBI:
+    default: return weasel::BuchlaLpg::MODE_BOTH;
   }
+}
 
-  if (++ch.paramCounter >= LPG_PARAM_INTERVAL) {
-    ch.paramCounter = 0;
-    float res = (mode == LPG_MODE_LP) ? ctrl * ctrl * 0.2f : combiRes;
-    ch.filter->SetRes(res);
-    ch.filter->SetFreq(fast_lpg_freq(ctrl));
-  }
+// One Buchla 292 LPG channel. The vactrol model now provides the slew that the old
+// fake rise/fall smoothing did, and the mode switch reconfigures the modelled
+// circuit instead of choosing between a gain and an SVF.
+float processLpg(weasel::BuchlaLpg& lpg, float in, float ctrl, LpgMode mode) {
+  weasel::BuchlaLpg::Mode circuitMode = toLpgCircuitMode(mode);
+  if (lpg.GetMode() != circuitMode) lpg.SetMode(circuitMode);
 
-  ch.filter->Process(in);
-  float out = ch.filter->Low();
-
-  if (isBadFloat(out)) {
-    ch.filter->Init(sampleRate);
-    ch.filter->SetDrive(LPG_SVF_DRIVE);
-    ch.paramCounter = LPG_PARAM_INTERVAL;  // force a coefficient update next sample
-    return 0.0f;
-  }
-
-  if (mode == LPG_MODE_COMBI) {
-    out *= ctrl;
-  } else {
-    // LP mode: short fade to silence at the very bottom instead of a hard mute
-    float fade = ctrl * 50.0f;
-    if (fade < 1.0f) out *= fade;
-  }
-  return out;
+  if (ctrl < 0.0f) ctrl = 0.0f;
+  if (ctrl > 1.0f) ctrl = 1.0f;
+  return lpg.Process(ctrl * LPG_CV_VOLTS, in);
 }
 
 void AudioCallback(float** in, float** out, size_t size) {
@@ -1517,16 +1481,16 @@ void AudioCallback(float** in, float** out, size_t size) {
     }
 
     // --- 9. BUCHLA LPG MIXER ---
-    // Channel 1: folded complex oscillator (squared VCA law, light resonance in COMBI)
-    float processedSig0 = processLpg(lpg1, foldedSig, smComplexOscSigLevel + vcaComplexOsc,
-                                     foldedLpgMode, true, 0.1f);
+    // Channel 1: folded complex oscillator
+    float processedSig0 = processLpg(lpGate1, foldedSig, smComplexOscSigLevel + vcaComplexOsc,
+                                     foldedLpgMode);
 
-    // Channel 2: modulation oscillator (linear VCA law, no resonance in COMBI)
+    // Channel 2: modulation oscillator
     float signal1 = modOscSig;
     if (signal1 > 1.0f) signal1 = 1.0f;
     if (signal1 < -1.0f) signal1 = -1.0f;
-    float processedSig1 = processLpg(lpg2, signal1, smModOscSigLevel + vcaModulationOsc,
-                                     modOscLpgMode, false, 0.0f);
+    float processedSig1 = processLpg(lpGate2, signal1, smModOscSigLevel + vcaModulationOsc,
+                                     modOscLpgMode);
 
     // --- 9.5 MIX WITH HEADROOM ---
     // Sum at half level so two full channels don't clip, then a soft knee as a safety net
@@ -1579,15 +1543,6 @@ void setup() {
   // One-pole coefficient for the requested glide time (time constant = PARAM_SMOOTH_MS)
   paramSmoothCoeff = 1.0f - expf(-1.0f / (PARAM_SMOOTH_MS * 0.001f * sampleRate));
 
-  // -- LPG LUT
-  for (int i = 0; i < LPG_TABLE_SIZE; i++) {
-    float ctrl = (float)i / (float)(LPG_TABLE_SIZE - 1);
-    float freq = 20.0f * powf(2.0f, ctrl * 9.81f);
-    if (freq < 30.0f) freq = 30.0f;
-    if (freq > 18000.0f) freq = 18000.0f;
-    lpgFreqTable[i] = freq;
-  }
-
   // -- DSP OBJECTS --
   // COMPLEX OSC // SINE + MORPH
   complexOsc.Init(sampleRate);
@@ -1605,11 +1560,17 @@ void setup() {
   modulationOsc.SetWaveform(modulationOsc.WAVE_SIN);
   modulationOsc.SetFreq(440.0f);
   modulationOsc.SetAmp(1.0f);
-  // LPG FILTERS
-  lpGateFilter1.Init(sampleRate);
-  lpGateFilter2.Init(sampleRate);
-  lpGateFilter1.SetDrive(LPG_SVF_DRIVE);
-  lpGateFilter2.SetDrive(LPG_SVF_DRIVE);
+  // LOW PASS GATES
+  lpGate1.Init(sampleRate);
+  lpGate2.Init(sampleRate);
+  lpGate1.SetVactrolTimes(LPG_VACTROL_ON, LPG_VACTROL_OFF);
+  lpGate2.SetVactrolTimes(LPG_VACTROL_ON, LPG_VACTROL_OFF);
+  lpGate1.SetVactrolRho(LPG_VACTROL_RHO, LPG_VACTROL_RHO);
+  lpGate2.SetVactrolRho(LPG_VACTROL_RHO, LPG_VACTROL_RHO);
+  lpGate1.SetResonance(LPG1_LOPASS_RES);
+  lpGate2.SetResonance(LPG2_LOPASS_RES);
+  lpGate1.SetMode(toLpgCircuitMode(foldedLpgMode));
+  lpGate2.SetMode(toLpgCircuitMode(modOscLpgMode));
   // ENVELOPE
   env.Init(sampleRate);
   gateRemainingSamples = 0;

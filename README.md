@@ -29,7 +29,7 @@ panel always tells you what the synth is doing.
 - **Complex oscillator**: sine plus a morphing saw / square / triangle, with timbre and polarity
 - **Wavefolder** on the complex oscillator
 - **Modulation oscillator**: sine, triangle, sawtooth and square, with FM or AM into the complex oscillator
-- **Dual low pass gate**: each channel switches between VCA, low pass and combination (classic Buchla LPG)
+- **Dual low pass gate**: each channel switches between VCA, low pass and combination. Since firmware 1.1.2 this is a circuit model of the Buchla 292 (vactrol plus audio circuit, after Parker & D'Angelo, DAFx-13), with the mode switch reconfiguring the modelled circuit as on the original
 - **Envelope generator**: attack / sustain / decay, in transient, sustain or oscillating mode
 - **Pulsar**: decaying pulse generator, triggered by the sequencer, MIDI, or free running
 - **Sequential voltage source**: 5-step sequencer with 3, 4 or 5 stages and a toggle per step
@@ -240,6 +240,7 @@ Regenerate the production files from KiCad after any board change.
 | --- | --- |
 | `src/WEASEL_FW/` | Firmware (Arduino / DaisyDuino) |
 | `src/tests/` | Hardware test sketches |
+| `tools/lpg_test/` | Desktop test harness for the LPG model |
 | `build/WEASEL_KiCad/` | Mainboard and panels: schematic, PCB, footprints, DRC report, production files |
 | `build/WEASEL_KEYS_KiCad/` | Keys board |
 | `lib/` | KiCad libraries (Daisy Seed) |
