@@ -171,7 +171,7 @@ it's pressed.
 **MIDI pitch per oscillator.** By default the MIDI note sets the pitch of both oscillators. To
 choose which ones follow it:
 
-1. Hold the complex oscillator's **MIDI** button for 1 second. The LPG 1 and LPG 2 mode LEDs flash.
+1. Hold the complex oscillator's **MIDI** button for half a second. The LPG 1 and LPG 2 mode LEDs flash.
 2. Press **LPG 1** (complex oscillator) or **LPG 2** (modulation oscillator) to switch that
    oscillator in or out of MIDI pitch. Flashing = follows the MIDI note; steady (showing the
    channel's mode as normal) = keeps its own pitch. Press again to switch it back.

@@ -1,5 +1,5 @@
 // Desktop check of the panel buttons in WEASEL_FW.ino: act on release, the MIDI shift
-// (hold 1 s, LPG 1 / LPG 2 pick which oscillators follow MIDI pitch), boot hold. Run: sh run.sh
+// (hold 0.5 s, LPG 1 / LPG 2 pick which oscillators follow MIDI pitch), boot hold. Run: sh run.sh
 #include "gen.h"
 #include <cassert>
 // step time 10ms, two reads to debounce
@@ -27,7 +27,9 @@ int main(){
   // LPG pressed and released after MIDI released? hold MIDI, press LPG1 and keep it while releasing MIDI, then release LPG1
   scan(M,1100); scan(M|L1,50); scan(L1,50); assert(editor.px==0); scan(0,50); assert(actions.empty()); puts("ok  LPG released after MIDI: still no LPG mode change");
   // press LPG before the shift is active: ignored, and MIDI does not toggle
-  scan(M,300); scan(M|L1,50); scan(M,50); scan(0,30); assert(actions.empty() && editor.px==0); puts("ok  LPG pressed before 1 s: ignored, MIDI not toggled");
+  scan(M,300); scan(M|L1,50); scan(M,50); scan(0,30); assert(actions.empty() && editor.px==0); puts("ok  LPG pressed before 0.5 s: ignored, MIDI not toggled");
+  // the shift starts at 0.5 s, not before
+  scan(M,490); assert(!shiftActive); scan(M,40); assert(shiftActive);  // press is debounced 20 ms in scan(0,30); assert(actions.empty()); puts("ok  shift starts at 0.5 s");
   // other buttons during shift ignored
   scan(M,1100); scan(M|ENV,50); scan(M,50); scan(0,30); assert(actions.empty()); puts("ok  other buttons ignored during the shift");
   // latching step switch flicked while holding MIDI does not cancel the toggle

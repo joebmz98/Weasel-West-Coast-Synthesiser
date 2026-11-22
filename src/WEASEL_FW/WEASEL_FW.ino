@@ -203,7 +203,7 @@ const unsigned long BUTTON_READ_INTERVAL = 10;  // ms -> 10-20ms effective debou
 // The change applies when MIDI is released, and that release does NOT toggle MIDI on/off.
 // Any other button pressed while MIDI is held is ignored, and also cancels the MIDI toggle.
 #define SHIFT_BUTTON BTN_QUANTIZE_MIDI
-const unsigned long SHIFT_HOLD_MS = 1000;
+const unsigned long SHIFT_HOLD_MS = 500;   // hold MIDI this long to enter the shift
 const unsigned long SHIFT_FLASH_MS = 150;  // LED flash half-period
 unsigned long shiftDownAt = 0;
 bool shiftActive = false;      // held long enough: LPG LEDs flashing, LPG buttons edit
@@ -297,9 +297,13 @@ const LedLocation LED_RANDOM_MODE[] = { { 2, 1, 5 }, { 2, 1, 6 }, { 2, 1, 7 } };
 const LedLocation LED_CLOCK_SYNC[] = { { 3, 0, 1 }, { 3, 0, 2 } };               // FREE, MIDI SYNC
 // Sequencer step LEDs (U1 @ 0x58): D9 = P0_6, D14 = P0_7, D15 = P1_0, D16 = P1_1, D17 = P1_2
 const LedLocation LED_SEQ_STEP[] = { { 0, 0, 6 }, { 0, 0, 7 }, { 0, 1, 0 }, { 0, 1, 1 }, { 0, 1, 2 } };  // STEP 1..5
-// LPG mode LEDs (U2 @ 0x59, from the current schematic): LPG 1 = D38 LO PASS (P1_0),
-// D39 COMBI (P1_1), D40 VCA (P1_2); LPG 2 = D42 LO PASS (P1_4), D43 COMBI (P1_5), D44 VCA (P1_6).
+// LPG mode LEDs: U2 @ 0x59 port 1 - the same driver as the EG oscillating / trigger and
+// pulsar LEDs on its port 0, so if those light, U2 is answering. Same pins on the May 2026
+// prototype board and the current board (only the LED polarity differs).
+// LPG 1 = D38 LO PASS (P1_0), D39 COMBI (P1_1), D40 VCA (P1_2);
+// LPG 2 = D42 LO PASS (P1_4), D43 COMBI (P1_5), D44 VCA (P1_6).
 // D41 / D45 (P1_3 / P1_7) are the LPG trigger indicators, not used yet.
+// A driver that doesn't answer at boot is skipped (see "AW9523 not found" on USB serial).
 const LedLocation LED_LPG1_MODE[] = { { 1, 1, 2 }, { 1, 1, 0 }, { 1, 1, 1 } };  // VCA, LP, COMBI
 const LedLocation LED_LPG2_MODE[] = { { 1, 1, 6 }, { 1, 1, 4 }, { 1, 1, 5 } };  // VCA, LP, COMBI
 
