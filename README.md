@@ -212,7 +212,7 @@ Sequencer · Envelope · Pulsar · Random ──(patch bay)──→ modulation 
 | **Channel** | Omni by default; set 1-16 in the [web editor](https://joebmz98.github.io/Weasel-Flasher/editor.html) |
 | **Note on** | Triggers the sequencer, envelope, pulsar and random voltage when they're set to midi |
 | **Note pitch** | Plays the complex and mod oscillators when MIDI is on; each can be left out (see [Shift functions](#shift-functions-firmware-113) or the web editor) |
-| **Clock, start / stop** | Syncs the sequencer when the clock is set to sync (received on any channel) |
+| **Clock, start / stop / continue** | With the clock set to sync, the sequencer steps every N clock ticks (N from the clock speed pot: 1-32 ticks, 24 = a quarter note), so it stays locked to the master. Start plays step 1 on the next tick; Stop holds until Start or Continue; a clock with no transport messages just runs. Received on any channel |
 
 ---
 
@@ -257,6 +257,7 @@ Regenerate the production files from KiCad after any board change.
 | `src/WEASEL_FW/` | Firmware (Arduino / DaisyDuino) |
 | `src/tests/` | Hardware test sketches |
 | `tools/lpg_test/` | Desktop test harness for the LPG model |
+| `tools/clock_test/` | Desktop test of MIDI clock sync and tempo reading (`sh tools/clock_test/run.sh`) |
 | `tools/button_test/` | Desktop test of the panel buttons and the MIDI shift (`sh tools/button_test/run.sh`) |
 | `build/WEASEL_KiCad/` | Mainboard and panels: schematic, PCB, footprints, DRC report, production files |
 | `build/WEASEL_KEYS_KiCad/` | Keys board |

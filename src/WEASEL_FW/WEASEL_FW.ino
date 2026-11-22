@@ -2,7 +2,7 @@
 // ==== WEASEL ========== //
 // Buchla Music Easel     //
 // Inspired Digital Synth //
-// firmware version 1.1.3 //
+// firmware version 1.1.4 //
 // ********************** //
 // designed by            //
 // .axs instruments       //
@@ -52,7 +52,7 @@
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
 #include "buchla_lpg.h"    // BUCHLA 292 LPG MODEL (VACTROL + AUDIO CIRCUIT)
-#define WEASEL_FIRMWARE_VERSION "1.1.3"  // also reported to the web pages
+#define WEASEL_FIRMWARE_VERSION "1.1.4"  // also reported to the web pages
 #include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 
@@ -470,9 +470,7 @@ bool midiNoteReceived = false;     // Track if we've received a MIDI note in qua
 // -- MIDI CLOCK SYNC --
 bool midiClockSync = false;               // Enable/disable MIDI clock sync
 bool midiClockActive = false;             // Whether MIDI clock is currently being received
-uint32_t midiClockTicks = 0;              // Counter for MIDI clock ticks
-uint32_t midiClockSamplesPerTick = 0;     // Samples between steps (calculated from tempo)
-float midiTempo = 120.0f;                 // Current MIDI tempo in BPM
+float midiTempo = 120.0f;                 // Received MIDI tempo in BPM, averaged over a beat (web monitor)
 uint32_t lastMidiClockTime = 0;           // Last time we received a MIDI clock message
 const uint32_t MIDI_CLOCK_TIMEOUT = 500;  // Timeout in milliseconds (0.5 seconds)
 
@@ -496,6 +494,88 @@ uint32_t seqSampleCounter = 0;  // Counts samples to trigger the next step
 float activeSeqCV = 0.0f;       // The CV of the currently active step
 // SAMPLE RATE
 uint32_t samplesPerTick = 48000;  // default, will be updated in updateParameters()
+
+// ---- MIDI CLOCK SYNC (firmware 1.1.4) ----
+// The sequencer steps by COUNTING the clock ticks received: one step every `currentDivision`
+// ticks (24 a quarter note), so it stays locked to the master and never drifts. Before
+// 1.1.4 it free-ran on a step length worked out from the gap between the last two ticks,
+// which jumped about with main-loop timing (a 120 BPM clock read anywhere from ~90 to ~160).
+// The tempo shown on the web page is averaged over the last beat (24 ticks), timed in us.
+// Ticks are counted by the main loop (MIDI is read there) and consumed by the audio callback.
+volatile uint32_t midiClockTickCount = 0;   // every tick received (main loop writes)
+volatile uint32_t midiStartTickCount = 0;   // tick count when Start arrived
+volatile bool midiStartPending = false;     // Start: next tick plays step 1
+volatile bool midiResyncPending = false;    // sync switched on: count from the next tick
+volatile bool midiTransportRunning = true;  // false after Stop, until Start / Continue
+const uint8_t MIDI_TEMPO_WINDOW = 24;       // ticks averaged for the tempo (one beat)
+uint32_t midiTickTimesUs[MIDI_TEMPO_WINDOW + 1];
+uint8_t midiTickTimeHead = 0, midiTickTimeCount = 0;
+uint32_t audioSeenTickCount = 0;  // audio callback only
+uint32_t seqTickAccum = 0;        // audio callback only: ticks towards the next step
+
+// Main loop: a MIDI clock tick arrived (from handleMidiClock)
+void midiClockTickReceived(uint32_t nowUs, uint32_t nowMs) {
+  // Clock (re)started after a gap: forget the old tick times
+  if (lastMidiClockTime == 0 || nowMs - lastMidiClockTime > MIDI_CLOCK_TIMEOUT) midiTickTimeCount = 0;
+  midiTickTimesUs[midiTickTimeHead] = nowUs;
+  midiTickTimeHead = (midiTickTimeHead + 1) % (MIDI_TEMPO_WINDOW + 1);
+  if (midiTickTimeCount < MIDI_TEMPO_WINDOW + 1) midiTickTimeCount++;
+  if (midiTickTimeCount >= 2) {
+    uint8_t oldest = (midiTickTimeHead + (MIDI_TEMPO_WINDOW + 1) - midiTickTimeCount) % (MIDI_TEMPO_WINDOW + 1);
+    uint32_t spanUs = nowUs - midiTickTimesUs[oldest];
+    if (spanUs > 0) {
+      float bpm = 60.0e6f * (float)(midiTickTimeCount - 1) / (24.0f * (float)spanUs);
+      if (bpm < 20.0f) bpm = 20.0f;
+      if (bpm > 400.0f) bpm = 400.0f;
+      midiTempo = bpm;
+    }
+  }
+  lastMidiClockTime = nowMs;
+  midiClockActive = true;
+  midiClockTickCount = midiClockTickCount + 1;
+}
+
+// Main loop: transport messages
+void midiClockStart() {
+  midiStartTickCount = midiClockTickCount;  // written before the flag the audio callback reads
+  midiStartPending = true;
+  midiTransportRunning = true;
+}
+void midiClockContinue() { midiTransportRunning = true; }
+void midiClockStop() { midiTransportRunning = false; }
+void midiClockResync() {  // sync switched on: start from step 1 on the next tick
+  midiResyncPending = true;
+  midiTransportRunning = true;
+}
+
+// Audio callback, once a sample while synced: true when this sample starts a step
+bool midiSyncStepDue() {
+  uint32_t div = (uint32_t)currentDivision;
+  if (div < 1) div = 1;
+  if (midiResyncPending) {
+    midiResyncPending = false;
+    audioSeenTickCount = midiClockTickCount;
+    seqTickAccum = div - 1;
+    seqCurrentStep = seqMaxSteps - 1;  // the next step is step 1
+  }
+  if (midiStartPending) {
+    midiStartPending = false;
+    audioSeenTickCount = midiStartTickCount;  // ticks after the Start count towards step 1
+    seqTickAccum = div - 1;                   // ...and the first of them plays it
+    seqCurrentStep = seqMaxSteps - 1;
+  }
+  uint32_t t = midiClockTickCount;
+  uint32_t newTicks = t - audioSeenTickCount;
+  audioSeenTickCount = t;
+  if (!midiTransportRunning) return false;  // stopped: hold position
+  seqTickAccum += newTicks;
+  if (seqTickAccum < div) return false;
+  seqTickAccum -= div;
+  // After a long hold-up (e.g. a flash save) take one step and keep the phase, rather than a burst
+  if (seqTickAccum >= div) seqTickAccum %= div;
+  return true;
+}
+// ---- END MIDI CLOCK SYNC ----
 
 // SEQUENCER MODES
 enum SeqTriggerMode { SEQ_TRIGGER_CLOCK,
@@ -653,6 +733,7 @@ void handleNoteOff(byte channel, byte note, byte velocity);
 void handleMidiClock();
 void handleMidiStart();
 void handleMidiStop();
+void handleMidiContinue();
 void handleControlChange(byte channel, byte number, byte value);
 void readPanelModes(uint8_t* out);
 void writePanelModes(const uint8_t* in);
@@ -806,6 +887,7 @@ void readPotentiometers() {
     int raw2 = analogRead(MUX2_SIG);
     filterPot(ch, raw1);
     filterPot(ch + NUM_POTS_PER_MUX, raw2);
+    if ((ch & 3) == 3) drainMidi();  // keep MIDI clock timing tight during the scan
 #if WEASEL_DEBUG
     debugPotJump(ch, raw1);
     debugPotJump(ch + NUM_POTS_PER_MUX, raw2);
@@ -1075,6 +1157,7 @@ void updateLeds() {
       ledWritten[chip][0] = ledFrame[chip][0];
       ledWritten[chip][1] = ledFrame[chip][1];
     }
+    drainMidi();  // each chip write is ~0.5 ms of I2C: don't let MIDI clock wait behind all four
   }
   ledForceWrite = false;
 }
@@ -1178,10 +1261,9 @@ void handleButtonPress(uint8_t bit) {
     case BTN_CLOCK_SYNC:
       midiClockSync = !midiClockSync;
       if (midiClockSync) {
-        seqCurrentStep = 0;
         seqSampleCounter = 0;
-        midiClockTicks = 0;
         updateClockDivision();
+        midiClockResync();
       }
       break;
 
@@ -1363,14 +1445,9 @@ void AudioCallback(float** in, float** out, size_t size) {
     bool seqStepTriggered = false;
 
     if (currentSeqTriggerMode == SEQ_TRIGGER_CLOCK) {
-      if (midiClockSync && midiClockActive && midiClockSamplesPerTick > 0) {
-        // MIDI clock sync - step on MIDI-derived interval
-        static uint32_t midiSampleCounter = 0;
-        midiSampleCounter++;
-        if (midiSampleCounter >= midiClockSamplesPerTick) {
-          seqStepTriggered = true;
-          midiSampleCounter = 0;
-        }
+      if (midiClockSync && midiClockActive) {
+        // MIDI clock sync: a step every `currentDivision` ticks received
+        seqStepTriggered = midiSyncStepDue();
       } else if (midiClockSync && !midiClockActive) {
         // Sync enabled but no clock - sequencer stops
       } else {
@@ -1710,6 +1787,7 @@ void setup() {
   MIDI.setHandleClock(handleMidiClock);
   MIDI.setHandleStart(handleMidiStart);
   MIDI.setHandleStop(handleMidiStop);
+  MIDI.setHandleContinue(handleMidiContinue);
   MIDI.setHandleControlChange(handleControlChange);
 #if WEASEL_DEBUG
   MIDI.setHandleSystemExclusive(handleMidiSysExDebug);
@@ -2079,30 +2157,12 @@ void handleControlChange(byte channel, byte number, byte value) {
 
 void handleMidiClock() {
   // 24 ticks per quarter note
-  uint32_t now = millis();
-  midiClockActive = true;
-
-  if (midiClockSync && lastMidiClockTime > 0) {
-    uint32_t tickInterval = now - lastMidiClockTime;
-    float quarterNoteInterval = tickInterval * 24.0f;
-    if (quarterNoteInterval > 0) {
-      midiTempo = 60000.0f / quarterNoteInterval;
-      if (midiTempo < 40.0f) midiTempo = 40.0f;
-      if (midiTempo > 240.0f) midiTempo = 240.0f;
-
-      float secondsPerTick = 60.0f / (midiTempo * 24.0f);
-      midiClockSamplesPerTick = (uint32_t)(secondsPerTick * sampleRate * currentDivision);
-      if (midiClockSamplesPerTick < 1) midiClockSamplesPerTick = 1;
-    }
-  }
-  lastMidiClockTime = now;
-  midiClockTicks++;
+  midiClockTickReceived(micros(), millis());
 }
 
 void checkMidiClockActivity() {
   if (midiClockSync && (millis() - lastMidiClockTime > MIDI_CLOCK_TIMEOUT)) {
     midiClockActive = false;
-    midiClockSamplesPerTick = 0;
   }
 #if WEASEL_DEBUG
   // Report clock starting/stopping, whether or not clock sync is switched on
@@ -2125,14 +2185,21 @@ void updateClockDivision() {
 }
 
 void handleMidiStart() {
-  seqCurrentStep = 0;
-  seqSampleCounter = 0;
-  midiClockTicks = 0;
+  if (midiClockSync) {
+    midiClockStart();  // the audio callback restarts on step 1 at the next tick
+  } else {
+    seqCurrentStep = 0;
+    seqSampleCounter = 0;
+  }
 }
 
 void handleMidiStop() {
   seqSampleCounter = 0;
-  midiClockTicks = 0;
+  midiClockStop();  // synced: hold until Start / Continue (clock-only sources never send Stop)
+}
+
+void handleMidiContinue() {
+  midiClockContinue();
 }
 
 // ============================================
@@ -2199,11 +2266,10 @@ void writePanelModes(const uint8_t* in) {
 
   bool sync = in[weasel::P_CLOCK_MODE] != 0;
   if (sync && !midiClockSync) {
-    seqCurrentStep = 0;
     seqSampleCounter = 0;
-    midiClockTicks = 0;
     midiClockSync = true;
     updateClockDivision();
+    midiClockResync();
   } else {
     midiClockSync = sync;
   }
