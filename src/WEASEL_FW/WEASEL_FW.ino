@@ -2,7 +2,7 @@
 // ==== WEASEL ========== //
 // Buchla Music Easel     //
 // Inspired Digital Synth //
-// firmware version 1.1.4 //
+// firmware version 1.1.5 //
 // ********************** //
 // designed by            //
 // .axs instruments       //
@@ -52,7 +52,7 @@
 #include <MIDI.h>          // MIDI
 #include "wavefolder.h"    // EXTRACTED FROM DAISYSP
 #include "buchla_lpg.h"    // BUCHLA 292 LPG MODEL (VACTROL + AUDIO CIRCUIT)
-#define WEASEL_FIRMWARE_VERSION "1.1.4"  // also reported to the web pages
+#define WEASEL_FIRMWARE_VERSION "1.1.5"  // also reported to the web pages
 #include "WeaselEditor.h"  // WEB PAGES: MIDI CHANNEL + PANEL MODES OVER USB SERIAL
 #include <math.h>
 

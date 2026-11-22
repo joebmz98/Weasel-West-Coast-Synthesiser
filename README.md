@@ -232,6 +232,9 @@ To build it yourself:
    - `LED_BRIGHTNESS` (0-255) and `AW9523_ISEL` set the LED current.
    - `SEQ_STEP_SWITCHES_LATCHING`: `1` for toggle switches on the sequencer steps, `0` for momentary buttons.
 4. Select **Daisy Seed** as the board. For the web editor, also set **Tools > USB support > CDC (generic 'Serial' supersede U(S)ART)**.
+   `src/WEASEL_FW/build_opt.h` (picked up automatically by the STM32 core) names the USB port **WEASEL**,
+   so it shows as WEASEL rather than "DAISY_SEED CDC in FS Mode" in the browser's port picker and in the
+   computer's device list (firmware 1.1.5+).
 5. Put the Seed in DFU mode and upload, or use **Sketch > Export Compiled Binary** and flash the `.hex` from the build folder with the web flasher (**custom file**). A `.hex` carries its own flash addresses, so there's nothing to set; a `.bin` also works, at start address `0x08000000`.
 
 `src/tests/potentiometerTests` is a small sketch for checking the pots and multiplexers.
