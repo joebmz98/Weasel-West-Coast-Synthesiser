@@ -48,7 +48,7 @@ The **[WEASEL web tools](https://joebmz98.github.io/Weasel-Flasher/)** have four
 
 | Page | What it does | WEASEL needs to be |
 | --- | --- | --- |
-| **Update firmware** | Flashes a release or your own `.bin` over WebUSB | In DFU mode |
+| **Update firmware** | Flashes a release or your own `.hex` firmware file (a `.bin` works too) over WebUSB | In DFU mode |
 | **MIDI settings** | MIDI in channel (1-16 or omni) and a MIDI in monitor | Running, with the USB editor firmware |
 | **Presets** | Stores and recalls every panel mode by name; import / export as JSON | Running, with the USB editor firmware |
 | **Play** | The WEASEL sound engine running in the browser | Not needed |
@@ -228,7 +228,7 @@ To build it yourself:
    - `LED_BRIGHTNESS` (0-255) and `AW9523_ISEL` set the LED current.
    - `SEQ_STEP_SWITCHES_LATCHING`: `1` for toggle switches on the sequencer steps, `0` for momentary buttons.
 4. Select **Daisy Seed** as the board. For the web editor, also set **Tools > USB support > CDC (generic 'Serial' supersede U(S)ART)**.
-5. Put the Seed in DFU mode and upload, or use **Sketch > Export Compiled Binary** and flash the `.bin` with the web flasher.
+5. Put the Seed in DFU mode and upload, or use **Sketch > Export Compiled Binary** and flash the `.hex` from the build folder with the web flasher (**custom file**). A `.hex` carries its own flash addresses, so there's nothing to set; a `.bin` also works, at start address `0x08000000`.
 
 `src/tests/potentiometerTests` is a small sketch for checking the pots and multiplexers.
 
