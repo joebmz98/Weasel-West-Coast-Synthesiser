@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/images/renders/WEASEL_v3_hero.png" alt="WEASEL synthesiser: black stacked-panel case with orange knobs and buttons, slide pots, toggle switches and patch sockets" width="100%">
+</p>
+
 # WEASEL
 ### Buchla Music Easel inspired digital west coast synthesiser
 
