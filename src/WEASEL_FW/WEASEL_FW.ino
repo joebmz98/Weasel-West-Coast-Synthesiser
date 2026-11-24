@@ -287,7 +287,8 @@ const LedLocation LED_SEQ_STAGES[] = { { 0, 0, 3 }, { 0, 0, 4 }, { 0, 0, 5 } }; 
 const LedLocation LED_ENV_TRIG[] = { { 0, 1, 3 }, { 0, 1, 4 }, { 0, 1, 5 } };    // SEQ, PULSAR, MIDI
 const LedLocation LED_ENV_MODE[] = { { 0, 1, 6 }, { 0, 1, 7 }, { 1, 0, 0 } };    // TRANSIENT, SUSTAIN, OSCILLATE
 const LedLocation LED_PULSAR_MODE[] = { { 1, 0, 2 }, { 1, 0, 3 }, { 1, 0, 4 } };  // SEQ, MIDI, OSC
-const LedLocation LED_PULSAR_ACT[] = { { 1, 0, 5 }, { 1, 0, 6 } };               // idle, firing
+// Pulsar trigger LED: D35 (U2 P0_5) lights while the pulsar fires. D36 (P0_6) was removed.
+const LedLocation LED_PULSAR_ACT[] = { { 1, 0, 5 } };                              // firing
 const LedLocation LED_MODOSC_AMFM[] = { { 2, 0, 4 }, { 2, 0, 5 } };              // FM, AM
 const LedLocation LED_MODOSC_WAVE[] = { { 2, 0, 0 }, { 2, 0, 1 }, { 2, 0, 2 }, { 2, 0, 3 } };  // SIN, TRI, SAW, SQUARE
 const LedLocation LED_COMP_POL[] = { { 2, 0, 6 }, { 2, 0, 7 } };                 // NORMAL, INVERTED
@@ -1111,7 +1112,7 @@ void buildLedFrame() {
   SET_LED(LED_ENV_TRIG, currentEnvTriggerMode);
   SET_LED(LED_ENV_MODE, currentEnvMode);
   SET_LED(LED_PULSAR_MODE, currentPulsarMode);
-  SET_LED(LED_PULSAR_ACT, pulsarRunning ? 1 : 0);
+  if (pulsarRunning) SET_LED(LED_PULSAR_ACT, 0);
   SET_LED(LED_MODOSC_AMFM, useAmplitudeMod ? 1 : 0);
   SET_LED(LED_MODOSC_WAVE, modWaveformIndex);
   SET_LED(LED_COMP_POL, complexOscInverted ? 1 : 0);

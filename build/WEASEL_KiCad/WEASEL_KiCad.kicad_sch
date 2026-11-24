@@ -10202,6 +10202,28 @@
 	)
 	(wire
 		(pts
+			(xy 529.59 158.75) (xy 529.59 163.83)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "912a7026-b6ef-4408-b0e3-cde656ddf717")
+	)
+	(junction
+		(at 529.59 158.75)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6bf6f7f7-1b8a-47a6-bea0-2a15a777952e")
+	)
+	(junction
+		(at 529.59 163.83)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "94d1bf53-9142-467f-9b5d-2933053daa03")
+	)
+	(wire
+		(pts
 			(xy 335.28 135.89) (xy 328.93 135.89)
 		)
 		(stroke
