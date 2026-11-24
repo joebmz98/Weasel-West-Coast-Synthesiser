@@ -1,7 +1,36 @@
 ** Drc report for WEASEL_KiCad.kicad_pcb **
-** Created on 2026-11-20T18:21:59+0000 **
+** Created on 2026-11-24T16:14:04+0000 **
 
-** Found 0 DRC violations **
+** Found 9 DRC violations **
+[items_not_allowed]: Items not allowed (keepout area)
+    Rule: keepout area; error
+    @(148.6600 mm, 202.2400 mm): Track [Net-(D26-A)] on F.Cu, length 18.0000 mm
+[items_not_allowed]: Items not allowed (keepout area)
+    Rule: keepout area; error
+    @(158.8100 mm, 210.4400 mm): Track [Net-(D27-A)] on F.Cu, length 36.0527 mm
+[items_not_allowed]: Items not allowed (keepout area)
+    Rule: keepout area; error
+    @(129.3100 mm, 204.4400 mm): Track [Net-(D27-A)] on F.Cu, length 23.5000 mm
+[items_not_allowed]: Items not allowed (keepout area)
+    Rule: keepout area; error
+    @(159.3100 mm, 209.6900 mm): Track [Net-(D28-A)] on F.Cu, length 48.5000 mm
+[items_not_allowed]: Items not allowed (keepout area)
+    Rule: keepout area; error
+    @(130.0600 mm, 203.6900 mm): Track [Net-(D28-A)] on F.Cu, length 23.2500 mm
+[items_not_allowed]: Items not allowed (keepout area)
+    Rule: keepout area; error
+    @(144.0600 mm, 217.4400 mm): Track [Net-(D11-K)] on F.Cu, length 11.5000 mm
+[items_not_allowed]: Items not allowed (keepout area)
+    Rule: keepout area; error
+    @(219.5600 mm, 218.6900 mm): Track [Net-(D11-K)] on F.Cu, length 42.5000 mm
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; error
+    @(69.0600 mm, 60.4400 mm): Footprint R26
+    @(65.7700 mm, 32.4400 mm): Footprint A1
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; error
+    @(69.1600 mm, 62.9400 mm): Footprint R27
+    @(65.7700 mm, 32.4400 mm): Footprint A1
 
 ** Found 0 unconnected pads **
 
