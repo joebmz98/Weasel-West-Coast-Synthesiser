@@ -29,7 +29,8 @@
 //   shift_registers.h  74HC165 chain
 //   patch_bay.h        patch bay scanning (with the floating-input guard)
 //   leds.h             AW9523 LED drivers
-//   panel.h            buttons, MIDI shift, mode LEDs, panel memory
+//   buttons.h          button scanning, act-on-release, MIDI shift
+//   panel.h            what the buttons do, mode LEDs, panel memory
 //   controls.h         what each pot does
 //   midi_input.h       MIDI handlers;  midi_notes.h held notes;  midi_clock.h clock sync
 //   sequencer.h        sequential voltage source
@@ -39,6 +40,8 @@
 //   smoothing.h        audio-rate pot smoothing;  dsp_util.h maths helpers
 //   synth.h            every module in one struct
 //   audio.h            the audio callback
+//   antialias.h        oversampling filters, band-limited waveforms, ADAA folder
+//   cpu_meter.h        audio CPU load (printed with WEASEL_DEBUG 1)
 //   WeaselEditor.h     USB link to the web pages (MIDI channel, presets, DFU)
 // =============================================================================
 
@@ -83,6 +86,7 @@
 #include "panel.h"
 #include "midi_input.h"
 #include "audio.h"
+#include "cpu_meter.h"
 
 // -- THE INSTRUMENT --
 DaisyHardware hw;
@@ -97,6 +101,7 @@ using namespace weasel;
 
 Buttons buttons;
 PanelMemory panelMemory;
+CpuMeter cpuMeter;
 
 // Main-loop schedule
 unsigned long lastButtonRead = 0;
@@ -106,15 +111,26 @@ unsigned long lastLedUpdate = 0;
 const unsigned long kPatchScanIntervalMs = 20;
 const unsigned long kPotReadIntervalMs = 5;
 const unsigned long kLedUpdateIntervalMs = 10;
+const size_t kAudioBlockSize = 64;
 
 // Called between slow panel I/O so MIDI bytes (clock above all) are read promptly
 void serviceMidi() { drainMidi(); }
+
+// Button hooks (buttons.h): the action, and the pitch-follow setting kept by the editor
+void onButton(uint8_t bit) { buttonAction(synth, bit); }
+uint8_t getPitchExclude() { return editor.pitchExclude(); }
+void setPitchExclude(uint8_t mask) { editor.setPitchExclude(mask); }
 
 // Web presets page hooks
 void readPanelForEditor(uint8_t* out) { readPanelModes(synth, out); }
 void writePanelFromEditor(const uint8_t* in) { writePanelModes(synth, in); }
 
-void AudioCallback(float** in, float** out, size_t size) { audioCallback(in, out, size); }
+void AudioCallback(float** in, float** out, size_t size)
+{
+  cpuMeter.blockStart();
+  audioCallback(in, out, size);
+  cpuMeter.blockEnd();
+}
 
 // One pot scan, then hand the new values to the audio callback
 void scanPots()
@@ -143,8 +159,9 @@ void setup()
 
   // -- DAISY SEED AT 48 kHz --
   hw = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
-  DAISY.SetAudioBlockSize(64);
+  DAISY.SetAudioBlockSize(kAudioBlockSize);
   synth.initDsp(DAISY.get_samplerate());
+  cpuMeter.init(synth.sampleRate, kAudioBlockSize);
 
   // -- MIDI --
   beginMidi();
@@ -164,8 +181,11 @@ void setup()
   {
     synth.patchBay.scan(synth.shiftRegisters, serviceMidi);
   }
-  buttons.update(synth);
-  buttons.update(synth);
+  buttons.onAction = onButton;
+  buttons.getPitchExclude = getPitchExclude;
+  buttons.setPitchExclude = setPitchExclude;
+  scanButtons(synth, buttons);
+  scanButtons(synth, buttons);
   buttons.armed = true;  // buttons held at boot do nothing, on press or on release
 
   // -- PANEL MEMORY: power up with the modes from last time --
@@ -211,7 +231,7 @@ void loop()
   // BUTTONS
   if (now - lastButtonRead >= Buttons::kReadIntervalMs)
   {
-    buttons.update(synth);
+    scanButtons(synth, buttons);
     lastButtonRead = now;
   }
 
@@ -235,4 +255,19 @@ void loop()
     updateLeds(synth, buttons, serviceMidi);
     lastLedUpdate = now;
   }
+
+#if WEASEL_DEBUG
+  // AUDIO CPU LOAD
+  static unsigned long lastCpuReport = 0;
+  if (now - lastCpuReport >= 3000)
+  {
+    lastCpuReport = now;
+    Serial.print("Audio CPU: ");
+    Serial.print(cpuMeter.avg() * 100.0f, 1);
+    Serial.print("% average, ");
+    Serial.print(cpuMeter.peak() * 100.0f, 1);
+    Serial.println("% peak");
+    cpuMeter.resetPeak();
+  }
+#endif
 }

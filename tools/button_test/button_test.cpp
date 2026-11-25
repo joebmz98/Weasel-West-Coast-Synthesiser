@@ -1,12 +1,28 @@
-// Desktop check of the panel buttons in WEASEL_FW.ino: act on release, the MIDI shift
+// Desktop check of the panel buttons (buttons.h): act on release, the MIDI shift
 // (hold 0.5 s, LPG 1 / LPG 2 pick which oscillators follow MIDI pitch), boot hold. Run: sh run.sh
-#include "gen.h"
+#include "Arduino.h"
+#include "buttons.h"
 #include <cassert>
+#include <vector>
+using namespace weasel;
+struct Ed { uint8_t px = 0; int saves = 0; } editor;
+std::vector<int> actions;
+uint32_t fakeRaw = 0;
+Buttons buttons;
+// The firmware's hooks, faked: actions are recorded, the pitch-follow mask lives in "editor"
+void onAction(uint8_t bit) { actions.push_back(bit); }
+uint8_t getPx() { return editor.px; }
+void setPx(uint8_t m) { editor.px = m; editor.saves++; }
+void readButtons() { buttons.update(fakeRaw); }
+bool& buttonsArmed = buttons.armed;
+bool& shiftActive = buttons.shiftActive;
+uint8_t& shiftPitchExclude = buttons.shiftPitchExclude;
 // step time 10ms, two reads to debounce
 void scan(uint32_t raw, int ms=10){ fakeRaw=raw; for(int t=0;t<ms;t+=10){ fakeMs+=10; readButtons(); } }
 const uint32_t M=1UL<<BTN_QUANTIZE_MIDI, L1=1UL<<BTN_LPG1_MODE, L2=1UL<<BTN_LPG2_MODE, PU=1UL<<BTN_PULSAR_MANUAL, ENV=1UL<<BTN_ENV_MODE, S1=1UL<<BTN_SEQ_STEP1;
 // latching step switches read LOW = enabled; keep them all 'enabled' (low)
 int main(){
+  buttons.onAction = onAction; buttons.getPitchExclude = getPx; buttons.setPitchExclude = setPx;
   // boot with pulsar held: nothing fires, on press or release
   fakeRaw=PU; readButtons(); readButtons(); buttonsArmed=true;
   scan(0,30); assert(actions.empty()); puts("ok  held at boot: no action on release");

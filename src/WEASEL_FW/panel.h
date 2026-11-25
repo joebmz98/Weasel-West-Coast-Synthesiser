@@ -1,15 +1,7 @@
 // =============================================================================
-// panel.h — buttons, mode LEDs and panel memory (main loop)
+// panel.h — what the buttons do, mode LEDs and panel memory (main loop)
 //
-// BUTTONS act on RELEASE (press then let go), so a button can also be held as a
-// shift. The manual pulsar trigger still fires on press, as a performance trigger.
-//
-// MIDI SHIFT: hold MIDI for kShiftHoldMs and the LPG 1 and LPG 2 mode LEDs flash.
-// While they flash, LPG 1 / LPG 2 toggle whether the complex / modulation
-// oscillator follows the MIDI note's pitch (flashing = follows, steady = ignores
-// MIDI pitch). The change applies when MIDI is released, and that release does
-// NOT toggle MIDI on/off. Any other button pressed while MIDI is held is ignored,
-// and also cancels the MIDI toggle.
+// BUTTONS: buttons.h decides when a button acts; buttonAction() is what it does.
 //
 // PANEL MEMORY: the panel button modes (the same 14 the presets page handles)
 // are saved to the Seed's QSPI flash and restored at power-up. Not saved: the
@@ -24,6 +16,7 @@
 #include "config.h"
 #include "hardware.h"
 #include "synth.h"
+#include "buttons.h"
 #include "WeaselEditor.h"
 
 namespace weasel
@@ -120,141 +113,19 @@ WEASEL_NOINLINE inline void buttonAction(Synth& s, uint8_t bit)
 }
 
 // -----------------------------------------------------------------------------
-// BUTTON SCANNING: debounce, press / release, MIDI shift
+// BUTTON SCANNING (buttons.h decides when a button acts)
 // -----------------------------------------------------------------------------
-class Buttons
+static_assert(Buttons::kPitchExcludeComplex == PITCH_EXCLUDE_COMPLEX, "pitch-exclude bits");
+static_assert(Buttons::kPitchExcludeModulation == PITCH_EXCLUDE_MODULATION, "pitch-exclude bits");
+
+inline void scanButtons(Synth& s, Buttons& buttons)
 {
- public:
-  static const unsigned long kReadIntervalMs = 10;  // -> 10-20 ms effective debounce
-  static const unsigned long kShiftHoldMs = 500;    // hold MIDI this long to enter the shift
-  static const unsigned long kShiftFlashMs = 150;   // LPG LED flash half-period
-
-  bool armed = false;  // false during setup(): track state, take no actions
-
-  // Shift state, shown by the LEDs
-  bool shiftActive = false;      // held long enough: LPG LEDs flashing, LPG buttons edit
-  uint8_t shiftPitchExclude = 0;  // pending pitch-follow mask (PITCH_EXCLUDE_* bits)
-
-  inline bool isDown(uint8_t bit) const { return (debounced_ >> bit) & 1UL; }
-
-  WEASEL_NOINLINE void update(Synth& s)
-  {
-    uint32_t raw = s.shiftRegisters.read() & kButtonMask;
-
-    // Accept a new state only once two consecutive reads agree
-    if (raw == rawPrev_) debounced_ = raw;
-    rawPrev_ = raw;
-
-    uint32_t pressed = debounced_ & ~lastHandled_;   // rising edges
-    uint32_t released = ~debounced_ & lastHandled_;  // falling edges
-    lastHandled_ = debounced_;
-
-    if (!armed)
-    {
-      // setup(): anything down now is ignored until it has been let go
-      consumed_ = debounced_;
-      pressed = released = 0;
-    }
-
-    // -- presses --
-    while (pressed)
-    {
-      uint8_t bit = __builtin_ctz(pressed);
-      pressed &= pressed - 1;
-
-      if (bit == kShiftButton)
-      {
-        shiftDownAt_ = millis();
-        shiftActive = false;
-        shiftUsed_ = false;
-        shiftPitchExclude = editor.pitchExclude();
-        continue;
-      }
-      if (shiftHeld() && ((1UL << bit) & kShiftableMask))
-      {
-        // Pressed while MIDI is held: a shift combo, never a normal press or release
-        shiftUsed_ = true;
-        consumed_ |= (1UL << bit);
-        if (shiftActive)
-        {
-          if (bit == BTN_LPG1_MODE) shiftPitchExclude ^= PITCH_EXCLUDE_COMPLEX;
-          else if (bit == BTN_LPG2_MODE) shiftPitchExclude ^= PITCH_EXCLUDE_MODULATION;
-        }
-        continue;
-      }
-      if (bit == BTN_PULSAR_MANUAL) buttonAction(s, bit);  // performance trigger: on press
-    }
-
-    // -- MIDI shift: held long enough? --
-    if (shiftHeld() && !shiftActive && millis() - shiftDownAt_ >= kShiftHoldMs)
-    {
-      shiftActive = true;
-    }
-
-    // -- releases --
-    while (released)
-    {
-      uint8_t bit = __builtin_ctz(released);
-      released &= released - 1;
-      uint32_t mask = 1UL << bit;
-
-      if (consumed_ & mask)
-      {  // part of a combo, or held since power-up
-        consumed_ &= ~mask;
-        if (bit == kShiftButton) shiftActive = false;
-        continue;
-      }
-      if (bit == kShiftButton)
-      {
-        if (shiftActive || shiftUsed_)
-        {
-          // End of a shift: apply the pitch-follow choice, leave MIDI on/off alone
-          if (shiftPitchExclude != editor.pitchExclude()) editor.setPitchExclude(shiftPitchExclude);
-        }
-        else
-        {
-          buttonAction(s, bit);  // a plain press and release: toggle MIDI
-        }
-        shiftActive = false;
-        shiftUsed_ = false;
-        continue;
-      }
-      if (bit == BTN_PULSAR_MANUAL) continue;  // already fired on press
-      if (!(mask & kShiftableMask)) continue;  // latching step switches: read by level below
-      buttonAction(s, bit);
-    }
-
+  buttons.update(s.shiftRegisters.read());
 #if SEQ_STEP_SWITCHES_LATCHING
-    // Level-based step enable
-    for (int i = 0; i < Sequencer::kSteps; i++)
-    {
-#if SEQ_STEP_ENABLED_WHEN_HIGH
-      s.seq.stepEnabled[i] = isDown(kSeqStepBits[i]);
-#else
-      s.seq.stepEnabled[i] = !isDown(kSeqStepBits[i]);
+  // Level-based step enable
+  for (int i = 0; i < Sequencer::kSteps; i++) s.seq.stepEnabled[i] = buttons.stepEnabled(i);
 #endif
-    }
-#endif
-  }
-
- private:
-  // Buttons that can take part in a shift combo (not the latching step switches)
-#if SEQ_STEP_SWITCHES_LATCHING
-  static const uint32_t kShiftableMask = kButtonMask & ~((1UL << BTN_SEQ_STEP1) | (1UL << BTN_SEQ_STEP2) | (1UL << BTN_SEQ_STEP3) | (1UL << BTN_SEQ_STEP4) | (1UL << BTN_SEQ_STEP5));
-#else
-  static const uint32_t kShiftableMask = kButtonMask;
-#endif
-
-  // MIDI is down as a shift (not a button held since power-up)
-  inline bool shiftHeld() const { return isDown(kShiftButton) && !(consumed_ & (1UL << kShiftButton)); }
-
-  uint32_t rawPrev_ = 0;      // previous raw read (for 2-read debounce)
-  uint32_t debounced_ = 0;    // stable button state
-  uint32_t lastHandled_ = 0;  // state at last edge-processing pass
-  uint32_t consumed_ = 0;     // buttons whose release must do nothing (used in a shift combo, or held at boot)
-  unsigned long shiftDownAt_ = 0;
-  bool shiftUsed_ = false;    // another button was pressed during this hold
-};
+}
 
 // -----------------------------------------------------------------------------
 // MODE LEDS: built from the real synth state, so they always show the firmware state
