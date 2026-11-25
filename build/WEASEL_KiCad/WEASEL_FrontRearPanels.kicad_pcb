@@ -119,7 +119,7 @@
 			(mirror no)
 			(drillshape 0)
 			(scaleselection 1)
-			(outputdirectory "production/WEASEL_panels")
+			(outputdirectory "DRC/")
 		)
 	)
 	(net 0 "")
