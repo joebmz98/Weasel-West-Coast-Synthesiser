@@ -1,5 +1,5 @@
-** Drc report for WEASEL_KiCad.kicad_pcb **
-** Created on 2026-11-24T16:14:04+0000 **
+** Drc report for WEASEL_MainBoard.kicad_pcb **
+** Created on 2026-11-25T10:47:03+0000 **
 
 ** Found 9 DRC violations **
 [items_not_allowed]: Items not allowed (keepout area)
