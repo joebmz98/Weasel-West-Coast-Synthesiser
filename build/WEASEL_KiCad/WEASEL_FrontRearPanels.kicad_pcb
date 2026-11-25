@@ -42524,7 +42524,7 @@
 	(footprint "AXS_LOGO:AXS_LOGO_TEXTONLY_FULL_MASK"
 		(layer "F.Cu")
 		(uuid "fb65ea96-27cb-400e-80f0-888a69fe06a5")
-		(at 202.94 328.31)
+		(at 198.1987 331.1088)
 		(property "Reference" "G***"
 			(at 0 0 0)
 			(layer "F.SilkS")
