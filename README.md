@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="assets/images/renders/WEASEL_v3_hero.png" alt="WEASEL synthesiser: black stacked-panel case with orange knobs and buttons, slide pots, toggle switches and patch sockets" width="100%">
+  <img src="assets/images/renders/WEASEL_hero.png" alt="WEASEL synthesiser: black stacked-panel case with orange knobs and buttons, slide pots, toggle switches and patch sockets" width="100%">
 </p>
 
 # WEASEL
 ### Buchla Music Easel inspired digital west coast synthesiser
 
-**firmware 1.0** | **hardware 1.0**
+**firmware 1.2** | **hardware 1.0**
 
 Designed by **[.axs instruments](https://github.com/axsinstruments)**
 
@@ -32,6 +32,7 @@ panel always tells you what the synth is doing.
 
 - **Complex oscillator**: sine plus a morphing saw / square / triangle, with timbre and polarity
 - **Wavefolder** on the complex oscillator
+- **Anti-aliased** (firmware 1.2+): the complex oscillator, wavefolder and AM run 4x oversampled with band-limited waveforms and an anti-aliased folder, so high notes, deep folding, FM and AM stay clean instead of turning into digital noise
 - **Modulation oscillator**: sine, triangle, sawtooth and square, with FM or AM into the complex oscillator
 - **Dual low pass gate**: each channel switches between VCA, low pass and combination. Since firmware 1.1.2 this is a circuit model of the Buchla 292 (vactrol plus audio circuit, after Parker & D'Angelo, DAFx-13), with the mode switch reconfiguring the modelled circuit as on the original
 - **Envelope generator**: attack / sustain / decay, in transient, sustain or oscillating mode
@@ -60,8 +61,8 @@ The **[WEASEL web tools](https://joebmz98.github.io/Weasel-Flasher/)** have four
 **Putting WEASEL in DFU mode:** hold **BOOT**, tap **RESET**, release **BOOT** on the Daisy Seed.
 Once the editor firmware is running you can also restart into DFU mode from the flasher page.
 
-The MIDI settings and Presets pages need the firmware build with the USB editor link
-(`WeaselEditor.h`), which currently lives in the flasher repo under `firmware-src/`.
+The MIDI settings and Presets pages need firmware 1.0 or later (the USB editor link,
+`src/WEASEL_FW/WeaselEditor.h`).
 Add `?demo` to any page's address to try it against a simulated WEASEL.
 
 ---
@@ -199,7 +200,7 @@ source can drive several destinations at once.
 ## Signal flow
 
 ```
-[Complex Osc] → [Wavefolder] → [LPG 1] ┐
+[Complex Osc] → [Wavefolder] → [LPG 1] ┐      (complex osc, folder and AM: 4x oversampled)
        ↑ FM / AM                        ├→ [Mixer] → [Output filter] → [Reverb] → [Master volume] → Out
 [Mod Osc] ───────────────────→ [LPG 2] ┘
 
@@ -227,10 +228,12 @@ To build it yourself:
 
 1. Install the [Arduino IDE](https://www.arduino.cc/en/software), [DaisyDuino](https://github.com/electro-smith/DaisyDuino#installation) and the [MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library).
 2. Open `src/WEASEL_FW/WEASEL_FW.ino`.
-3. Set the board options at the top of the sketch:
+3. Set the build options in `src/WEASEL_FW/config.h`:
    - `WEASEL_LED_SINK_WIRING`: `1` for the current board (LED cathodes on the AW9523, dimmable), `0` for the prototype boards.
-   - `LED_BRIGHTNESS` (0-255) and `AW9523_ISEL` set the LED current.
+     With `1`, `brightness` (0-255) and `kLedCurrentRange` in `leds.h` set the LED current.
    - `SEQ_STEP_SWITCHES_LATCHING`: `1` for toggle switches on the sequencer steps, `0` for momentary buttons.
+   - `WEASEL_COMPLEX_OVERSAMPLING`: `4` (default), `2`, or `1` for the 1.1.x complex oscillator (aliasing included), to compare.
+   - `WEASEL_DEBUG`: `1` prints button presses, patch changes, MIDI input and the **audio CPU load** over USB serial (115200 baud). Leave it at `0` for the web editor.
 4. Select **Daisy Seed** as the board. For the web editor, also set **Tools > USB support > CDC (generic 'Serial' supersede U(S)ART)**.
    `src/WEASEL_FW/build_opt.h` (picked up automatically by the STM32 core) names the USB port **WEASEL**,
    so it shows as WEASEL rather than "DAISY_SEED CDC in FS Mode" in the browser's port picker and in the
@@ -238,6 +241,25 @@ To build it yourself:
 5. Put the Seed in DFU mode and upload, or use **Sketch > Export Compiled Binary** and flash the `.hex` from the build folder with the web flasher (**custom file**). A `.hex` carries its own flash addresses, so there's nothing to set; a `.bin` also works, at start address `0x08000000`.
 
 `src/tests/potentiometerTests` is a small sketch for checking the pots and multiplexers.
+
+### Firmware layout
+
+`WEASEL_FW.ino` only wires the modules together; each part of the instrument has its own header (namespace `weasel`):
+
+| File | Contents |
+| --- | --- |
+| `config.h` | Version and build options |
+| `hardware.h` | Pin map, pot / button / patch bay / LED maps |
+| `pots.h`, `shift_registers.h`, `patch_bay.h`, `leds.h` | Panel hardware: pot muxes and filtering, 74HC165 chain, patch bay scan, AW9523 LED drivers |
+| `buttons.h`, `panel.h` | Button scanning and the MIDI shift; what each button does, the mode LEDs, panel memory |
+| `controls.h` | What each pot does |
+| `midi_input.h`, `midi_notes.h`, `midi_clock.h` | MIDI handlers, held notes, clock sync |
+| `sequencer.h`, `envelopes.h` | Sequential voltage source; envelope generator, pulsar, random voltage |
+| `oscillators.h`, `antialias.h` | Modulation and complex oscillators; oversampling filters, band-limited waveforms, anti-aliased wavefolder |
+| `lpg_channel.h`, `buchla_lpg.*` | Panel LPG channel; the Buchla 292 circuit model |
+| `smoothing.h`, `dsp_util.h`, `cpu_meter.h` | Audio-rate pot smoothing, maths helpers, audio CPU load |
+| `synth.h`, `audio.h` | Every module in one struct; the audio callback |
+| `WeaselEditor.h` | USB link to the web pages (MIDI channel, presets, DFU) |
 
 ---
 
@@ -266,6 +288,8 @@ Regenerate the production files from KiCad after any board change.
 | `tools/lpg_test/` | Desktop test harness for the LPG model |
 | `tools/clock_test/` | Desktop test of MIDI clock sync and tempo reading (`sh tools/clock_test/run.sh`) |
 | `tools/button_test/` | Desktop test of the panel buttons and the MIDI shift (`sh tools/button_test/run.sh`) |
+| `tools/firmware_sim/` | Runs the whole firmware on a computer against a model of the panel, and compares two versions sample for sample (`sh tools/firmware_sim/run.sh <other sketch folder>`) |
+| `tools/alias_test/` | Measures the complex oscillator's aliasing, oversampling off / 2x / 4x (`sh tools/alias_test/run.sh`) |
 | `build/WEASEL_KiCad/` | Mainboard and panels: schematic, PCB, footprints, DRC report, production files |
 | `build/WEASEL_KEYS_KiCad/` | Keys board |
 | `lib/` | KiCad libraries (Daisy Seed) |

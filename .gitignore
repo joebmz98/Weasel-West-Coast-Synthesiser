@@ -47,3 +47,6 @@ tools/button_test/gen.h
 tools/button_test/button_test
 tools/clock_test/gen.h
 tools/clock_test/clock_test
+
+# firmware simulator output
+tools/firmware_sim/out/

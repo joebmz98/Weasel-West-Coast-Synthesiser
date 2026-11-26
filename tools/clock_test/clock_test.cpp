@@ -1,15 +1,19 @@
-// Desktop check of the MIDI clock sync in WEASEL_FW.ino (firmware 1.1.4): a 120 BPM clock read
+// Desktop check of the MIDI clock sync (midi_clock.h, firmware 1.1.4+): a 120 BPM clock read
 // by a main loop that is held up by 0-6 ms at random, as on the real panel. Run: sh run.sh
-#include "gen.h"
+#include "Arduino.h"
+#include "midi_clock.h"
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <vector>
 const double SR = 48000;
+weasel::MidiClock* clk = new weasel::MidiClock();
+weasel::Sequencer seq;
 // Old firmware's tempo: one tick gap, in whole ms
 float oldTempo(uint32_t gapMs) { float t = 60000.0f / (gapMs * 24.0f); return t < 40 ? 40 : t > 240 ? 240 : t; }
 
 int main() {
+  clk->division = 6;
   setvbuf(stdout, nullptr, _IONBF, 0);
   srand(7);
   const double bpm = 120, tickUs = 60e6 / (bpm * 24);
@@ -21,8 +25,8 @@ int main() {
     uint32_t ms = (uint32_t)(seen / 1000);
     if (lastOldMs) { float o = oldTempo(ms - lastOldMs); if (i > 24) { oldMin = fminf(oldMin, o); oldMax = fmaxf(oldMax, o); } }
     lastOldMs = ms;
-    midiClockTickReceived((uint32_t)seen, ms);
-    if (i > 24) { newMin = fminf(newMin, midiTempo); newMax = fmaxf(newMax, midiTempo); }
+    clk->tickReceived((uint32_t)seen, ms);
+    if (i > 24) { newMin = fminf(newMin, clk->tempo); newMax = fmaxf(newMax, clk->tempo); }
     t += tickUs;
   }
   printf("120 BPM clock, 0-6 ms loop delay: old reading %.0f-%.0f BPM, new reading %.1f-%.1f BPM\n", oldMin, oldMax, newMin, newMax);
@@ -31,9 +35,9 @@ int main() {
 
   // ---- sequencer: ticks arrive in loop passes, audio runs per sample ----
   // fresh state
-  midiClockTickCount = 0; audioSeenTickCount = 0; seqTickAccum = 0; midiTransportRunning = true;
-  currentDivision = 6;  // 1/16 notes: 6 ticks a step
-  midiClockResync();
+  clk = new weasel::MidiClock();
+  clk->division = 6;  // 1/16 notes: 6 ticks a step
+  clk->resync();
   std::vector<long> steps;
   long sample = 0; double nextTick = 0; long ticks = 0;
   auto run = [&](double seconds, bool clockOn, double stallAt = -1, double stallLen = 0) {
@@ -47,11 +51,11 @@ int main() {
       bool stalled = stallAt >= 0 && nowUs >= stallAt * 1e6 && nowUs < (stallAt + stallLen) * 1e6;
       if (!stalled && sample >= nextPass) {
         nextPass = sample + 48 * (1 + rand() % 6);  // next loop pass in 1-6 ms
-        for (double tk : pendingTicks) { midiClockTickReceived((uint32_t)nowUs, (uint32_t)(nowUs / 1000)); ticks++; (void)tk; }
+        for (double tk : pendingTicks) { clk->tickReceived((uint32_t)nowUs, (uint32_t)(nowUs / 1000)); ticks++; (void)tk; }
         pendingTicks.clear();
       }
-      if (midiClockActive && midiSyncStepDue()) {
-        seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps;
+      if (clk->active && clk->stepDue(seq)) {
+        seq.currentStep = (seq.currentStep + 1) % seq.maxSteps;
         steps.push_back(sample);
       }
     }
@@ -71,16 +75,16 @@ int main() {
   puts("ok  steps locked to the clock: no drift, jitter only from loop timing");
 
   // Start: the first tick after it plays step 1 (index 0)
-  midiClockStart(); seqCurrentStep = 3; steps.clear();
+  clk->start(); seq.currentStep = 3; steps.clear();
   { long end = sample + 48000; double nowUs; bool got = false;
-    for (; sample < end && !got; sample++) { nowUs = sample / SR * 1e6; while (nextTick <= nowUs) { midiClockTickReceived((uint32_t)nowUs, (uint32_t)(nowUs / 1000)); nextTick += tickUs; }
-      if (midiSyncStepDue()) { seqCurrentStep = (seqCurrentStep + 1) % seqMaxSteps; got = true; } }
-    assert(got && seqCurrentStep == 0); }
+    for (; sample < end && !got; sample++) { nowUs = sample / SR * 1e6; while (nextTick <= nowUs) { clk->tickReceived((uint32_t)nowUs, (uint32_t)(nowUs / 1000)); nextTick += tickUs; }
+      if (clk->stepDue(seq)) { seq.currentStep = (seq.currentStep + 1) % seq.maxSteps; got = true; } }
+    assert(got && seq.currentStep == 0); }
   puts("ok  Start: the first tick after it plays step 1");
 
   // Stop holds, Continue resumes
-  midiClockStop(); steps.clear(); run(1, true); assert(steps.empty());
-  midiClockContinue(); run(1, true); assert(steps.size() >= 7 && steps.size() <= 9);
+  clk->stop(); steps.clear(); run(1, true); assert(steps.empty());
+  clk->cont(); run(1, true); assert(steps.size() >= 7 && steps.size() <= 9);
   puts("ok  Stop holds the sequencer while clock keeps running; Continue resumes");
 
   // A 0.3 s hold-up (flash save): one catch-up step, then back in phase
